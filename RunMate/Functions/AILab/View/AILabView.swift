@@ -15,6 +15,8 @@ struct AILabView: View {
 
     @State private var scrollOffset: CGFloat = 0
 
+    @State private var observer = PollinationFeedObserver()
+
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
@@ -30,15 +32,24 @@ struct AILabView: View {
 
                     Color.clear.frame(height: maxHeight)
 
-                    
-                    ForEach(0 ..< 50) { i in
-                        Text("列表项目 \(i)")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                            .padding(.vertical, 4)
+                    List(observer.images) { item in
+                        VStack(alignment: .leading) {
+                            // 异步加载图片
+                            AsyncImage(url: URL(string: item.imageURL)) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(height: 200)
+                            .cornerRadius(12)
+
+                            Text(item.prompt)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(2)
+                                .padding(.top, 4)
+                        }
                     }
                 }
             }
@@ -49,6 +60,12 @@ struct AILabView: View {
                 }
             }
             headerView
+        }
+        .onAppear {
+            observer.startListening()
+        }
+        .onDisappear {
+            observer.stopListening()
         }
     }
 
