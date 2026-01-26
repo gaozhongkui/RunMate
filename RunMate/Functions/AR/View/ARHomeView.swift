@@ -11,8 +11,8 @@ struct ARHomeView: View {
     let namespace: Namespace.ID
 
     var body: some View {
-        VStack {
-            Color.brown
+        ZStack {
+            ARViewContainer().edgesIgnoringSafeArea(.top)
         }
     }
 }
