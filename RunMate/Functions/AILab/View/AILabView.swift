@@ -17,6 +17,11 @@ struct AILabView: View {
 
     @State private var observer = PollinationFeedObserver()
 
+    private let columns = [
+        GridItem(.flexible(), spacing: 11),
+        GridItem(.flexible(), spacing: 11),
+    ]
+
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView {
@@ -32,25 +37,11 @@ struct AILabView: View {
 
                     Color.clear.frame(height: maxHeight)
 
-                    List(observer.images) { item in
-                        VStack(alignment: .leading) {
-                            // 异步加载图片
-                            AsyncImage(url: URL(string: item.imageURL)) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(height: 200)
-                            .cornerRadius(12)
-
-                            Text(item.prompt)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .lineLimit(2)
-                                .padding(.top, 4)
+                    LazyVGrid(columns: columns, spacing: 14) {
+                        ForEach(0 ..< 50) { _ in
+                            VideoItemView().aspectRatio(170 / 234, contentMode: .fit)
                         }
-                    }
+                    }.padding(.top, 24).padding(.horizontal, 16)
                 }
             }
             .coordinateSpace(name: "scroll")
