@@ -18,8 +18,8 @@ struct AILabView: View {
     @State private var observer = PollinationFeedObserver()
 
     private let columns = [
-        GridItem(.flexible(), spacing: 11),
-        GridItem(.flexible(), spacing: 11),
+        GridItem(.flexible(), spacing: 7),
+        GridItem(.flexible(), spacing: 7),
     ]
 
     var body: some View {
@@ -37,9 +37,9 @@ struct AILabView: View {
 
                     Color.clear.frame(height: maxHeight)
 
-                    LazyVGrid(columns: columns, spacing: 14) {
-                        ForEach(0 ..< 50) { _ in
-                            VideoItemView().aspectRatio(170 / 234, contentMode: .fit)
+                    LazyVGrid(columns: columns, spacing: 7) {
+                        ForEach(observer.images, id: \.id) { item in
+                            VideoItemView(item: item, onClickTap: {}).aspectRatio(170 / 234, contentMode: .fit).id(item.id)
                         }
                     }.padding(.top, 24).padding(.horizontal, 16)
                 }
@@ -60,7 +60,7 @@ struct AILabView: View {
         }
     }
 
-    var headerView: some View {
+    private var headerView: some View {
         VStack {
             Spacer(minLength: 0)
             HStack {
@@ -80,7 +80,7 @@ struct AILabView: View {
         .zIndex(1)
     }
 
-    var headerHeight: CGFloat {
+    private var headerHeight: CGFloat {
         let height = maxHeight + scrollOffset
         return max(minHeight, height)
     }

@@ -14,13 +14,18 @@ class PollinationFeedObserver {
     var images: [PollinationFeedItem] = []
     private var task: Task<Void, Never>?
 
+    // 临时缓冲区，不使用 @Published，避免中途触发 UI 刷新
+    private var tempStorage: [PollinationFeedItem] = []
+
     func startListening() {
-        stopListening() // 启动前先停止旧的，防止内存泄漏
-        
+        stopListening()
+
+        // 重置数据
+        tempStorage = []
+
         task = Task {
             guard let url = URL(string: "https://image.pollinations.ai/feed") else { return }
 
-            // 1. 配置 Session 禁用所有缓存
             let config = URLSessionConfiguration.default
             config.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
             config.urlCache = nil
@@ -29,57 +34,60 @@ class PollinationFeedObserver {
             var request = URLRequest(url: url)
             request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
             request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
-            request.timeoutInterval = 3600 // 给长连接足够的生命周期
+            request.timeoutInterval = 3600
 
             do {
-                // 2. 使用 URLSession.bytes 获取流
                 let (bytes, response) = try await session.bytes(for: request)
-                
-                // 检查 HTTP 状态码
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-                    print("❌ 服务器响应异常")
-                    return
-                }
 
-                print("✅ SSE 连接已建立")
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
+
+                print("✅ 已建立连接，正在积攒数据 (0/50)...")
 
                 for try await line in bytes.lines {
-                    // 调试用：打印原始行，看看是不是真的有数据进来
-                    // print("Raw line: \(line)")
+                    // 检查取消状态
+                    if Task.isCancelled { break }
 
-                    // 3. 必须检查 data: 前缀
                     guard line.hasPrefix("data:") else { continue }
-                    
+
                     let jsonString = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
                     guard let data = jsonString.data(using: .utf8) else { continue }
 
                     do {
                         let item = try JSONDecoder().decode(PollinationFeedItem.self, from: data)
-                        
-                        // 4. 过滤逻辑：只显示生成完毕的
-                        // 注意：如果想实时看过程，可以去掉这个 if
+
+                        // 过滤出生成完成的图片
                         if item.status == "end_generating" {
-                            self.appendImage(item)
+                            // 放入缓冲区
+                            tempStorage.append(item)
+
+                            // 打印进度方便调试
+                            if tempStorage.count % 10 == 0 {
+                                print("📈 已获取: \(tempStorage.count)/50")
+                            }
+
+                            // 核心逻辑：达到 50 条时更新并退出
+                            if tempStorage.count >= 10 {//50
+                                await MainActor.run {
+                                    withAnimation(.spring()) {
+                                        // 一次性批量更新
+                                        self.images = tempStorage
+                                    }
+                                }
+                                print("🎉 已收集 50 条数据，更新 UI 并停止监听。")
+                                self.stopListening() // 停止任务
+                                break // 退出循环
+                            }
                         }
                     } catch {
-                        // 忽略解码失败（有时 SSE 会传一些非 JSON 的心跳包）
                         continue
                     }
                 }
             } catch {
-                print("⚠️ 连接中断: \(error.localizedDescription)")
-                // 这里可以加一个延时自动重连逻辑
+                if !Task.isCancelled {
+                    print("⚠️ 连接中断: \(error.localizedDescription)")
+                }
             }
         }
-    }
-
-    private func appendImage(_ item: PollinationFeedItem) {
-//        withAnimation {
-//            images.insert(item, at: 0)
-//            if images.count > 50 {
-//                images.removeLast()
-//            }
-//        }
     }
 
     func stopListening() {
