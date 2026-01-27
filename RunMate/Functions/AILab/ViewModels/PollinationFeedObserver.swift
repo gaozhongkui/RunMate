@@ -12,7 +12,6 @@ import SwiftUI
 class PollinationFeedObserver {
     private(set) var images: [PollinationFeedItem] = [] {
         didSet {
-            // 当数据填满并更新时，触发回调
             onDataUpdate?(images)
         }
     }
@@ -45,7 +44,7 @@ class PollinationFeedObserver {
 
                 guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
 
-                print("✅ 已建立连接，正在积攒数据 (0/50)...")
+                print("✅ 已建立连接，正在积攒数据 ...")
 
                 for try await line in bytes.lines {
                     // 检查取消状态
@@ -64,20 +63,23 @@ class PollinationFeedObserver {
                             // 放入缓冲区
                             tempStorage.append(item)
 
-                            // 打印进度方便调试
                             if tempStorage.count % 10 == 0 {
-                                print("📈 已获取: \(tempStorage.count)/50")
-                            }
-
-                            // 核心逻辑：达到 50 条时更新并退出
-                            if tempStorage.count >= 50 {
                                 await MainActor.run {
                                     withAnimation(.spring()) {
                                         // 一次性批量更新
                                         self.images = tempStorage
                                     }
                                 }
-                                print("🎉 已收集 50 条数据，更新 UI 并停止监听。")
+                            }
+
+                            if tempStorage.count >= 100 {
+                                await MainActor.run {
+                                    withAnimation(.spring()) {
+                                        // 一次性批量更新
+                                        self.images = tempStorage
+                                    }
+                                }
+                                print("🎉 已收集 指定的数量，更新 UI 并停止监听。")
                                 self.stopListening() // 停止任务
                                 break // 退出循环
                             }
