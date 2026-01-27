@@ -25,13 +25,48 @@ class WaterfallViewController: UIViewController, UICollectionViewDataSource, Wat
     }()
 
     private let searchBar: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 15
-        view.layer.shadowRadius = 2
-        view.layer.shadowOpacity = 0.2
-        view.layer.shadowOffset = CGSize(width: 0, height: 2)
-        return view
+        let container = UIView()
+        container.backgroundColor = .systemBackground
+        container.layer.cornerRadius = 15
+
+        // 阴影（等价 SwiftUI .shadow(radius: 2)）
+        container.layer.shadowColor = UIColor.black.cgColor
+        container.layer.shadowOpacity = 0.15
+        container.layer.shadowRadius = 2
+        container.layer.shadowOffset = CGSize(width: 0, height: 2)
+
+        // icon
+        let iconView = UIImageView(image: UIImage(systemName: "wand.and.stars"))
+        iconView.tintColor = .secondaryLabel
+        iconView.contentMode = .scaleAspectFit
+        iconView.setContentHuggingPriority(.required, for: .horizontal)
+
+        // placeholder text
+        let label = UILabel()
+        label.text = "Describe what you want the Al to create..."
+        label.font = .systemFont(ofSize: 15)
+        label.textColor = .secondaryLabel
+
+        // spacer
+        let spacer = UIView()
+
+        // stack
+        let stack = UIStackView(arrangedSubviews: [iconView, label, spacer])
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 8
+
+        container.addSubview(stack)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 10),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -10)
+        ])
+
+        return container
     }()
 
     override func viewDidLoad() {
@@ -136,16 +171,23 @@ class WaterfallViewController: UIViewController, UICollectionViewDataSource, Wat
         return cell
     }
 
-    func collectionView(_ collectionView: UICollectionView, heightForItemAt indexPath: IndexPath, itemWidth: CGFloat) -> CGFloat {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        heightForItemAt indexPath: IndexPath,
+        itemWidth: CGFloat
+    ) -> CGFloat {
         let item = dataList[indexPath.item]
         let originalWidth = CGFloat(item.width ?? 0)
         let originalHeight = CGFloat(item.height ?? 0)
 
-        guard originalWidth > 0 else { return 200 }
+        guard originalWidth > 0 else { return itemWidth } // 至少 1:1
 
-        // 比例 = 原始高 / 原始宽
-        let ratio = originalHeight / originalWidth
-        // 目标高度 = 当前列宽 * 比例
+        // 原始比例
+        let rawRatio = originalHeight / originalWidth
+
+        // 最小比例限制为 1:1
+        let ratio = max(rawRatio, 1.0)
+
         return itemWidth * ratio
     }
 }
