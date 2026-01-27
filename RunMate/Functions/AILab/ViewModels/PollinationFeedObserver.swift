@@ -9,19 +9,23 @@ import Foundation
 import SwiftUI
 
 @MainActor
-@Observable
 class PollinationFeedObserver {
-    var images: [PollinationFeedItem] = []
+    private(set) var images: [PollinationFeedItem] = [] {
+        didSet {
+            // 当数据填满并更新时，触发回调
+            onDataUpdate?(images)
+        }
+    }
+
     private var task: Task<Void, Never>?
 
-    // 临时缓冲区，不使用 @Published，避免中途触发 UI 刷新
-    private var tempStorage: [PollinationFeedItem] = []
+    var onDataUpdate: (([PollinationFeedItem]) -> Void)?
 
     func startListening() {
         stopListening()
 
         // 重置数据
-        tempStorage = []
+        var tempStorage: [PollinationFeedItem] = []
 
         task = Task {
             guard let url = URL(string: "https://image.pollinations.ai/feed") else { return }
@@ -66,7 +70,7 @@ class PollinationFeedObserver {
                             }
 
                             // 核心逻辑：达到 50 条时更新并退出
-                            if tempStorage.count >= 10 {//50
+                            if tempStorage.count >= 50 {
                                 await MainActor.run {
                                     withAnimation(.spring()) {
                                         // 一次性批量更新
