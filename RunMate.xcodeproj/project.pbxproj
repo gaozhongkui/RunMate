@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */ = {isa = PBXBuildFile; productRef = 056A0DC32F29E47700408FD9 /* DotLottie */; };
 		05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 05CAA6AA2F285543001D3924 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */,
+				056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = RunMate;
 			packageProductDependencies = (
 				05CAA6AA2F285543001D3924 /* Kingfisher */,
+				056A0DC32F29E47700408FD9 /* DotLottie */,
 			);
 			productName = RunMate;
 			productReference = 05CA9E922F271B03001D3924 /* RunMate.app */;
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				05CAA6A92F285543001D3924 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 05CA9E932F271B03001D3924 /* Products */;
@@ -351,6 +355,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/LottieFiles/dotlottie-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		05CAA6A92F285543001D3924 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -362,6 +374,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		056A0DC32F29E47700408FD9 /* DotLottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */;
+			productName = DotLottie;
+		};
 		05CAA6AA2F285543001D3924 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 05CAA6A92F285543001D3924 /* XCRemoteSwiftPackageReference "Kingfisher" */;

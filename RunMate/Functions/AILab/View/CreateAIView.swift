@@ -53,7 +53,7 @@ struct CreateAIView: View {
                 .frame(width: 44, height: 44)
 
                 Spacer()
-            } 
+            }
         }
         .frame(height: 44)
         .padding(.horizontal, 16)
