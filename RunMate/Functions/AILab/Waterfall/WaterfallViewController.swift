@@ -7,50 +7,50 @@
 
 import UIKit
 
-class WaterfallViewController: UIViewController, UICollectionViewDataSource, WaterfallLayoutDelegate, UICollectionViewDelegate {
+class WaterfallViewController: UIViewController,
+    UICollectionViewDataSource,
+    UICollectionViewDelegate,
+    WaterfallLayoutDelegate
+{
     private let observer = PollinationFeedObserver()
     private var collectionView: UICollectionView!
     private var dataList: [PollinationFeedItem] = []
 
-    // Header 相关常量
-    private let maxHeight: CGFloat = 80
-    private let minHeight: CGFloat = 60
+    // MARK: - Header Constants
+
+    private let maxHeight: CGFloat = 56
+    private let minHeight: CGFloat = 44
     private var headerHeightConstraint: NSLayoutConstraint!
 
-    // 1. 定义 Header 视图
-    private let headerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .systemBlue
-        return view
+    // MARK: - Header Views
+
+    private let blurView: UIVisualEffectView = {
+        let blur = UIBlurEffect(style: .systemUltraThinMaterial)
+        return UIVisualEffectView(effect: blur)
     }()
+
+    /// 内容容器（从 SafeArea 开始）
+    private let headerContentView = UIView()
 
     private let searchBar: UIView = {
         let container = UIView()
-        container.backgroundColor = .systemBackground
+        container.backgroundColor = .secondarySystemBackground
         container.layer.cornerRadius = 15
-
-        // 阴影（等价 SwiftUI .shadow(radius: 2)）
         container.layer.shadowColor = UIColor.black.cgColor
         container.layer.shadowOpacity = 0.15
-        container.layer.shadowRadius = 2
+        container.layer.shadowRadius = 4
         container.layer.shadowOffset = CGSize(width: 0, height: 2)
 
-        // icon
         let iconView = UIImageView(image: UIImage(systemName: "wand.and.stars"))
         iconView.tintColor = .secondaryLabel
-        iconView.contentMode = .scaleAspectFit
-        iconView.setContentHuggingPriority(.required, for: .horizontal)
 
-        // placeholder text
         let label = UILabel()
-        label.text = "Describe what you want the Al to create..."
+        label.text = "Describe what you want the AI to create..."
         label.font = .systemFont(ofSize: 15)
         label.textColor = .secondaryLabel
 
-        // spacer
         let spacer = UIView()
 
-        // stack
         let stack = UIStackView(arrangedSubviews: [iconView, label, spacer])
         stack.axis = .horizontal
         stack.alignment = .center
@@ -69,25 +69,50 @@ class WaterfallViewController: UIViewController, UICollectionViewDataSource, Wat
         return container
     }()
 
+    // MARK: - Loading
+
+    private let loadingView: UIActivityIndicatorView = {
+        let v = UIActivityIndicatorView(style: .large)
+        v.hidesWhenStopped = true
+        return v
+    }()
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         setupCollectionView()
         setupHeaderView()
+        setupLoadingView()
 
-        // 开启数据监听
+        loadingView.startAnimating()
+
         observer.onDataUpdate = { [weak self] items in
-            self?.dataList = items
-            self?.collectionView.reloadData()
+            guard let self else { return }
+            self.dataList = items
+            self.collectionView.reloadData()
+            self.loadingView.stopAnimating()
         }
+
         observer.startListening()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let safeTop = view.safeAreaInsets.top
+        collectionView.contentInset.top = maxHeight
+        collectionView.verticalScrollIndicatorInsets.top = maxHeight
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         observer.stopListening()
     }
+
+    // MARK: - Setup
 
     private func setupCollectionView() {
         let layout = WaterfallLayout()
@@ -98,13 +123,12 @@ class WaterfallViewController: UIViewController, UICollectionViewDataSource, Wat
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.contentInset = UIEdgeInsets(top: maxHeight, left: 0, bottom: 0, right: 0)
-        collectionView.verticalScrollIndicatorInsets = UIEdgeInsets(top: maxHeight, left: 0, bottom: 0, right: 0)
-
-        collectionView.register(VideoItemCell.self, forCellWithReuseIdentifier: VideoItemCell.identifier)
+        collectionView.register(VideoItemCell.self,
+                                forCellWithReuseIdentifier: VideoItemCell.identifier)
 
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -114,80 +138,90 @@ class WaterfallViewController: UIViewController, UICollectionViewDataSource, Wat
     }
 
     private func setupHeaderView() {
-        view.addSubview(headerView)
-        headerView.addSubview(searchBar)
+        view.addSubview(blurView)
+        view.addSubview(headerContentView)
+        headerContentView.addSubview(searchBar)
 
-        headerView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        headerContentView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
 
-        // 这里的约束是核心：我们通过修改这个高度约束来实现伸缩
-        headerHeightConstraint = headerView.heightAnchor.constraint(equalToConstant: maxHeight)
+        headerHeightConstraint = headerContentView.heightAnchor.constraint(equalToConstant: maxHeight)
 
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // Blur：覆盖状态栏
+            blurView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurView.bottomAnchor.constraint(equalTo: headerContentView.bottomAnchor),
+
+            // 内容区：SafeArea 内
+            headerContentView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerHeightConstraint,
 
-            // 搜索框在 Header 内部水平居中，底部留一点 Padding
-            searchBar.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
-            searchBar.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -10),
+            // SearchBar
+            searchBar.leadingAnchor.constraint(equalTo: headerContentView.leadingAnchor, constant: 16),
+            searchBar.trailingAnchor.constraint(equalTo: headerContentView.trailingAnchor, constant: -16),
+            searchBar.bottomAnchor.constraint(equalTo: headerContentView.bottomAnchor, constant: -10),
             searchBar.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
 
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let yOffset = scrollView.contentOffset.y
+    private func setupLoadingView() {
+        view.addSubview(loadingView)
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
 
-        // yOffset 初始值是 -maxHeight (即 -80)
-        // 向上滚动时，yOffset 会变大（例如变为 -50, 0, 100...）
-        let currentHeight = -yOffset
+        NSLayoutConstraint.activate([
+            loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+
+    // MARK: - Scroll
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let currentHeight = -scrollView.contentOffset.y
 
         if currentHeight > maxHeight {
-            // 向下拉时，Header 跟着变大（Stretching 效果）
             headerHeightConstraint.constant = currentHeight
         } else if currentHeight < minHeight {
-            // 向上滑到极限时，保持最小高度
             headerHeightConstraint.constant = minHeight
         } else {
-            // 在 min 和 max 之间自由缩放
             headerHeightConstraint.constant = currentHeight
         }
-
-        // 动态调整搜索框透明度（可选，类似 SwiftUI 渐变效果）
-        let progress = (currentHeight - minHeight) / (maxHeight - minHeight)
-        searchBar.alpha = progress
+//        let progress = (currentHeight - minHeight) / (maxHeight - minHeight)
+//        searchBar.alpha = max(0, min(1, progress))
     }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataList.count
+    // MARK: - DataSource
+
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int
+    {
+        dataList.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // 使用自定义 Cell
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: VideoItemCell.identifier, for: indexPath) as! VideoItemCell
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: VideoItemCell.identifier,
+            for: indexPath
+        ) as! VideoItemCell
         cell.configure(with: dataList[indexPath.item])
         return cell
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        heightForItemAt indexPath: IndexPath,
-        itemWidth: CGFloat
-    ) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView,
+                        heightForItemAt indexPath: IndexPath,
+                        itemWidth: CGFloat) -> CGFloat
+    {
         let item = dataList[indexPath.item]
-        let originalWidth = CGFloat(item.width ?? 0)
-        let originalHeight = CGFloat(item.height ?? 0)
-
-        guard originalWidth > 0 else { return itemWidth } // 至少 1:1
-
-        // 原始比例
-        let rawRatio = originalHeight / originalWidth
-
-        // 最小比例限制为 1:1
-        let ratio = max(rawRatio, 1.0)
-
-        return itemWidth * ratio
+        let w = CGFloat(item.width ?? 0)
+        let h = CGFloat(item.height ?? 0)
+        guard w > 0 else { return itemWidth }
+        return itemWidth * max(h / w, 1.0)
     }
 }
