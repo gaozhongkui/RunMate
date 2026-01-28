@@ -103,8 +103,8 @@ class WaterfallViewController: UIViewController,
         super.viewDidLayoutSubviews()
 
         let safeTop = view.safeAreaInsets.top
-        collectionView.contentInset.top = maxHeight
-        collectionView.verticalScrollIndicatorInsets.top = maxHeight
+        collectionView.contentInset.top = maxHeight + safeTop
+        collectionView.verticalScrollIndicatorInsets.top = maxHeight + safeTop
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -182,17 +182,22 @@ class WaterfallViewController: UIViewController,
     // MARK: - Scroll
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let currentHeight = -scrollView.contentOffset.y
+        let safeTop = view.safeAreaInsets.top
+        // 计算当前的实际偏移量（考虑了初始的 contentInset）
+        let offset = scrollView.contentOffset.y + maxHeight + safeTop
 
-        if currentHeight > maxHeight {
-            headerHeightConstraint.constant = currentHeight
-        } else if currentHeight < minHeight {
-            headerHeightConstraint.constant = minHeight
+        // 动态计算目标高度
+        // 当向上滚动时（offset > 0），高度减小；向下拖拽时（offset < 0），高度增加
+        let targetHeight = maxHeight - offset
+        
+        // 限制在 [minHeight, maxHeight] 之间，除非你想做下拉放大效果
+        if targetHeight >= maxHeight {
+            headerHeightConstraint.constant = targetHeight // 下拉放大
+        } else if targetHeight <= minHeight {
+            headerHeightConstraint.constant = minHeight // 最小收缩高度
         } else {
-            headerHeightConstraint.constant = currentHeight
+            headerHeightConstraint.constant = targetHeight // 中间过渡
         }
-//        let progress = (currentHeight - minHeight) / (maxHeight - minHeight)
-//        searchBar.alpha = max(0, min(1, progress))
     }
 
     // MARK: - DataSource
