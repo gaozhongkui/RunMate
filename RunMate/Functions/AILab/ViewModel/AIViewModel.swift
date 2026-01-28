@@ -23,5 +23,22 @@ class AIViewModel {
         AIViewInfo(title: "AIVision", image: "ai_test", prompt: "ai_test")
     ]
 
+    var inputText = ""
+
     var selectedAIStyleID: UUID?
+
+    func doGenerateImage() {
+        PollinationsImageGenerator.shared.generateImage(
+            prompt: inputText,
+            onProgress: { progress in
+                print("gzk \(progress)")
+
+            },
+            completion: { result in
+                if case .success(let data) = result {
+                    print("gzk \(self.inputText) \(data)")
+                }
+            }
+        )
+    }
 }

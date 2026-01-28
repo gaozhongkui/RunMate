@@ -12,8 +12,6 @@ struct CreateAIView: View {
 
     var namespace: Namespace.ID
 
-    @State private var text = ""
-
     @State private var viewModel: AIViewModel = .init()
 
     private let columns = [
@@ -71,10 +69,10 @@ struct CreateAIView: View {
                     .fill(Color.gray.opacity(0.3))
                     .frame(maxHeight: .infinity)
 
-                TextEditor(text: $text)
+                TextEditor(text: $viewModel.inputText)
                     .frame(maxHeight: .infinity).scrollContentBackground(.hidden).padding(10).foregroundColor(.white).font(.system(size: 15))
 
-                if text.isEmpty {
+                if viewModel.inputText.isEmpty {
                     Text("Describe the action in detail... (e.g. Running on a rainbow bridge)")
                         .foregroundColor(.white.opacity(0.2))
                         .font(.system(size: 15))
@@ -92,7 +90,7 @@ struct CreateAIView: View {
             HStack {
                 Spacer()
                 AIExpandButton {
-                    text = AIExpandHelper.generatePaintingDescription()
+                    viewModel.inputText = AIExpandHelper.generatePaintingDescription()
                 }
             }.padding(.top, 8)
 
@@ -110,7 +108,7 @@ struct CreateAIView: View {
 
     private func bottomLayout() -> some View {
         Button(action: {
-            print("Generate image with description:")
+            viewModel.doGenerateImage()
         }) {
             Text("Generate")
                 .font(.headline)
