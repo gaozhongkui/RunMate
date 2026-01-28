@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CreateAIView: View {
     @Environment(\.dismiss) var dismiss
+    
+    var namespace: Namespace.ID
 
     @State private var text = ""
 
@@ -23,15 +25,18 @@ struct CreateAIView: View {
     var body: some View {
         VStack(spacing: 20) {
             headerView()
-            ScrollView(showsIndicators: false) {
+            ScrollView {
                 contentView()
             }
-            bottomLayout()
+            .frame(maxHeight: .infinity)
 
-        }.background {
+            bottomLayout()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
             LinearGradient(gradient: Gradient(colors: [Color(hex: "1F1F35"), Color(hex: "121226")]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
-        }
+        }.navigationBarBackButtonHidden()
     }
 
     private func headerView() -> some View {
@@ -83,7 +88,6 @@ struct CreateAIView: View {
                 blurRadius: 2
             )
             .cornerRadius(24)
-            .padding(.horizontal)
 
             Text("Choose an AI model to create your free AI image").font(.system(size: 16)).foregroundColor(.white.opacity(0.4))
 
@@ -94,7 +98,7 @@ struct CreateAIView: View {
                     }.aspectRatio(108 / 150, contentMode: .fill)
                 }
             }
-        }.frame(maxHeight: .infinity)
+        }.padding(.horizontal, 16)
     }
 
     private func bottomLayout() -> some View {
@@ -111,10 +115,7 @@ struct CreateAIView: View {
                 )
                 .cornerRadius(30)
                 .shadow(color: Color(hex: "6E50BB").opacity(0.6), radius: 10, x: 0, y: 5)
+                .padding(.horizontal, 16)
         }
     }
-}
-
-#Preview {
-    CreateAIView()
 }

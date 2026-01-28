@@ -34,7 +34,10 @@ struct ContentView: View {
                             self.tabItemView(style: .ARHome, selected: self.selectedTab == .ARHome)
                         }
                 }
-            }
+            }.modifier(NavigationDestinationImage(namespace: self.nameSpace))
+        }
+        .onAppear {
+            self.navManager.push(.createAI)
         }
     }
 
