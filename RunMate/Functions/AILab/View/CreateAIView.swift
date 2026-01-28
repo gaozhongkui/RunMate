@@ -14,7 +14,7 @@ struct CreateAIView: View {
 
     @State private var viewModel: AIViewModel = .init()
 
-    private let columns = [
+    private let rows = [
         GridItem(.flexible(), spacing: 9.0),
         GridItem(.flexible(), spacing: 9.0),
     ]
@@ -47,7 +47,7 @@ struct CreateAIView: View {
                     Image(systemName: "chevron.left")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 22, height: 22)
+                        .frame(width: 18, height: 18)
                         .foregroundColor(.white)
                         .padding(11)
                         .background(Color(hex: "#868095").opacity(0.2))
@@ -79,31 +79,45 @@ struct CreateAIView: View {
                         .padding(10)
                 }
             }
-            .frame(height: 200)
+            .frame(minHeight: 60)
             .glowBorder(
                 gradient: LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "00FFFF")], startPoint: .topLeading, endPoint: .bottomTrailing),
                 lineWidth: 2,
                 blurRadius: 2
             )
-            .cornerRadius(24)
+            .cornerRadius(12)
+            .padding(.horizontal, 16)
 
             HStack {
                 Spacer()
                 AIExpandButton {
                     viewModel.inputText = AIExpandHelper.generatePaintingDescription()
                 }
-            }.padding(.top, 8)
+            }.padding(.top, 8).padding(.horizontal, 16)
 
-            Text("Choose an AI model to create your free AI image").font(.system(size: 18)).foregroundColor(.white).fontWeight(.bold).padding(.top, 30)
+            HStack {
+                Text("Choose Your Sytle").font(.system(size: 18)).foregroundColor(.white).fontWeight(.bold)
+                Spacer()
+            }.padding(.top, 30).padding(.horizontal, 16)
 
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(viewModel.imageAIStyles, id: \.id) { item in
-                    StyleOptionView(item: item, isSelected: item.id == viewModel.selectedAIStyleID) {
-                        viewModel.selectedAIStyleID = item.id
-                    }.aspectRatio(167 / 108, contentMode: .fill)
-                }
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHGrid(rows: rows) {
+                    ForEach(viewModel.imageAIStyles, id: \.id) { item in
+                        StyleOptionView(item: item, isSelected: item.id == viewModel.selectedAIStyleID) {
+                            viewModel.selectedAIStyleID = item.id
+                        }
+                    }
+                }.padding(.horizontal, 10)
+
             }.padding(.bottom, 20).padding(.top, 10)
-        }.padding(.horizontal, 16)
+
+            HStack {
+                Text(" Aspect Ratio").font(.system(size: 18)).foregroundColor(.white).fontWeight(.bold)
+                Spacer()
+            }.padding(.top, 16).padding(.horizontal, 16)
+
+            AspectRatioSelector().padding(.top, 10).padding(.horizontal, 16)
+        }
     }
 
     private func bottomLayout() -> some View {

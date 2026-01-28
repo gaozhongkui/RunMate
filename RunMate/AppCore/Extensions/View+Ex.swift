@@ -25,7 +25,7 @@ struct GlowBorder: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay(
-                RoundedRectangle(cornerRadius: 24) // 假设这里的圆角和内容的圆角一致
+                RoundedRectangle(cornerRadius: 12) // 假设这里的圆角和内容的圆角一致
                     .stroke(gradient, lineWidth: lineWidth)
                     .blur(radius: blurRadius)
             )
