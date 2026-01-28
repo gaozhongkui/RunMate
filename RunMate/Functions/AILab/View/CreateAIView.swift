@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CreateAIView: View {
     @Environment(\.dismiss) var dismiss
-    
+
     var namespace: Namespace.ID
 
     @State private var text = ""
@@ -19,7 +19,6 @@ struct CreateAIView: View {
     private let columns = [
         GridItem(.flexible(), spacing: 9.0),
         GridItem(.flexible(), spacing: 9.0),
-        GridItem(.flexible(), spacing: 9.0)
     ]
 
     var body: some View {
@@ -66,7 +65,7 @@ struct CreateAIView: View {
     }
 
     private func contentView() -> some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
             ZStack {
                 Rectangle()
                     .fill(Color.gray.opacity(0.3))
@@ -89,15 +88,22 @@ struct CreateAIView: View {
             )
             .cornerRadius(24)
 
-            Text("Choose an AI model to create your free AI image").font(.system(size: 16)).foregroundColor(.white.opacity(0.4))
+            HStack {
+                Spacer()
+                AIExpandButton {
+                    print("用于测试用的")
+                }
+            }.padding(.top, 8)
+
+            Text("Choose an AI model to create your free AI image").font(.system(size: 18)).foregroundColor(.white).fontWeight(.bold).padding(.top, 30)
 
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(viewModel.imageAIStyles, id: \.id) { item in
                     StyleOptionView(item: item, isSelected: item.id == viewModel.selectedAIStyleID) {
                         viewModel.selectedAIStyleID = item.id
-                    }.aspectRatio(108 / 150, contentMode: .fill)
+                    }.aspectRatio(167 / 108, contentMode: .fill)
                 }
-            }
+            }.padding(.bottom, 20).padding(.top, 10)
         }.padding(.horizontal, 16)
     }
 
