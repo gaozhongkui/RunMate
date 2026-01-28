@@ -12,7 +12,8 @@ struct HomeView: View {
 
     var body: some View {
         VStack {
-            Color.red
+          
+            CreateAIView()
         }
     }
 }
