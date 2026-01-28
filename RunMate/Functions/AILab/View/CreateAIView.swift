@@ -72,11 +72,12 @@ struct CreateAIView: View {
                     .frame(maxHeight: .infinity)
 
                 TextEditor(text: $text)
-                    .frame(maxHeight: .infinity).scrollContentBackground(.hidden).padding(10)
+                    .frame(maxHeight: .infinity).scrollContentBackground(.hidden).padding(10).foregroundColor(.white).font(.system(size: 15))
 
                 if text.isEmpty {
                     Text("Describe the action in detail... (e.g. Running on a rainbow bridge)")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.2))
+                        .font(.system(size: 15))
                         .padding(10)
                 }
             }
@@ -91,7 +92,7 @@ struct CreateAIView: View {
             HStack {
                 Spacer()
                 AIExpandButton {
-                    print("用于测试用的")
+                    text = AIExpandHelper.generatePaintingDescription()
                 }
             }.padding(.top, 8)
 
