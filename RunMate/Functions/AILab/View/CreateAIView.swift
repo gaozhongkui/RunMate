@@ -12,20 +12,21 @@ struct CreateAIView: View {
 
     @State private var text = ""
 
-    @State private var selectedStyle: String = "Anime"
+    @State private var viewModel: AIViewModel = .init()
 
-    let styles = ["Anime", "3D", "Cyberpunk", "Cinematic"]
-    let styleImages: [String: String] = [
-        "Anime": "anime_style_image",
-        "3D": "3d_style_image",
-        "Cyberpunk": "cyberpunk_style_image",
-        "Cinematic": "cinematic_style_image"
+    private let columns = [
+        GridItem(.flexible(), spacing: 9.0),
+        GridItem(.flexible(), spacing: 9.0),
+        GridItem(.flexible(), spacing: 9.0)
     ]
 
     var body: some View {
         VStack(spacing: 20) {
             headerView()
-            contentView()
+            ScrollView(showsIndicators: false) {
+                contentView()
+            }
+            bottomLayout()
 
         }.background {
             LinearGradient(gradient: Gradient(colors: [Color(hex: "1F1F35"), Color(hex: "121226")]), startPoint: .top, endPoint: .bottom)
@@ -60,60 +61,56 @@ struct CreateAIView: View {
     }
 
     private func contentView() -> some View {
-        ZStack {
-            VStack(spacing: 20) {
-                ZStack {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(maxHeight: .infinity)
+        VStack(spacing: 20) {
+            ZStack {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(maxHeight: .infinity)
 
-                    TextEditor(text: $text)
-                        .frame(maxHeight: .infinity).scrollContentBackground(.hidden).padding(10)
+                TextEditor(text: $text)
+                    .frame(maxHeight: .infinity).scrollContentBackground(.hidden).padding(10)
 
-                    if text.isEmpty {
-                        Text("Describe the action in detail... (e.g. Running on a rainbow bridge)")
-                            .foregroundColor(.gray)
-                            .padding(10)
-                    }
+                if text.isEmpty {
+                    Text("Describe the action in detail... (e.g. Running on a rainbow bridge)")
+                        .foregroundColor(.gray)
+                        .padding(10)
                 }
-                .frame(height: 200)
-                .glowBorder(
-                    gradient: LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "00FFFF")], startPoint: .topLeading, endPoint: .bottomTrailing),
-                    lineWidth: 2,
-                    blurRadius: 2
-                )
-                .cornerRadius(24)
-                .padding(.horizontal)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 15) {
-                        ForEach(styles, id: \.self) { style in
-                            StyleOptionView(styleName: style, isSelected: selectedStyle == style) {
-                                selectedStyle = style
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-
-                Spacer()
-
-                Button(action: {
-                    print("Generate image with description:")
-                }) {
-                    Text("Generate")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 15)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            LinearGradient(colors: [Color(hex: "9D50BB"), Color(hex: "6E50BB")], startPoint: .leading, endPoint: .trailing)
-                        )
-                        .cornerRadius(30)
-                        .shadow(color: Color(hex: "6E50BB").opacity(0.6), radius: 10, x: 0, y: 5)
-                }
-                .padding(.horizontal)
             }
+            .frame(height: 200)
+            .glowBorder(
+                gradient: LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "00FFFF")], startPoint: .topLeading, endPoint: .bottomTrailing),
+                lineWidth: 2,
+                blurRadius: 2
+            )
+            .cornerRadius(24)
+            .padding(.horizontal)
+
+            Text("Choose an AI model to create your free AI image").font(.system(size: 16)).foregroundColor(.white.opacity(0.4))
+
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(viewModel.imageAIStyles, id: \.id) { item in
+                    StyleOptionView(item: item, isSelected: item.id == viewModel.selectedAIStyleID) {
+                        viewModel.selectedAIStyleID = item.id
+                    }.aspectRatio(108 / 150, contentMode: .fill)
+                }
+            }
+        }.frame(maxHeight: .infinity)
+    }
+
+    private func bottomLayout() -> some View {
+        Button(action: {
+            print("Generate image with description:")
+        }) {
+            Text("Generate")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.vertical, 15)
+                .frame(maxWidth: .infinity)
+                .background(
+                    LinearGradient(colors: [Color(hex: "9D50BB"), Color(hex: "6E50BB")], startPoint: .leading, endPoint: .trailing)
+                )
+                .cornerRadius(30)
+                .shadow(color: Color(hex: "6E50BB").opacity(0.6), radius: 10, x: 0, y: 5)
         }
     }
 }
