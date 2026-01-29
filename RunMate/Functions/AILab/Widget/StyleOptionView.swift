@@ -34,7 +34,7 @@ struct StyleOptionView: View {
                         .shadow(color: isSelected ? .purple.opacity(0.7) : .clear, radius: 5, x: 0, y: 0)
                 }
                 Text(item.title).font(.system(size: 14)).foregroundColor(.white).fontWeight(.bold).padding(.bottom, 10)
-            }
+            }.padding(.top, 10)
         }
     }
 }
