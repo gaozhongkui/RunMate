@@ -24,9 +24,12 @@ class PollinationFeedObserver {
         stopListening()
 
         // 重置数据
+
         var tempStorage: [PollinationFeedItem] = []
 
         task = Task {
+            images = await loadLocalCache()
+
             guard let url = URL(string: "https://image.pollinations.ai/feed") else { return }
 
             let config = URLSessionConfiguration.default
@@ -77,10 +80,14 @@ class PollinationFeedObserver {
                                     withAnimation(.spring()) {
                                         // 一次性批量更新
                                         self.images = tempStorage
+
+                                        let databse = PollinationDatabase.shared
+                                        // 临时缓冲保存到本地
+                                        databse.saveItems(images)
                                     }
                                 }
                                 print("🎉 已收集 指定的数量，更新 UI 并停止监听。")
-                                self.stopListening() // 停止任务
+                                self.stopListening()
                                 break // 退出循环
                             }
                         }
@@ -94,6 +101,11 @@ class PollinationFeedObserver {
                 }
             }
         }
+    }
+
+    @MainActor
+    private func loadLocalCache() async -> [PollinationFeedItem] {
+        return PollinationDatabase.shared.fetchCachedItems()
     }
 
     func stopListening() {

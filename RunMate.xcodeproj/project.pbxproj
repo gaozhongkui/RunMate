@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */ = {isa = PBXBuildFile; productRef = 056A0DC32F29E47700408FD9 /* DotLottie */; };
 		056A0FAA2F2B293100408FD9 /* Zoomable in Frameworks */ = {isa = PBXBuildFile; productRef = 056A0FA92F2B293100408FD9 /* Zoomable */; };
+		056A1C612F30B9A600408FD9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1C602F30B9A600408FD9 /* SQLite */; };
 		05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 05CAA6AA2F285543001D3924 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				056A1C612F30B9A600408FD9 /* SQLite in Frameworks */,
 				05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */,
 				056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */,
 				056A0FAA2F2B293100408FD9 /* Zoomable in Frameworks */,
@@ -77,6 +79,7 @@
 				05CAA6AA2F285543001D3924 /* Kingfisher */,
 				056A0DC32F29E47700408FD9 /* DotLottie */,
 				056A0FA92F2B293100408FD9 /* Zoomable */,
+				056A1C602F30B9A600408FD9 /* SQLite */,
 			);
 			productName = RunMate;
 			productReference = 05CA9E922F271B03001D3924 /* RunMate.app */;
@@ -110,6 +113,7 @@
 				05CAA6A92F285543001D3924 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */,
 				056A0FA82F2B293100408FD9 /* XCRemoteSwiftPackageReference "Zoomable" */,
+				056A1C5F2F30B9A600408FD9 /* XCRemoteSwiftPackageReference "SQLite" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 05CA9E932F271B03001D3924 /* Products */;
@@ -375,6 +379,14 @@
 				kind = branch;
 			};
 		};
+		056A1C5F2F30B9A600408FD9 /* XCRemoteSwiftPackageReference "SQLite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.5;
+			};
+		};
 		05CAA6A92F285543001D3924 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -395,6 +407,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 056A0FA82F2B293100408FD9 /* XCRemoteSwiftPackageReference "Zoomable" */;
 			productName = Zoomable;
+		};
+		056A1C602F30B9A600408FD9 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 056A1C5F2F30B9A600408FD9 /* XCRemoteSwiftPackageReference "SQLite" */;
+			productName = SQLite;
 		};
 		05CAA6AA2F285543001D3924 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
