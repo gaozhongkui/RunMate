@@ -25,13 +25,12 @@ struct GlowBorder: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay(
-                RoundedRectangle(cornerRadius: 12) // 假设这里的圆角和内容的圆角一致
+                RoundedRectangle(cornerRadius: 12)
                     .stroke(gradient, lineWidth: lineWidth)
                     .blur(radius: blurRadius)
             )
     }
 }
-
 
 struct InnerShadow: ViewModifier {
     var color: Color = .black
@@ -42,12 +41,31 @@ struct InnerShadow: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay(
-                RoundedRectangle(cornerRadius: 12) // 假设输入框的圆角是12
+                RoundedRectangle(cornerRadius: 12)
                     .fill(color)
-                    .blendMode(.multiply) // 或者 .darken, 尝试不同模式
+                    .blendMode(.multiply)
                     .offset(x: x, y: y)
                     .blur(radius: radius)
-                    .mask(content) // 使用内容本身作为遮罩，只显示内容区域的阴影
+                    .mask(content)
             )
+    }
+}
+
+extension UIView {
+    func addGradientBorder(colors: [UIColor], width: CGFloat) {
+        let gradient = CAGradientLayer()
+        gradient.frame = CGRect(origin: CGPoint.zero, size: bounds.size)
+        gradient.colors = colors.map { $0.cgColor }
+        gradient.startPoint = CGPoint(x: 0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 1, y: 0.5)
+
+        let shape = CAShapeLayer()
+        shape.lineWidth = width
+        shape.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
+        shape.strokeColor = UIColor.black.cgColor
+        shape.fillColor = nil
+        gradient.mask = shape
+
+        layer.addSublayer(gradient)
     }
 }

@@ -24,7 +24,6 @@ struct AILabView: View {
         @Namespace var previewNamespace
 
         var body: some View {
-            // 2. 将声明好的 namespace 传进去
             AILabView(namespace: previewNamespace)
         }
     }

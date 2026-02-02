@@ -5,10 +5,8 @@
 //  Created by gaozhongkui on 2026/1/27.
 //
 
-
-
-import UIKit
 import Kingfisher
+import UIKit
 
 class VideoItemCell: UICollectionViewCell {
     static let identifier = "VideoItemCell"
@@ -18,7 +16,6 @@ class VideoItemCell: UICollectionViewCell {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.backgroundColor = UIColor(hex: "#1A1629") // 占位背景色
         return iv
     }()
     
@@ -37,7 +34,12 @@ class VideoItemCell: UICollectionViewCell {
         return label
     }()
     
-    private let loadingIndicator = UIActivityIndicatorView(style: .medium)
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.color = .white
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
 
     // 2. 初始化
     override init(frame: CGRect) {
@@ -50,8 +52,6 @@ class VideoItemCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        // 圆角和背景色 (对应 SwiftUI 的 .clipShape 和 .background)
-        contentView.backgroundColor = UIColor(hex: "#C9DFD9")
         contentView.layer.cornerRadius = 24
         contentView.layer.masksToBounds = true
         
@@ -61,29 +61,25 @@ class VideoItemCell: UICollectionViewCell {
         textBackgroundView.addSubview(promptLabel)
         imageView.addSubview(loadingIndicator)
         
-        // Auto Layout 约束
+        // Auto Layout 约束 (保持不变)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         textBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         promptLabel.translatesAutoresizingMaskIntoConstraints = false
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            // 图片撑满整个 Cell
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            // 加载指示器居中
             loadingIndicator.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
             
-            // 底部文字容器
             textBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             textBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             textBackgroundView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            // 文字 Padding (对应 SwiftUI 的 .padding)
             promptLabel.topAnchor.constraint(equalTo: textBackgroundView.topAnchor, constant: 6),
             promptLabel.leadingAnchor.constraint(equalTo: textBackgroundView.leadingAnchor, constant: 10),
             promptLabel.trailingAnchor.constraint(equalTo: textBackgroundView.trailingAnchor, constant: -10),
@@ -91,20 +87,21 @@ class VideoItemCell: UICollectionViewCell {
         ])
     }
     
-    // 3. 配置数据 (对应 SwiftUI 的 KFImage 逻辑)
+    // 3. 配置数据
     func configure(with item: PollinationFeedItem) {
         promptLabel.text = item.prompt ?? "No Prompt"
         
         guard let url = URL(string: item.imageURL) else { return }
         
-        // 对应 SwiftUI 的降采样和配置
         let processor = DownsamplingImageProcessor(size: self.bounds.size)
         
         loadingIndicator.startAnimating()
         loadingIndicator.isHidden = false
         
+        // 使用 Kingfisher 设置占位图
         imageView.kf.setImage(
             with: url,
+            placeholder: UIImage(named: "img_loading"),
             options: [
                 .processor(processor),
                 .scaleFactor(UIScreen.main.scale),
@@ -117,7 +114,7 @@ class VideoItemCell: UICollectionViewCell {
         }
     }
     
-    // 4. 重置 Cell 防止复用残留
+    // 4. 重置 Cell
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()

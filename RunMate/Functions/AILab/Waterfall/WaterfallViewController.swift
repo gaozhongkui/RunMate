@@ -5,6 +5,7 @@
 //  Created by gaozhongkui on 2025/12/24.
 //
 
+import DotLottie
 import UIKit
 
 class WaterfallViewController: UIViewController,
@@ -24,47 +25,49 @@ class WaterfallViewController: UIViewController,
 
     var onItemTap: ((PollinationFeedItem) -> Void)?
 
-    private let blurView: UIVisualEffectView = {
-        let blur = UIBlurEffect(style: .systemUltraThinMaterial)
-        return UIVisualEffectView(effect: blur)
-    }()
-
-    /// 内容容器（从 SafeArea 开始）
     private let headerContentView = UIView()
 
     private let searchBar: UIView = {
-        let container = UIView()
-        container.backgroundColor = .secondarySystemBackground
-        container.layer.cornerRadius = 15
-        container.layer.shadowColor = UIColor.black.cgColor
-        container.layer.shadowOpacity = 0.15
-        container.layer.shadowRadius = 4
-        container.layer.shadowOffset = CGSize(width: 0, height: 2)
+        let container = GradientBorderView()
 
+        // 设置渐变色 (青色 -> 紫粉色)
+        container.gradientColors = [
+            UIColor(red: 0/255, green: 255/255, blue: 255/255, alpha: 1.0),
+            UIColor(red: 255/255, green: 0/255, blue: 255/255, alpha: 1.0)
+        ]
+
+        // 2. 更新图标为放大镜
         let iconView = UIImageView(image: UIImage(systemName: "wand.and.stars"))
-        iconView.tintColor = .secondaryLabel
+        iconView.tintColor = .white
+        iconView.contentMode = .scaleAspectFit
+        NSLayoutConstraint.activate([
+            iconView.widthAnchor.constraint(equalToConstant: 20),
+            iconView.heightAnchor.constraint(equalToConstant: 20)
+        ])
 
+        // 3. 更新文字内容和颜色
         let label = UILabel()
-        label.text = "Describe what you want the AI to create..."
-        label.font = .systemFont(ofSize: 15)
-        label.textColor = .secondaryLabel
+        label.text = "Explore AI Art..."
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.textColor = .white
 
         let spacer = UIView()
 
         let stack = UIStackView(arrangedSubviews: [iconView, label, spacer])
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 8
+        stack.spacing = 12
 
         container.addSubview(stack)
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
-            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 10),
-            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -10)
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -20),
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12)
         ])
+
         return container
     }()
 
@@ -73,31 +76,28 @@ class WaterfallViewController: UIViewController,
         onHeaderTap?()
     }
 
-    // MARK: - Loading
-
-    private let loadingView: UIActivityIndicatorView = {
-        let v = UIActivityIndicatorView(style: .large)
-        v.hidesWhenStopped = true
-        return v
+    private let loadingView: DotLottieAnimationView = {
+        let config = AnimationConfig(autoplay: true, loop: true)
+        let lottieView = DotLottieAnimationView(dotLottieViewModel: DotLottieAnimation(fileName: "loading", config: config))
+        return lottieView
     }()
-
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = UIColor(hex: "#0A0A0F")
 
         setupCollectionView()
         setupHeaderView()
         setupLoadingView()
 
-        loadingView.startAnimating()
+        loadingView.dotLottieViewModel.play()
 
         observer.onDataUpdate = { [weak self] items in
             guard let self else { return }
             self.dataList = items
             self.collectionView.reloadData()
-            self.loadingView.stopAnimating()
+            self.loadingView.dotLottieViewModel.stop()
+            self.loadingView.isHidden = true
         }
 
         observer.startListening()
@@ -127,8 +127,7 @@ class WaterfallViewController: UIViewController,
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.register(VideoItemCell.self,
-                                forCellWithReuseIdentifier: VideoItemCell.identifier)
+        collectionView.register(VideoItemCell.self, forCellWithReuseIdentifier: VideoItemCell.identifier)
 
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -142,11 +141,9 @@ class WaterfallViewController: UIViewController,
     }
 
     private func setupHeaderView() {
-        view.addSubview(blurView)
         view.addSubview(headerContentView)
         headerContentView.addSubview(searchBar)
 
-        blurView.translatesAutoresizingMaskIntoConstraints = false
         headerContentView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.isUserInteractionEnabled = true
@@ -156,13 +153,6 @@ class WaterfallViewController: UIViewController,
         headerHeightConstraint = headerContentView.heightAnchor.constraint(equalToConstant: maxHeight)
 
         NSLayoutConstraint.activate([
-            // Blur：覆盖状态栏
-            blurView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            blurView.bottomAnchor.constraint(equalTo: headerContentView.bottomAnchor),
-
-            // 内容区：SafeArea 内
             headerContentView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -182,11 +172,11 @@ class WaterfallViewController: UIViewController,
 
         NSLayoutConstraint.activate([
             loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loadingView.widthAnchor.constraint(equalToConstant: 200),
+            loadingView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
-
-    // MARK: - Scroll
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let safeTop = view.safeAreaInsets.top
@@ -234,7 +224,7 @@ class WaterfallViewController: UIViewController,
         let w = CGFloat(item.width ?? 0)
         let h = CGFloat(item.height ?? 0)
         guard w > 0 else { return itemWidth }
-        return itemWidth * max(h / w, 1.0)
+        return itemWidth * max(h/w, 1.0)
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

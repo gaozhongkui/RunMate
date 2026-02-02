@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var navManager = NavigationManager.shared
-    @State private var selectedTab: TabStyle = .Home
+    @State private var selectedTab: TabStyle = .AILab
     @Namespace private var nameSpace
 
     var body: some View {
@@ -27,18 +27,15 @@ struct ContentView: View {
                         .tabItem {
                             self.tabItemView(style: .AILab, selected: self.selectedTab == .AILab)
                         }
-
-                    ARHomeView(namespace: self.nameSpace)
-                        .tag(TabStyle.ARHome)
+                    MeView(namespace: self.nameSpace)
+                        .tag(TabStyle.AILab)
                         .tabItem {
-                            self.tabItemView(style: .ARHome, selected: self.selectedTab == .ARHome)
+                            self.tabItemView(style: .ME, selected: self.selectedTab == .ME)
                         }
                 }
             }.modifier(NavigationDestinationImage(namespace: self.nameSpace))
         }
-        .onAppear {
-            self.navManager.push(.createAI)
-        }
+        .onAppear {}
     }
 
     private func tabItemView(style: TabStyle, selected: Bool) -> some View {
@@ -60,13 +57,13 @@ enum TabStyle: Int, CaseIterable, Identifiable {
 
     case Home = 0
     case AILab = 1
-    case ARHome = 2
+    case ME = 2
 
     var imageName: String {
         switch self {
         case .Home: return "house"
         case .AILab: return "wand.and.stars"
-        case .ARHome: return "cube.transparent"
+        case .ME: return "person"
         }
     }
 
@@ -74,7 +71,7 @@ enum TabStyle: Int, CaseIterable, Identifiable {
         switch self {
         case .Home: return LocalizedStringKey("Home")
         case .AILab: return LocalizedStringKey("AILab")
-        case .ARHome: return LocalizedStringKey("AR")
+        case .ME: return LocalizedStringKey("Me")
         }
     }
 }

@@ -75,7 +75,7 @@ struct AIImageConfigView: View {
             }
             .frame(minHeight: 60)
             .glowBorder(
-                gradient: LinearGradient(colors: [Color(hex: "8A2BE2"), Color(hex: "00FFFF")], startPoint: .topLeading, endPoint: .bottomTrailing),
+                gradient: LinearGradient(colors: [Color(hex: "#8A2BE2"), Color(hex: "#00FFFF")], startPoint: .topLeading, endPoint: .bottomTrailing),
                 lineWidth: 2,
                 blurRadius: 2
             )
