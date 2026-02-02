@@ -11,7 +11,11 @@ struct AILabView: View {
     let namespace: Namespace.ID
 
     var body: some View {
-        WaterfallView().frame(maxWidth: .infinity).frame(maxHeight: .infinity).ignoresSafeArea()
+        WaterfallView(onHeaderTap: {
+            NavigationManager.shared.push(.createAI)
+        }, onItemTap: { item in
+            print("gzk \(item)")
+        }).frame(maxWidth: .infinity).frame(maxHeight: .infinity).ignoresSafeArea()
     }
 }
 

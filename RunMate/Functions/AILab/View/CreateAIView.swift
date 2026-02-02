@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateAIView: View {
     var namespace: Namespace.ID
     @State private var viewModel: AIViewModel = .init()
-    @State private var aiStep: CreateAIStep = .Result
+    @State private var aiStep: CreateAIStep = .Config
 
     private let rows = [
         GridItem(.flexible(), spacing: 0.0),

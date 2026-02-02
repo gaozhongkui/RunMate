@@ -16,13 +16,13 @@ class WaterfallViewController: UIViewController,
     private var collectionView: UICollectionView!
     private var dataList: [PollinationFeedItem] = []
 
-    // MARK: - Header Constants
-
     private let maxHeight: CGFloat = 56
     private let minHeight: CGFloat = 44
     private var headerHeightConstraint: NSLayoutConstraint!
 
-    // MARK: - Header Views
+    var onHeaderTap: (() -> Void)?
+
+    var onItemTap: ((PollinationFeedItem) -> Void)?
 
     private let blurView: UIVisualEffectView = {
         let blur = UIBlurEffect(style: .systemUltraThinMaterial)
@@ -65,9 +65,13 @@ class WaterfallViewController: UIViewController,
             stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 10),
             stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -10)
         ])
-
         return container
     }()
+
+    @objc private func headerTap() {
+        print("gzk  点击头部")
+        onHeaderTap?()
+    }
 
     // MARK: - Loading
 
@@ -145,6 +149,9 @@ class WaterfallViewController: UIViewController,
         blurView.translatesAutoresizingMaskIntoConstraints = false
         headerContentView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.isUserInteractionEnabled = true
+        let searchTap = UITapGestureRecognizer(target: self, action: #selector(headerTap))
+        searchBar.addGestureRecognizer(searchTap)
 
         headerHeightConstraint = headerContentView.heightAnchor.constraint(equalToConstant: maxHeight)
 
@@ -189,7 +196,7 @@ class WaterfallViewController: UIViewController,
         // 动态计算目标高度
         // 当向上滚动时（offset > 0），高度减小；向下拖拽时（offset < 0），高度增加
         let targetHeight = maxHeight - offset
-        
+
         // 限制在 [minHeight, maxHeight] 之间，除非你想做下拉放大效果
         if targetHeight >= maxHeight {
             headerHeightConstraint.constant = targetHeight // 下拉放大
@@ -228,5 +235,10 @@ class WaterfallViewController: UIViewController,
         let h = CGFloat(item.height ?? 0)
         guard w > 0 else { return itemWidth }
         return itemWidth * max(h / w, 1.0)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedItem = dataList[indexPath.item]
+        onItemTap?(selectedItem)
     }
 }

@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct WaterfallView: UIViewControllerRepresentable {
+    var onHeaderTap: () -> Void
+
+    var onItemTap: (PollinationFeedItem) -> Void
+
     func makeUIViewController(context: Context) -> WaterfallViewController {
         let vc = WaterfallViewController()
+        vc.onHeaderTap = onHeaderTap
+        vc.onItemTap = onItemTap
         return vc
     }
 
