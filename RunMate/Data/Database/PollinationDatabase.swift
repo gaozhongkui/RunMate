@@ -34,6 +34,7 @@ class PollinationDatabase {
     private let status = Expression<String?>("status")
     private let nsfw = Expression<Bool?>("nsfw")
     private let timestamp = Expression<Date>("timestamp") // 用于排序和清理旧数据
+    private let id = Expression<Int64>("id") // 自增主键，用于精确分页
 
     private init() {
         setupDatabase()
@@ -46,7 +47,8 @@ class PollinationDatabase {
 
             // 创建表
             try db?.run(items.create(ifNotExists: true) { t in
-                t.column(imageURL, primaryKey: true) // 以URL作为唯一标识
+                t.column(id, primaryKey: .autoincrement) // 自增主键
+                t.column(imageURL, unique: true) // URL 作为唯一约束，防止重复
                 t.column(prompt)
                 t.column(width)
                 t.column(height)
@@ -61,25 +63,32 @@ class PollinationDatabase {
                 t.column(timestamp, defaultValue: Date()) // 记录存入时间
             })
 
+            // 创建索引加速查询
             _ = try? db?.run(items.createIndex(timestamp, ifNotExists: true))
+            _ = try? db?.run(items.createIndex(imageURL, ifNotExists: true))
 
         } catch {
-            print("SQLite 数据库初始化失败: \(error)")
+            print("❌ SQLite 数据库初始化失败: \(error)")
         }
     }
 
+    // MARK: - 保存数据
+
+    /// 批量保存数据
     /// - Parameters:
-    ///   - newItems: 需要缓冲的数据
-    ///   - limit: 数据库保留的最大条数（默认保留最近的200条）
-    func saveItems(_ newItems: [PollinationFeedItem], maxKeepCount: Int = 200) {
+    ///   - newItems: 需要缓存的数据
+    ///   - maxKeepCount: 数据库保留的最大条数（默认保留最近的1000条）
+    func saveItems(_ newItems: [PollinationFeedItem], maxKeepCount: Int = 1000) async {
         guard let db = db else { return }
+        guard !newItems.isEmpty else { return }
 
         do {
-            // 1. 开启事务，确保批量写入的高性能
+            // 开启事务，确保批量写入的高性能
             try db.transaction {
                 let now = Date()
                 for item in newItems {
-                    try db.run(items.insert(or: .replace,
+                    // 使用 INSERT OR IGNORE 避免重复插入
+                    try db.run(items.insert(or: .ignore,
                                             imageURL <- item.imageURL,
                                             prompt <- item.prompt,
                                             width <- item.width,
@@ -95,71 +104,171 @@ class PollinationDatabase {
                                             timestamp <- now))
                 }
             }
+            
+            print("💾 已保存 \(newItems.count) 条数据到数据库")
 
-            // 2. 自动清理超出的旧数据（保持列表缓冲轻量）
-            autoCleanup(maxCount: maxKeepCount)
+            // 自动清理超出的旧数据
+            await autoCleanup(maxCount: maxKeepCount)
 
         } catch {
-            print("批量保存失败: \(error)")
+            print("❌ 批量保存失败: \(error)")
         }
     }
 
-    // MARK: - 核心功能：获取列表缓冲
+    // MARK: - 查询数据
 
+    /// 获取最新的 N 条数据（初始加载）
     /// - Parameter limit: 取出的条数
-    func fetchCachedItems(limit: Int = 50) -> [PollinationFeedItem] {
+    func fetchCachedItems(limit: Int = 50) async -> [PollinationFeedItem] {
         var list = [PollinationFeedItem]()
         guard let db = db else { return list }
 
         do {
-            // 按存入时间倒序排列，确保用户看到的是最新的
-            let query = items.order(timestamp.desc).limit(limit)
+            // 按 ID 降序排列（最新的在前面）
+            let query = items.order(id.desc).limit(limit)
             for row in try db.prepare(query) {
-                let item = PollinationFeedItem(
-                    imageURL: row[imageURL],
-                    prompt: row[prompt],
-                    width: row[width],
-                    height: row[height],
-                    seed: row[seed],
-                    model: row[model],
-                    enhance: row[enhance],
-                    safe: row[safe],
-                    nologo: row[nologo],
-                    quality: row[quality],
-                    status: row[status],
-                    nsfw: row[nsfw]
-                )
+                let item = rowToItem(row)
                 list.append(item)
             }
+            print("📖 从数据库加载了 \(list.count) 条数据")
         } catch {
-            print("读取缓冲失败: \(error)")
+            print("❌ 读取缓存失败: \(error)")
         }
         return list
     }
 
-    // MARK: - 私有工具：清理超出容量的数据
+    /// 获取某个 ID 之前的数据（用于加载更多）
+    /// - Parameters:
+    ///   - lastId: 当前列表中最后一条数据的 ID
+    ///   - limit: 加载的条数
+    func fetchItemsBefore(lastId: Int64, limit: Int = 20) async -> [PollinationFeedItem] {
+        var list = [PollinationFeedItem]()
+        guard let db = db else { return list }
 
-    private func autoCleanup(maxCount: Int) {
+        do {
+            // 查询 ID 小于 lastId 的数据（更旧的数据）
+            let query = items
+                .filter(id < lastId)
+                .order(id.desc)
+                .limit(limit)
+            
+            for row in try db.prepare(query) {
+                let item = rowToItem(row)
+                list.append(item)
+            }
+            print("📖 加载了 \(list.count) 条历史数据")
+        } catch {
+            print("❌ 加载历史数据失败: \(error)")
+        }
+        return list
+    }
+
+    /// 根据时间戳加载更旧的数据（备用方案）
+    func fetchItemsBefore(timestamp: Date, limit: Int = 20) async -> [PollinationFeedItem] {
+        var list = [PollinationFeedItem]()
+        guard let db = db else { return list }
+
+        do {
+            let query = items
+                .filter(self.timestamp < timestamp)
+                .order(self.timestamp.desc)
+                .limit(limit)
+            
+            for row in try db.prepare(query) {
+                let item = rowToItem(row)
+                list.append(item)
+            }
+            print("📖 加载了 \(list.count) 条历史数据（按时间）")
+        } catch {
+            print("❌ 加载历史数据失败: \(error)")
+        }
+        return list
+    }
+
+    // MARK: - 辅助方法
+
+    /// 将数据库行转换为 PollinationFeedItem
+    private func rowToItem(_ row: Row) -> PollinationFeedItem {
+        var item = PollinationFeedItem(
+            imageURL: row[imageURL],
+            prompt: row[prompt],
+            width: row[width],
+            height: row[height],
+            seed: row[seed],
+            model: row[model],
+            enhance: row[enhance],
+            safe: row[safe],
+            nologo: row[nologo],
+            quality: row[quality],
+            status: row[status],
+            nsfw: row[nsfw]
+        )
+        
+        // 保存数据库 ID，用于分页
+        item.dbId = row[id]
+        item.dbTimestamp = row[timestamp]
+        
+        return item
+    }
+
+    /// 获取数据库中的总数据量
+    func getTotalCount() async -> Int {
+        guard let db = db else { return 0 }
+        do {
+            return try db.scalar(items.count)
+        } catch {
+            return 0
+        }
+    }
+
+    // MARK: - 清理数据
+
+    /// 自动清理超出容量的数据
+    private func autoCleanup(maxCount: Int) async {
         guard let db = db else { return }
         do {
             let currentCount = try db.scalar(items.count)
             if currentCount > maxCount {
-                // 找出排在 maxCount 之后的所有旧数据的 URL
-                let deleteThreshold = items.order(timestamp.desc).limit(1, offset: maxCount)
-                if let thresholdRow = try db.pluck(deleteThreshold) {
-                    let thresholdDate = thresholdRow[timestamp]
-                    // 删除比这个时间更早的数据
-                    let toDelete = items.filter(timestamp < thresholdDate)
-                    try db.run(toDelete.delete())
+                let deleteCount = currentCount - maxCount
+                
+                // 找出最旧的数据（按 ID 升序，取前 deleteCount 个）
+                let oldestItems = items.order(id.asc).limit(deleteCount)
+                
+                // 获取要删除的最大 ID
+                if let lastToDelete = try db.pluck(oldestItems.order(id.desc).limit(1)) {
+                    let maxIdToDelete = lastToDelete[id]
+                    
+                    // 删除 ID 小于等于这个值的所有数据
+                    let toDelete = items.filter(id <= maxIdToDelete)
+                    let deleted = try db.run(toDelete.delete())
+                    print("🗑️ 清理了 \(deleted) 条旧数据，保留最新 \(maxCount) 条")
                 }
             }
         } catch {
-            print("清理旧缓冲失败: \(error)")
+            print("❌ 清理旧缓存失败: \(error)")
         }
     }
 
-    // 清空所有缓存
-    func clearAllCache() {
-        _ = try? db?.run(items.delete())
+    /// 清空所有缓存
+    func clearAllCache() async {
+        guard let db = db else { return }
+        do {
+            let deleted = try db.run(items.delete())
+            print("🗑️ 已清空所有缓存，共删除 \(deleted) 条数据")
+        } catch {
+            print("❌ 清空缓存失败: \(error)")
+        }
+    }
+
+    /// 删除指定 URL 的数据
+    func deleteItem(imageURL url: String) async {
+        guard let db = db else { return }
+        do {
+            let item = items.filter(imageURL == url)
+            try db.run(item.delete())
+            print("🗑️ 已删除图片: \(url)")
+        } catch {
+            print("❌ 删除失败: \(error)")
+        }
     }
 }

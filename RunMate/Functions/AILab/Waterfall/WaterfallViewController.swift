@@ -13,7 +13,7 @@ class WaterfallViewController: UIViewController,
     UICollectionViewDelegate,
     WaterfallLayoutDelegate
 {
-    private let observer = PollinationFeedObserver()
+    private let observer = CivitAIFeedObserver()
     private var collectionView: UICollectionView!
     private var dataList: [PollinationFeedItem] = []
 
@@ -22,10 +22,12 @@ class WaterfallViewController: UIViewController,
     private var headerHeightConstraint: NSLayoutConstraint!
 
     var onHeaderTap: (() -> Void)?
-
     var onItemTap: ((PollinationFeedItem) -> Void)?
 
     private let headerContentView = UIView()
+    
+    // 加载更多的触发阈值（距离底部多少时开始加载）
+    private let loadMoreThreshold: CGFloat = 500
 
     private let searchBar: UIView = {
         let container = GradientBorderView()
@@ -81,6 +83,14 @@ class WaterfallViewController: UIViewController,
         let lottieView = DotLottieAnimationView(dotLottieViewModel: DotLottieAnimation(fileName: "loading", config: config))
         return lottieView
     }()
+    
+    // 底部加载指示器
+    private let footerLoadingView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.color = .white
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,17 +99,10 @@ class WaterfallViewController: UIViewController,
         setupCollectionView()
         setupHeaderView()
         setupLoadingView()
+        setupFooterLoadingView()
+        setupObserver()
 
         loadingView.dotLottieViewModel.play()
-
-        observer.onDataUpdate = { [weak self] items in
-            guard let self else { return }
-            self.dataList = items
-            self.collectionView.reloadData()
-            self.loadingView.dotLottieViewModel.stop()
-            self.loadingView.isHidden = true
-        }
-
         observer.startListening()
     }
 
@@ -177,23 +180,116 @@ class WaterfallViewController: UIViewController,
             loadingView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
+    
+    private func setupFooterLoadingView() {
+        view.addSubview(footerLoadingView)
+        footerLoadingView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            footerLoadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            footerLoadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
+    }
+    
+    private func setupObserver() {
+        // 完全刷新（首次加载）
+        observer.onDataUpdate = { [weak self] items in
+            guard let self else { return }
+            self.dataList = items
+            self.collectionView.reloadData()
+            
+            // 首次加载完成，隐藏中心加载动画
+            if !items.isEmpty {
+                self.loadingView.dotLottieViewModel.stop()
+                self.loadingView.isHidden = true
+            }
+        }
+        
+        // 新数据插入顶部（实时流）
+        observer.onNewItemsInserted = { [weak self] indexPaths in
+            guard let self else { return }
+            
+            self.dataList = self.observer.images
+            
+            // 使用 performBatchUpdates 实现平滑插入
+            self.collectionView.performBatchUpdates {
+                self.collectionView.insertItems(at: indexPaths)
+            } completion: { _ in
+                // 可选：滚动到顶部查看新内容
+                // self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+            }
+        }
+        
+        // 历史数据追加底部（加载更多）
+        observer.onOldItemsAppended = { [weak self] indexPaths in
+            guard let self else { return }
+            
+            self.dataList = self.observer.images
+            
+            // 停止底部加载指示器
+            self.footerLoadingView.stopAnimating()
+            
+            // 使用 performBatchUpdates 实现平滑追加
+            self.collectionView.performBatchUpdates {
+                self.collectionView.insertItems(at: indexPaths)
+            }
+        }
+    }
+
+    // MARK: - Scroll Handling
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // 处理头部高度变化
+        updateHeaderHeight(scrollView: scrollView)
+        
+        // 处理加载更多
+        checkAndLoadMore(scrollView: scrollView)
+    }
+    
+    private func updateHeaderHeight(scrollView: UIScrollView) {
         let safeTop = view.safeAreaInsets.top
         // 计算当前的实际偏移量（考虑了初始的 contentInset）
         let offset = scrollView.contentOffset.y + maxHeight + safeTop
 
         // 动态计算目标高度
-        // 当向上滚动时（offset > 0），高度减小；向下拖拽时（offset < 0），高度增加
         let targetHeight = maxHeight - offset
 
-        // 限制在 [minHeight, maxHeight] 之间，除非你想做下拉放大效果
+        // 限制在 [minHeight, maxHeight] 之间
         if targetHeight >= maxHeight {
             headerHeightConstraint.constant = targetHeight // 下拉放大
         } else if targetHeight <= minHeight {
             headerHeightConstraint.constant = minHeight // 最小收缩高度
         } else {
             headerHeightConstraint.constant = targetHeight // 中间过渡
+        }
+    }
+    
+    private func checkAndLoadMore(scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+        
+        // 距离底部还有 loadMoreThreshold 时开始加载
+        let distanceToBottom = contentHeight - offsetY - frameHeight
+        
+        if distanceToBottom < loadMoreThreshold {
+            loadMoreIfNeeded()
+        }
+    }
+    
+    private func loadMoreIfNeeded() {
+        // 如果已经在加载或数据为空，则不再触发
+        guard !footerLoadingView.isAnimating, !dataList.isEmpty else { return }
+        
+        // 显示底部加载指示器
+        footerLoadingView.startAnimating()
+        
+        // 触发加载更多
+        observer.loadMoreHistory { [weak self] in
+            // 加载完成后的回调
+            DispatchQueue.main.async {
+                self?.footerLoadingView.stopAnimating()
+            }
         }
     }
 
@@ -230,5 +326,22 @@ class WaterfallViewController: UIViewController,
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedItem = dataList[indexPath.item]
         onItemTap?(selectedItem)
+    }
+    
+    // MARK: - Public Methods
+    
+    /// 滚动到顶部
+    func scrollToTop(animated: Bool = true) {
+        guard !dataList.isEmpty else { return }
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
+    }
+    
+    /// 刷新数据
+    func refresh() {
+        loadingView.isHidden = false
+        loadingView.dotLottieViewModel.play()
+        
+        observer.stopListening()
+        observer.startListening()
     }
 }
