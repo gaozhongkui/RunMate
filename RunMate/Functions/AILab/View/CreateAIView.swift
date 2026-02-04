@@ -21,13 +21,23 @@ struct CreateAIView: View {
         ZStack {
             switch aiStep {
             case .Config:
-                AIImageConfigView(viewModel: $viewModel) {}
+                AIImageConfigView(viewModel: $viewModel) {
+                    withAnimation {
+                        aiStep = .Processing
+                    }
+                }
 
             case .Processing:
-                AIImageProcessingView {} processingAction: {}
+                AIImageProcessingView {
+                    aiStep = .Config
+                } processingAction: {
+                    aiStep = .Result
+                }
 
             case .Result:
-                ImageResultView {} confirmAction: {}
+                ImageResultView {
+                    
+                } confirmAction: {}
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

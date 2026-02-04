@@ -20,7 +20,6 @@ class AIViewModel {
         AIViewInfo(title: "Flux 2", image: "ai_test", prompt: "ai_test"),
         AIViewInfo(title: "QWEN", image: "ai_test", prompt: "ai_test"),
         AIViewInfo(title: "WAN", image: "ai_test", prompt: "ai_test"),
-        AIViewInfo(title: "AIVision", image: "ai_test", prompt: "ai_test")
     ]
 
     var inputText = ""
