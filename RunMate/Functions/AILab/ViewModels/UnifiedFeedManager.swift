@@ -47,7 +47,7 @@ class UnifiedFeedManager {
     private func setupDataSources() {
         // 添加所有可用的数据源，按优先级排序
         dataSources = [
-            PollinationDataSource(),
+           // PollinationDataSource(),
             CivitAIDataSource()
         ]
         

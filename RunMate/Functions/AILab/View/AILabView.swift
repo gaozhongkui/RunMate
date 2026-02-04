@@ -9,24 +9,17 @@ import SwiftUI
 
 struct AILabView: View {
     let namespace: Namespace.ID
+    @State private var currentItem: PollinationFeedItem? = nil
 
     var body: some View {
         WaterfallView(onHeaderTap: {
             NavigationManager.shared.push(.createAI)
         }, onItemTap: { item in
+            currentItem = item
             print("gzk \(item)")
-        }).frame(maxWidth: .infinity).frame(maxHeight: .infinity).ignoresSafeArea()
+        }).frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
+            .sheet(item: $currentItem) { item in
+                ImageDetailsView(item: item)
+            }
     }
-}
-
-#Preview {
-    struct PreviewWrapper: View {
-        @Namespace var previewNamespace
-
-        var body: some View {
-            AILabView(namespace: previewNamespace)
-        }
-    }
-
-    return PreviewWrapper()
 }
