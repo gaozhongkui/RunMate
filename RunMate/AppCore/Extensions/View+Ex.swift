@@ -15,6 +15,10 @@ extension View {
     func innerShadow(color: Color = .black.opacity(0.7), radius: CGFloat = 8, x: CGFloat = 0, y: CGFloat = 0) -> some View {
         modifier(InnerShadow(color: color, radius: radius, x: x, y: y))
     }
+
+    func toast(item: Binding<ToastModel?>) -> some View {
+        modifier(ToastModifier(toast: item))
+    }
 }
 
 struct GlowBorder: ViewModifier {

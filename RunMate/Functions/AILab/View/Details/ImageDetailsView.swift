@@ -15,6 +15,8 @@ struct ImageDetailsView: View {
     @State private var scrollID: PollinationFeedItem.ID?
     @Environment(\.dismiss) var dismiss
 
+    @State private var toast: ToastModel? = nil
+
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
@@ -45,6 +47,7 @@ struct ImageDetailsView: View {
                 selectedItem = item
             }
         }
+        .toast(item: $toast)
     }
 
     @ViewBuilder
@@ -87,9 +90,10 @@ struct ImageDetailsView: View {
 
     private func actionButton() -> some View {
         HStack(spacing: 12) {
-            // 下载按钮
             Button(action: {
                 print("下载: \(selectedItem.imageURL)")
+                toast = ToastModel(message: "图片下载成功", icon: "checkmark.circle.fill")
+
             }) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 22)
@@ -102,7 +106,6 @@ struct ImageDetailsView: View {
                 }
             }
 
-            // 生成相似按钮
             Button(action: { print("生成相似: \(selectedItem)") }) {
                 Text("Generate Similar")
                     .font(.headline)
