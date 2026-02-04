@@ -21,7 +21,7 @@ class WaterfallViewController: UIViewController,
     private var headerHeightConstraint: NSLayoutConstraint!
 
     var onHeaderTap: (() -> Void)?
-    var onItemTap: ((PollinationFeedItem) -> Void)?
+    var onItemTap: (([PollinationFeedItem], PollinationFeedItem) -> Void)?
 
     private let headerContentView = UIView()
 
@@ -327,10 +327,8 @@ class WaterfallViewController: UIViewController,
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedItem = dataList[indexPath.item]
-        onItemTap?(selectedItem)
+        onItemTap?(dataList, selectedItem)
     }
-
-    // MARK: - Public Methods
 
     /// 滚动到顶部
     func scrollToTop(animated: Bool = true) {

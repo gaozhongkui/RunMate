@@ -10,44 +10,75 @@ import SwiftUI
 import Zoomable
 
 struct ImageDetailsView: View {
-    let item: PollinationFeedItem?
-
+    @Binding var items: [PollinationFeedItem]
+    @State var selectedItem: PollinationFeedItem
+    @State private var scrollID: PollinationFeedItem.ID?
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
-            KFImage.url(URL(string: item?.imageURL ?? ""))
-                .placeholder {
-                    ZStack {
-                        Image("img_loading").resizable()
-                        ProgressView().tint(.white)
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 0) {
+                    ForEach(items) { item in
+                        detailContent(for: item).containerRelativeFrame(.horizontal).id(item.id)
                     }
                 }
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .zoomable()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .scrollTargetLayout()
+            }
+            .scrollPosition(id: $scrollID)
+            .scrollTargetBehavior(.paging)
+            .ignoresSafeArea()
 
-            // UI 层
             VStack {
                 closeButton()
                 Spacer()
                 actionButton()
             }
-            .padding(.bottom, 20)
+            .padding(.bottom, 40)
+        }
+        .onAppear {
+            scrollID = selectedItem.id
+        }
+        .onChange(of: scrollID) { _, newID in
+            if let newID = newID, let item = items.first(where: { $0.id == newID }) {
+                selectedItem = item
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func detailContent(for item: PollinationFeedItem) -> some View {
+        ZStack(alignment: .center) {
+            KFImage.url(URL(string: item.imageURL))
+                .placeholder {
+                    getPlaceholderView()
+                }
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .zoomable()
+
+            VStack {
+                Spacer()
+                Text(item.prompt ?? "").font(.system(size: 16)).foregroundColor(.white).lineLimit(2).frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, 16).padding(.bottom, 120 + (UIDevice.current.hasNotch ? 0 : 34))
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func getPlaceholderView() -> some View {
+        ZStack {
+            Image("img_loading").resizable()
+            ProgressView().tint(.white)
         }
     }
 
     private func closeButton() -> some View {
         HStack {
             Spacer()
-            Button {
-                // 2. 执行关闭动作
-                dismiss()
-            } label: {
+            Button { dismiss() } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.largeTitle) // 加大一点方便点击
+                    .font(.largeTitle)
                     .foregroundColor(.white.opacity(0.8))
                     .padding()
             }
@@ -56,42 +87,31 @@ struct ImageDetailsView: View {
 
     private func actionButton() -> some View {
         HStack(spacing: 12) {
+            // 下载按钮
             Button(action: {
-                // 下载逻辑
-                print("点击下载")
+                print("下载: \(selectedItem.imageURL)")
             }) {
                 ZStack {
-                    // 背景色：可以使用半透明深色或者实色
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.white.opacity(0.15))
-                        .frame(width: 60, height: 60) // 宽高一致，做成正方形
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 22)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-
-                    Image(systemName: "arrow.down.to.line") // 下载图标
+                        .frame(width: 60, height: 60)
+                        .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.white.opacity(0.2), lineWidth: 1))
+                    Image(systemName: "arrow.down.to.line")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
 
-            
-            Button(action: {
-                // 点击逻辑
-            }) {
+            // 生成相似按钮
+            Button(action: { print("生成相似: \(selectedItem)") }) {
                 Text("Generate Similar")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(height: 60)
-                    .frame(maxWidth: .infinity) // 自动撑开剩余空间
+                    .frame(maxWidth: .infinity)
                     .background(
-                        LinearGradient(
-                            colors: [Color(hex: "#C260F5"), Color(hex: "#6034E4")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .cornerRadius(22)
+                        LinearGradient(colors: [Color(hex: "#C260F5"), Color(hex: "#6034E4")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            .cornerRadius(22)
                     )
             }
         }

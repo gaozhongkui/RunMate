@@ -10,7 +10,7 @@ import SwiftUI
 struct WaterfallView: UIViewControllerRepresentable {
     var onHeaderTap: () -> Void
 
-    var onItemTap: (PollinationFeedItem) -> Void
+    var onItemTap: ([PollinationFeedItem], PollinationFeedItem) -> Void
 
     func makeUIViewController(context: Context) -> WaterfallViewController {
         let vc = WaterfallViewController()
