@@ -41,7 +41,7 @@ struct HomeView: View {
                 }
             }
         }.task {
-            _ = await PhotosUtils.fetchPhotos(limit: 10)
+            await viewModel.loadData()
         }
     }
        

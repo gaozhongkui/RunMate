@@ -5,6 +5,7 @@
 //  Created by gaozhongkui on 2026/2/5.
 //
 
+import Photos
 import SwiftUI
 
 @Observable
@@ -16,9 +17,19 @@ class HomeViewModel {
     var scannedSize = "205.71 GB"
     var totalSize = "255.87 GB"
 
+    private var fetchTask: Task<Void, Never>?
+    private var allAssetsFetchResult: PHFetchResult<PHAsset>?
+
     init() {
         setupMockData()
-        startScanAnimation()
+    }
+
+    func loadData() async {
+//        startScanAnimation()
+
+        let provider = MediaDataProvider()
+
+        print("gzk \(provider.allVideoList.count)")
     }
 
     private func setupMockData() {
@@ -27,13 +38,15 @@ class HomeViewModel {
                 title: "All Videos",
                 size: "__",
                 imageName: "all_videos",
-                viewHeight: 180
+                viewHeight: 180,
+                photoCategory: .allVideos
             ),
             HomeItem(
                 title: "Screenshots",
                 size: "__",
                 imageName: "screenshots",
-                viewHeight: 180
+                viewHeight: 180,
+                photoCategory: .screenshots
             )
         ]
 
@@ -42,13 +55,15 @@ class HomeViewModel {
                 title: "Recordings",
                 size: "__",
                 imageName: "",
-                viewHeight: 150
+                viewHeight: 150,
+                photoCategory: .recordings
             ),
             HomeItem(
                 title: "Short Videos",
                 size: "__",
                 imageName: "short_videos",
-                viewHeight: 350
+                viewHeight: 350,
+                photoCategory: .shortVideos(maxDuration: 0.3)
             )
         ]
     }

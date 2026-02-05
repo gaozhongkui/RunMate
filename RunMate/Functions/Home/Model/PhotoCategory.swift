@@ -10,6 +10,6 @@ import SwiftUI
 enum PhotoCategory {
     case allVideos
     case screenshots
-    case recordings 
+    case recordings
     case shortVideos(maxDuration: TimeInterval)
 }

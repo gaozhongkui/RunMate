@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Photos
 
 struct HomeItem: Identifiable {
     let id = UUID()
@@ -13,4 +14,6 @@ struct HomeItem: Identifiable {
     var size: String
     var imageName: String
     var viewHeight: CGFloat
+    var photoCategory: PhotoCategory
+    var phAsset: PHAsset?
 }
