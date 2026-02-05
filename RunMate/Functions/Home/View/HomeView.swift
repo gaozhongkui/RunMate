@@ -16,8 +16,12 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "#0A0A0F").ignoresSafeArea()
-               
+            LinearGradient(
+                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ).ignoresSafeArea()
+            
             VStack(spacing: 0) {
                 headerView
                    
@@ -27,6 +31,8 @@ struct HomeView: View {
                             scanningCard
                         }
                         
+                        PriSpaceBanner()
+                        
                         cleaningGrid.animation(.default, value: viewModel.isScanning)
                     }
                     .padding(.horizontal, 16)
@@ -34,12 +40,14 @@ struct HomeView: View {
                     .padding(.bottom, 100)
                 }
             }
+        }.task {
+            _ = await PhotosUtils.fetchPhotos(limit: 10)
         }
     }
        
     private var headerView: some View {
         HStack {
-            Text("Clean Now")
+            Text("PhotoVault AI")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
             Spacer()
@@ -48,7 +56,6 @@ struct HomeView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(Color(hex: "#0A0A0F"))
     }
        
     private var aiButton: some View {

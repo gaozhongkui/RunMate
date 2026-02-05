@@ -13,9 +13,7 @@ struct HomeItemCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topTrailing) {
-                Rectangle()
-                    .fill(.red)
-                    .frame(height: item.viewHeight)
+                Rectangle().fill(Color(hex: "#1A1629")).frame(height: item.viewHeight)
             }
 
             VStack(alignment: .leading, spacing: 4) {

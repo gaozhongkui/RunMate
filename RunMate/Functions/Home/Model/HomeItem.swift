@@ -10,7 +10,7 @@ import SwiftUI
 struct HomeItem: Identifiable {
     let id = UUID()
     let title: String
-    let size: String
-    let imageName: String
-    let viewHeight: CGFloat
+    var size: String
+    var imageName: String
+    var viewHeight: CGFloat
 }
