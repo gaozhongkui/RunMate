@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var navManager = NavigationManager.shared
-    @State private var selectedTab: TabStyle = .AILab
+    @State private var selectedTab: TabStyle = .Home
     @Namespace private var nameSpace
 
     var body: some View {
