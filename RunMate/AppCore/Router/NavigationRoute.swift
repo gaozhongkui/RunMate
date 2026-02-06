@@ -9,4 +9,5 @@ import SwiftUI
 
 enum NavigationRoute: Hashable {
     case createAI
+    case priSpace
 }

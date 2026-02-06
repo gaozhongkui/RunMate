@@ -31,7 +31,9 @@ struct HomeView: View {
                             scanningCard
                         }
                         
-                        PriSpaceBanner()
+                        PriSpaceBanner().onTapGesture {
+                            NavigationManager.shared.push(.priSpace)
+                        }
                         
                         cleaningGrid
                     }
@@ -41,7 +43,8 @@ struct HomeView: View {
                     .animation(.default, value: viewModel.isScanning)
                 }
             }
-        }.task {
+        }
+        .task {
             await viewModel.loadData()
         }
     }

@@ -17,6 +17,8 @@ struct NavigationDestinationImage: ViewModifier {
             switch node {
             case .createAI:
                 CreateAIView(namespace: namespace)
+            case .priSpace:
+                ImageEncryptionView(namespace: namespace)
             }
         }
     }
