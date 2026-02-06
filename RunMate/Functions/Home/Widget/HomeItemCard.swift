@@ -16,7 +16,7 @@ struct HomeItemCard: View {
     @State private var isVideo: Bool = false
     @State private var player: AVPlayer?
     @State private var isVisible: Bool = false
-    @State private var playerItemObserver: Any? 
+    @State private var playerItemObserver: Any?
 
     var body: some View {
         GeometryReader { geometry in
@@ -24,9 +24,9 @@ struct HomeItemCard: View {
                 // 媒体展示区
                 ZStack {
                     if isVideo, let player = player {
-                        VideoPlayerView(player: player)
-                            .frame(width: geometry.size.width, height: item.viewHeight)
-                            .clipped()
+//                        VideoPlayerView(player: player)
+//                            .frame(width: geometry.size.width, height: item.viewHeight)
+//                            .clipped()
                     } else if let image = thumbnail {
                         Image(uiImage: image)
                             .resizable()

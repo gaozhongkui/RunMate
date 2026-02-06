@@ -44,6 +44,9 @@ struct HomeView: View {
                 }
             }
         }
+        .overlay(content: {
+            VideoListView()
+        })
         .task {
             await viewModel.loadData()
         }
