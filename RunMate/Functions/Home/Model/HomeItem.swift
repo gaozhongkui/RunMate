@@ -9,11 +9,11 @@ import SwiftUI
 import Photos
 
 struct HomeItem: Identifiable {
-    let id = UUID()
-    let title: String
+    var id = UUID()
+    var title: String
     var size: String
-    var imageName: String
+    var phAsset: PHAsset?
     var viewHeight: CGFloat
     var photoCategory: PhotoCategory
-    var phAsset: PHAsset?
+    var count: Int = 0
 }

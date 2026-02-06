@@ -43,31 +43,67 @@ struct FetchResult: @unchecked Sendable {
     var videoSize: Int64 = 0
 }
 
-@Observable
+/// 媒体数据更新的回调协议
+protocol MediaManagerDelegate: AnyObject {
+    /// 数据加载状态变化
+    func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool)
+    
+    /// 短视频数据更新
+    func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64)
+    
+    /// 所有视频数据更新
+    func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64)
+    
+    /// 录屏视频数据更新
+    func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64)
+    
+    /// 截屏图片数据更新
+    func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64)
+    
+    /// 权限状态变化
+    func mediaManager(_ manager: MediaManager, didUpdateAuthorizationStatus status: PHAuthorizationStatus)
+    
+    /// 扫描完成
+    func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double)
+}
+
+// 可选的默认实现
+extension MediaManagerDelegate {
+    func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool) {}
+    func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {}
+    func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64) {}
+    func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64) {}
+    func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64) {}
+    func mediaManager(_ manager: MediaManager, didUpdateAuthorizationStatus status: PHAuthorizationStatus) {}
+    func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double) {}
+}
+
 @MainActor
-class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
+class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
+    // MARK: - Properties
+    
     /// 短视频(时长 <= 6 秒)
-    var shortVideoList: [MediaItemViewModel] = []
+    private(set) var shortVideoList: [MediaItemViewModel] = []
     /// 视频列表
-    var allVideoList: [MediaItemViewModel] = []
+    private(set) var allVideoList: [MediaItemViewModel] = []
     /// 录屏
-    var screenRecordingVideoList: [MediaItemViewModel] = []
+    private(set) var screenRecordingVideoList: [MediaItemViewModel] = []
     /// 截屏
-    var screenshootList: [MediaItemViewModel] = []
+    private(set) var screenshootList: [MediaItemViewModel] = []
 
     /// 所有视频总大小
-    var allVideoSize: Int64 = 0
+    private(set) var allVideoSize: Int64 = 0
+    private(set) var shortVideoSize: Int64 = 0
+    private(set) var screenRecordingVideoSize: Int64 = 0
+    private(set) var screenshotImageSize: Int64 = 0
 
-    var shortVideoSize: Int64 = 0
+    private(set) var isLoading: Bool = false {
+        didSet {
+            delegate?.mediaManager(self, didUpdateLoadingState: isLoading)
+        }
+    }
 
-    var screenRecordingVideoSize: Int64 = 0
-
-    var screenshotImageSize: Int64 = 0
-
-    var isLoading: Bool = false
-
-    var localCache: MediaCacheData?
-
+    private(set) var localCache: MediaCacheData?
     private var fetchTask: Task<Void, Never>?
     private var allAssetsFetchResult: PHFetchResult<PHAsset>?
 
@@ -76,8 +112,31 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
     private let cachePermissionKey = "PhotoLibraryPermissionCache"
 
     /// 扫描统计
-    var scanTime: Double = 0.0
+    private(set) var scanTime: Double = 0.0
 
+    private(set) var authorizationStatus: PHAuthorizationStatus = .notDetermined {
+        didSet {
+            delegate?.mediaManager(self, didUpdateAuthorizationStatus: authorizationStatus)
+        }
+    }
+    
+    // MARK: - Delegate
+    
+    weak var delegate: MediaManagerDelegate?
+    
+    // MARK: - Initialization
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+
+    override init() {
+        super.init()
+        checkAuthorization()
+    }
+    
+    // MARK: - PHPhotoLibraryChangeObserver
+    
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
         Task { @MainActor in
             if self.isLoading {
@@ -113,16 +172,7 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    var authorizationStatus: PHAuthorizationStatus = .notDetermined
-
-    deinit {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
-    }
-
-    override init() {
-        super.init()
-        checkAuthorization()
-    }
+    // MARK: - Public Methods
 
     func readData() {
         // 先加载缓存数据
@@ -149,6 +199,31 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
         }
         return authorizationStatus
     }
+
+    /// 删除指定的资源（从照片库和内存中删除）
+    /// - Parameter assets: 要删除的 PHAsset 数组
+    /// - Returns: 是否删除成功
+    /// - Throws: 删除过程中的错误
+    @discardableResult
+    func deleteAssets(assets: [PHAsset]) async throws -> Bool {
+        guard !assets.isEmpty else { return false }
+        print("开始删除 \(assets.count) 个资源")
+
+        // 获取 identifiers
+        let identifiers = assets.map { $0.localIdentifier }
+        // 使用非 Actor 隔离的 Helper 执行删除
+        let success = try await AssetDeleter.deleteAssets(identifiers: identifiers)
+
+        if success {
+            // 从内存中移除并更新统计
+            let ids = Set(identifiers)
+            removeAssets(ids: ids)
+        }
+
+        return success
+    }
+
+    // MARK: - Private Methods
 
     /// 已有权限时注册相册变更监听
     private func checkAuthorization() {
@@ -186,37 +261,17 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    /// 删除指定的资源（从照片库和内存中删除）
-    /// - Parameter assets: 要删除的 PHAsset 数组
-    /// - Returns: 是否删除成功
-    /// - Throws: 删除过程中的错误
-    @discardableResult
-    func deleteAssets(assets: [PHAsset]) async throws -> Bool {
-        guard !assets.isEmpty else { return false }
-        print("开始删除 \(assets.count) 个资源")
-
-        // 获取 identifiers
-        let identifiers = assets.map { $0.localIdentifier }
-        // 使用非 Actor 隔离的 Helper 执行删除
-        let success = try await AssetDeleter.deleteAssets(identifiers: identifiers)
-
-        if success {
-            // 从内存中移除并更新统计
-            let ids = Set(identifiers)
-            removeAssets(ids: ids)
-        }
-
-        return success
-    }
-
     /// 从所有列表中移除指定 ID 的资源
-    func removeAssets(ids: Set<String>) {
+    private func removeAssets(ids: Set<String>) {
         // Short Video
         let shortToRemove = shortVideoList.filter { ids.contains($0.phAsset.localIdentifier) }
         if !shortToRemove.isEmpty {
             shortVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = shortToRemove.reduce(0) { $0 + $1.size }
             shortVideoSize -= sizeToRemove
+            
+            // 通知代理
+            delegate?.mediaManager(self, didUpdateShortVideos: shortVideoList, totalSize: shortVideoSize)
         }
 
         let allVideoToRemove = allVideoList.filter { ids.contains($0.phAsset.localIdentifier) }
@@ -224,129 +279,110 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
             allVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = allVideoToRemove.reduce(0) { $0 + $1.size }
             allVideoSize -= sizeToRemove
+            
+            // 通知代理
+            delegate?.mediaManager(self, didUpdateAllVideos: allVideoList, totalSize: allVideoSize)
         }
 
-        // Screen Recording
-        let screenToRemove = screenRecordingVideoList.filter { ids.contains($0.phAsset.localIdentifier) }
-        if !screenToRemove.isEmpty {
+        let screenRecordingToRemove = screenRecordingVideoList.filter { ids.contains($0.phAsset.localIdentifier) }
+        if !screenRecordingToRemove.isEmpty {
             screenRecordingVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
-            let sizeToRemove = screenToRemove.reduce(0) { $0 + $1.size }
+            let sizeToRemove = screenRecordingToRemove.reduce(0) { $0 + $1.size }
             screenRecordingVideoSize -= sizeToRemove
+            
+            // 通知代理
+            delegate?.mediaManager(self, didUpdateScreenRecordings: screenRecordingVideoList, totalSize: screenRecordingVideoSize)
         }
 
-        // Screenshot
         let screenshotToRemove = screenshootList.filter { ids.contains($0.phAsset.localIdentifier) }
         if !screenshotToRemove.isEmpty {
             screenshootList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = screenshotToRemove.reduce(0) { $0 + $1.size }
             screenshotImageSize -= sizeToRemove
+            
+            // 通知代理
+            delegate?.mediaManager(self, didUpdateScreenshots: screenshootList, totalSize: screenshotImageSize)
         }
 
-        // 更新缓存
+        // 保存缓存
         saveCache()
     }
 
-    func fetchAssets(isInitialLoad: Bool = true) async {
-        // 取消上一次的任务，防止数据冲突
+    private func fetchAssets(isInitialLoad: Bool = true) async {
+        // 取消之前的任务
         fetchTask?.cancel()
-        let scanBeginTime = Date()
-        isLoading = true
 
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        fetchTask = Task {
+            isLoading = true
+            defer {
+                isLoading = false
+            }
 
-        let allAssets = PHAsset.fetchAssets(with: fetchOptions)
-        allAssetsFetchResult = allAssets
-        print("开始读取相册")
+            guard authorizationStatus == .authorized || authorizationStatus == .limited else {
+                print("无权限访问照片库")
+                return
+            }
 
-        // Capture hasCache before entering detached task to avoid actor isolation issues
-        let localCache = self.localCache
+            let startTime = Date()
 
-        fetchTask = Task.detached { [weak self, isInitialLoad, localCache] in
-            guard let self = self else { return }
+            let fetchOptions = PHFetchOptions()
+            fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
 
-            if Task.isCancelled { return }
+            let fetchResult = PHAsset.fetchAssets(with: fetchOptions)
+            allAssetsFetchResult = fetchResult
 
             var assets: [PHAsset] = []
-            allAssets.enumerateObjects { asset, _, _ in
+            fetchResult.enumerateObjects { asset, _, _ in
                 assets.append(asset)
             }
 
-            if Task.isCancelled { return }
+            print("共找到 \(assets.count) 个资源，是否首次加载: \(isInitialLoad)")
 
-            // 视频和截图
-            let assetsToProcess = assets.filter { asset in
-                let isVideo = asset.mediaType == .video
-                let isScreenshot = asset.mediaType == .image && asset.mediaSubtypes.contains(.photoScreenshot)
-                return isVideo || isScreenshot
-            }
-
-            print("需要处理的资源数量: \(assetsToProcess.count), 首次加载: \(isInitialLoad)")
-
-            // 区分首次加载还是相册变动
-            if isInitialLoad, localCache == nil {
-                await self.processAssetsProgressively(assetsToProcess)
+            if isInitialLoad {
+                // 首次加载：渐进式更新
+                await processAssetsProgressively(assets)
             } else {
-                await self.processAssetsAtOnce(assetsToProcess)
+                // 相册变更：静默读取，一次性更新
+                await processAssetsAtOnce(assets)
             }
 
-            print("读取相册结束")
-
-            // 扫描完成，计算时间并通知管理器
-            await MainActor.run {
-                self.isLoading = false
-                let nowTime = Date()
-                self.scanTime = nowTime.timeIntervalSince(scanBeginTime)
-
-                // 通知扫描统计管理器：扫描完成
-                let scanResult = AssetsLibraryScanResult(
-                    shortVideoCount: self.shortVideoList.count,
-                    shortVideoSize: self.shortVideoSize,
-                    allVideoCount: self.allVideoList.count,
-                    allVideoSize: self.allVideoSize,
-                    screenRecordingCount: self.screenRecordingVideoList.count,
-                    screenRecordingSize: self.screenRecordingVideoSize,
-                    screenshotCount: self.screenshootList.count,
-                    screenshotSize: self.screenshotImageSize
-                )
-
-                /// ScanStatisticsManager.shared.notifyAssetsLibraryScanCompleted(result: scanResult)
-            }
+            let endTime = Date()
+            scanTime = endTime.timeIntervalSince(startTime)
+            print("扫描完成，耗时: \(scanTime) 秒")
+            
+            // 通知代理扫描完成
+            delegate?.mediaManager(self, didFinishScanWithTime: scanTime)
         }
+
+        await fetchTask?.value
     }
 
-    /// 处理单个资源，返回 FetchResult
-    @MainActor
     private func processAsset(_ asset: PHAsset) async -> FetchResult {
-        if Task.isCancelled { return FetchResult() }
-
-        guard let resource = PHAssetResource.assetResources(for: asset).first else {
-            return FetchResult()
-        }
-
-        let size = Int64(resource.value(forKey: "fileSize") as? CLongLong ?? 0)
-        let vm = MediaItemViewModel(phAsset: asset)
-
         var result = FetchResult()
 
-        // 所有 asset
-        result.allAssets.append(vm)
+        let resources = PHAssetResource.assetResources(for: asset)
+        guard let resource = resources.first else { return result }
+
+        var size: Int64 = 0
+        if let unsignedSize = resource.value(forKey: "fileSize") as? Int {
+            size = Int64(unsignedSize)
+        }
+
+        let vm = MediaItemViewModel(phAsset: asset)
 
         switch asset.mediaType {
         case .video:
+            result.videoSize += size
             result.allVideoList.append(vm)
             result.allVideoSize += size
-            result.videoSize += size
 
-            let duration = asset.duration
-
-            // 短视频
-            if duration <= SHORT_VIDEO_TIME {
+            if let duration = await getVideoDuration(for: asset),
+               duration <= SHORT_VIDEO_TIME
+            {
                 result.shortVideoList.append(vm)
                 result.shortVideoSize += size
             }
 
-            // 屏幕录制
             if asset.mediaSubtypes.contains(.videoScreenRecording) {
                 result.screenRecordingVideoList.append(vm)
                 result.screenRecordingVideoSize += size
@@ -363,6 +399,23 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
         }
 
         return result
+    }
+
+    private func getVideoDuration(for asset: PHAsset) async -> Double? {
+        return await withCheckedContinuation { continuation in
+            let options = PHVideoRequestOptions()
+            options.version = .current
+            options.deliveryMode = .fastFormat
+
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                if let avAsset = avAsset {
+                    let duration = CMTimeGetSeconds(avAsset.duration)
+                    continuation.resume(returning: duration)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
     }
 
     /// 首次加载：分批渐进式更新
@@ -438,6 +491,12 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
                         self.allVideoSize += batchResult.allVideoSize
                         self.screenRecordingVideoSize += batchResult.screenRecordingVideoSize
                         self.screenshotImageSize += batchResult.screenshotImageSize
+                        
+                        // 通知代理数据更新
+                        self.delegate?.mediaManager(self, didUpdateShortVideos: self.shortVideoList, totalSize: self.shortVideoSize)
+                        self.delegate?.mediaManager(self, didUpdateAllVideos: self.allVideoList, totalSize: self.allVideoSize)
+                        self.delegate?.mediaManager(self, didUpdateScreenRecordings: self.screenRecordingVideoList, totalSize: self.screenRecordingVideoSize)
+                        self.delegate?.mediaManager(self, didUpdateScreenshots: self.screenshootList, totalSize: self.screenshotImageSize)
                     }
 
                     isFirstBatch = false
@@ -496,6 +555,12 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
                     self.screenshotImageSize = finalResult.screenshotImageSize
 
                     self.allVideoSize = finalResult.videoSize
+                    
+                    // 通知代理数据更新
+                    self.delegate?.mediaManager(self, didUpdateShortVideos: self.shortVideoList, totalSize: self.shortVideoSize)
+                    self.delegate?.mediaManager(self, didUpdateAllVideos: self.allVideoList, totalSize: self.allVideoSize)
+                    self.delegate?.mediaManager(self, didUpdateScreenRecordings: self.screenRecordingVideoList, totalSize: self.screenRecordingVideoSize)
+                    self.delegate?.mediaManager(self, didUpdateScreenshots: self.screenshootList, totalSize: self.screenshotImageSize)
                 }
             }
         }
@@ -555,6 +620,12 @@ class MediaDataProvider: NSObject, PHPhotoLibraryChangeObserver {
         allVideoSize = screenRecordingVideoSize + allVideoSize + shortVideoSize
 
         print("从缓存恢复数据 - 截屏: \(screenshotImageSize), 录屏: \(screenRecordingVideoSize), 大视频: \(allVideoSize), 短视频: \(shortVideoSize)")
+        
+        // 通知代理初始数据（仅大小，列表为空）
+        delegate?.mediaManager(self, didUpdateShortVideos: [], totalSize: shortVideoSize)
+        delegate?.mediaManager(self, didUpdateAllVideos: [], totalSize: allVideoSize)
+        delegate?.mediaManager(self, didUpdateScreenRecordings: [], totalSize: screenRecordingVideoSize)
+        delegate?.mediaManager(self, didUpdateScreenshots: [], totalSize: screenshotImageSize)
     }
 }
 

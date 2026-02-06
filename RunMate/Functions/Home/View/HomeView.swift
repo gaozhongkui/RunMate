@@ -33,11 +33,12 @@ struct HomeView: View {
                         
                         PriSpaceBanner()
                         
-                        cleaningGrid.animation(.default, value: viewModel.isScanning)
+                        cleaningGrid
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 20)
                     .padding(.bottom, 100)
+                    .animation(.default, value: viewModel.isScanning)
                 }
             }
         }.task {
@@ -127,16 +128,18 @@ struct HomeView: View {
     private var cleaningGrid: some View {
         HStack(alignment: .top, spacing: 10) {
             VStack(spacing: 10) {
-                ForEach(viewModel.cardLeftItems) { card in
+                ForEach(viewModel.cardLeftItems, id: \.id) { card in
                     HomeItemCard(item: card)
                 }
             }
+            .frame(maxWidth: .infinity)
 
             VStack(spacing: 10) {
-                ForEach(viewModel.cardRightItems) { card in
+                ForEach(viewModel.cardRightItems, id: \.id) { card in
                     HomeItemCard(item: card)
                 }
             }
+            .frame(maxWidth: .infinity)
         }
     }
 }
