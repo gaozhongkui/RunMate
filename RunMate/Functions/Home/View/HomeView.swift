@@ -44,12 +44,7 @@ struct HomeView: View {
                 }
             }
         }
-        .overlay(content: {
-            VideoListView()
-        })
-        .task {
-            await viewModel.loadData()
-        }
+   
     }
        
     private var headerView: some View {

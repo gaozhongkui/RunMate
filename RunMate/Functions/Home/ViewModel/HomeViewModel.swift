@@ -24,13 +24,13 @@ class HomeViewModel: MediaManagerDelegate {
     // 记录总扫描的大小（用于进度计算）
     private var totalScannedBytes: Int64 = 0
     private var estimatedTotalBytes: Int64 = 0
-
+    
     init() {
         setupInitialItems()
+        loadData()
     }
 
-    @MainActor
-    func loadData() async {
+    func loadData() {
         // 创建 MediaManager 并设置代理
         let manager = MediaManager()
         manager.delegate = self
@@ -38,10 +38,6 @@ class HomeViewModel: MediaManagerDelegate {
         
         // 开始扫描动画
         startScanAnimation()
-        
-        // 请求权限并开始加载数据
-        let status = await manager.requestAuthorization()
-        print("相册权限状态: \(status)")
     }
 
     private func setupInitialItems() {
@@ -64,13 +60,13 @@ class HomeViewModel: MediaManagerDelegate {
             HomeItem(
                 title: "Recordings",
                 size: "--",
-                viewHeight: 150,
+                viewHeight: 120,
                 photoCategory: .recordings
             ),
             HomeItem(
                 title: "Short Videos",
                 size: "--",
-                viewHeight: 350,
+                viewHeight: 240,
                 photoCategory: .shortVideos(maxDuration: 0.3)
             )
         ]

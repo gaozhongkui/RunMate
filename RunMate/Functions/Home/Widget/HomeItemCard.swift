@@ -24,9 +24,9 @@ struct HomeItemCard: View {
                 // 媒体展示区
                 ZStack {
                     if isVideo, let player = player {
-//                        VideoPlayerView(player: player)
-//                            .frame(width: geometry.size.width, height: item.viewHeight)
-//                            .clipped()
+                        InnerVideoPlayerView(player: player)
+                            .frame(width: geometry.size.width, height: item.viewHeight)
+                            .clipped()
                     } else if let image = thumbnail {
                         Image(uiImage: image)
                             .resizable()
@@ -173,7 +173,6 @@ struct HomeItemCard: View {
 
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
-        // 将 deliveryMode 设为 .highQualityFormat
         // 这样闭包通常只会被调用一次，返回最终质量的图片
         options.deliveryMode = .highQualityFormat
 
