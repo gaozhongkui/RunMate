@@ -19,6 +19,9 @@ struct NavigationDestinationImage: ViewModifier {
                 CreateAIView(namespace: namespace)
             case .priSpace:
                 ImageEncryptionView(namespace: namespace)
+            case .videoList(let videoItems):
+                VideoListView(namespace: namespace,videos: videoItems)
+                
             }
         }
     }

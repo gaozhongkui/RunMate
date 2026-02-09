@@ -44,7 +44,6 @@ struct HomeView: View {
                 }
             }
         }
-   
     }
        
     private var headerView: some View {
@@ -130,14 +129,18 @@ struct HomeView: View {
         HStack(alignment: .top, spacing: 10) {
             VStack(spacing: 10) {
                 ForEach(viewModel.cardLeftItems, id: \.id) { card in
-                    HomeItemCard(item: card)
+                    HomeItemCard(item: card).onTapGesture {
+                        NavigationManager.shared.push(.videoList(card.items ?? []))
+                    }
                 }
             }
             .frame(maxWidth: .infinity)
 
             VStack(spacing: 10) {
                 ForEach(viewModel.cardRightItems, id: \.id) { card in
-                    HomeItemCard(item: card)
+                    HomeItemCard(item: card).onTapGesture {
+                        NavigationManager.shared.push(.videoList(card.items ?? []))
+                    }
                 }
             }
             .frame(maxWidth: .infinity)

@@ -5,7 +5,7 @@ import AVFoundation
 // MARK: - 视频压缩视图
 
 struct VideoCompressView: View {
-    let video: VideoItem
+    let video: MediaItemViewModel
     @Binding var compressor: VideoCompressor
     let onComplete: (Bool, String) -> Void
     
@@ -52,19 +52,19 @@ struct VideoCompressView: View {
                         Text("原始视频")
                             .font(.headline)
                         
-                        if let thumbnail = video.thumbnail {
-                            Image(uiImage: thumbnail)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 200)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
+//                        if let thumbnail = video.thumbnail {
+//                            Image(uiImage: thumbnail)
+//                                .resizable()
+//                                .aspectRatio(contentMode: .fit)
+//                                .frame(maxWidth: .infinity)
+//                                .frame(height: 200)
+//                                .clipShape(RoundedRectangle(cornerRadius: 12))
+//                        }
                         
                         HStack {
                             VStack(alignment: .leading, spacing: 8) {
-                                InfoRow(icon: "clock", text: video.durationString)
-                                InfoRow(icon: "doc", text: video.fileSizeString)
+//                                InfoRow(icon: "clock", text: video.durationString)
+//                                InfoRow(icon: "doc", text: video.fileSizeString)
                             }
                             Spacer()
                         }
@@ -135,8 +135,8 @@ struct VideoCompressView: View {
                                     Text("原始大小:")
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text(video.fileSizeString)
-                                        .fontWeight(.semibold)
+//                                    Text(video.fileSizeString)
+//                                        .fontWeight(.semibold)
                                 }
                                 
                                 HStack {
@@ -249,21 +249,22 @@ struct VideoCompressView: View {
     }
     
     private var compressionRatio: String {
-        let saved = video.fileSize - compressedSize
-        let percentage = (Double(saved) / Double(video.fileSize)) * 100
-        return String(format: "%.1f%%", percentage)
+//        let saved = video.fileSize - compressedSize
+//        let percentage = (Double(saved) / Double(video.fileSize)) * 100
+//        return String(format: "%.1f%%", percentage)
+        return ""
     }
     
     private func startCompression() {
-        compressor.compressVideo(inputURL: video.url) { result in
-            switch result {
-            case .success(let url):
-                compressedURL = url
-                compressedSize = getFileSize(url: url)
-            case .failure(let error):
-                print("压缩失败: \(error.localizedDescription)")
-            }
-        }
+//        compressor.compressVideo(inputURL: video.url) { result in
+//            switch result {
+//            case .success(let url):
+//                compressedURL = url
+//                compressedSize = getFileSize(url: url)
+//            case .failure(let error):
+//                print("压缩失败: \(error.localizedDescription)")
+//            }
+//        }
     }
     
     private func getFileSize(url: URL) -> Int64 {

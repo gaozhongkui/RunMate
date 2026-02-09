@@ -5,8 +5,8 @@
 //  Created by gaozhongkui on 2026/2/5.
 //
 
-import SwiftUI
 import Photos
+import SwiftUI
 
 struct HomeItem: Identifiable {
     var id = UUID()
@@ -16,4 +16,5 @@ struct HomeItem: Identifiable {
     var viewHeight: CGFloat
     var photoCategory: PhotoCategory
     var count: Int = 0
+    var items: [MediaItemViewModel]?
 }

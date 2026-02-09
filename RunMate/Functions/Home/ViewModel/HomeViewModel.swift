@@ -104,23 +104,25 @@ class HomeViewModel: MediaManagerDelegate {
     }
 
     /// 核心方法：更新指定分类的 HomeItem
-    private func updateHomeItem(category: PhotoCategory, size: Int64, count: Int, asset: PHAsset?) {
+    private func updateHomeItem(category: PhotoCategory, size: Int64, count: Int, items: [MediaItemViewModel]) {
         let formattedSize = formatBytes(size)
         
         // 更新左侧数组
         if let index = cardLeftItems.firstIndex(where: { $0.photoCategory == category }) {
             cardLeftItems[index].size = formattedSize
             cardLeftItems[index].count = count
-            cardLeftItems[index].phAsset = asset
+            cardLeftItems[index].phAsset = items.first?.phAsset
             cardLeftItems[index].id = UUID()
+            cardLeftItems[index].items = items
         }
         
         // 更新右侧数组
         if let index = cardRightItems.firstIndex(where: { $0.photoCategory == category }) {
             cardRightItems[index].size = formattedSize
             cardRightItems[index].count = count
-            cardRightItems[index].phAsset = asset
+            cardRightItems[index].phAsset = items.first?.phAsset
             cardRightItems[index].id = UUID()
+            cardRightItems[index].items = items
         }
         
         // 更新总大小显示
@@ -203,7 +205,7 @@ class HomeViewModel: MediaManagerDelegate {
             category: .shortVideos(maxDuration: 0.3),
             size: totalSize,
             count: videos.count,
-            asset: videos.first?.phAsset
+            items: videos
         )
     }
 
@@ -215,7 +217,7 @@ class HomeViewModel: MediaManagerDelegate {
             category: .allVideos,
             size: totalSize,
             count: videos.count,
-            asset: videos.first?.phAsset
+            items: videos
         )
     }
 
@@ -227,7 +229,7 @@ class HomeViewModel: MediaManagerDelegate {
             category: .recordings,
             size: totalSize,
             count: recordings.count,
-            asset: recordings.first?.phAsset
+            items: recordings
         )
     }
 
@@ -239,7 +241,7 @@ class HomeViewModel: MediaManagerDelegate {
             category: .screenshots,
             size: totalSize,
             count: screenshots.count,
-            asset: screenshots.first?.phAsset
+            items: screenshots
         )
     }
 

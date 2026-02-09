@@ -8,6 +8,10 @@
 import SwiftUI
 
 enum NavigationRoute: Hashable {
+    /// 创建图片AI
     case createAI
+    /// 图片加密
     case priSpace
+    /// 视频列表
+    case videoList([MediaItemViewModel])
 }
