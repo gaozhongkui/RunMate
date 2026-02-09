@@ -27,22 +27,21 @@ struct HomeView: View {
                    
                 ScrollView {
                     VStack(spacing: 16) {
-                        if viewModel.isScanning {
-                            scanningCard
-                        }
+                        AdvancedScanningCard(viewModel: viewModel)
                         
-                        PriSpaceBanner().contentShape(Rectangle()).onTapGesture {
+                        PriSpaceBanner().contentShape(Rectangle()).padding(.horizontal, 16).onTapGesture {
                             NavigationManager.shared.push(.priSpace)
                         }
                         
-                        cleaningGrid
+                        cleaningGrid.padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
                     .padding(.top, 20)
                     .padding(.bottom, 100)
                     .animation(.default, value: viewModel.isScanning)
                 }
             }
+        }.task {
+            await viewModel.loadData()
         }
     }
        
@@ -76,53 +75,6 @@ struct HomeView: View {
             endPoint: .bottomTrailing)
         )
         .cornerRadius(20)
-    }
-
-    private var scanningCard: some View {
-        VStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .stroke(
-                        LinearGradient(colors: [Color.cyan.opacity(0.3), Color.cyan],
-                                       startPoint: .topLeading,
-                                       endPoint: .bottomTrailing), lineWidth: 8
-                    ).frame(width: 120, height: 120)
-                   
-                Circle()
-                    .trim(from: 0, to: viewModel.scanProgress)
-                    .stroke(
-                        LinearGradient(colors: [Color.cyan, Color.purple],
-                                       startPoint: .topLeading,
-                                       endPoint: .bottomTrailing),
-                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
-                    )
-                    .frame(width: 120, height: 120)
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 0.3), value: viewModel.scanProgress)
-            }
-               
-            Text("AI Scanning...")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.white)
-               
-            Text("\(viewModel.scannedSize) of \(viewModel.totalSize)").font(.system(size: 14)).foregroundColor(.gray)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .background(
-            RoundedRectangle(cornerRadius: 20).fill(Color(hex: "#1A1A24"))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [Color.cyan.opacity(0.3), Color.purple.opacity(0.3)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1
-                )
-        )
     }
     
     private var cleaningGrid: some View {

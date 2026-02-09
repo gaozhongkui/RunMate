@@ -27,23 +27,23 @@ class HomeViewModel: MediaManagerDelegate {
     
     init() {
         setupInitialItems()
-        loadData()
     }
 
-    func loadData() {
-        // 创建 MediaManager 并设置代理
-       
-        Task {
-            let manager = MediaManager()
-            manager.delegate = self
-            
-            await MainActor.run {
-                mediaManager = manager
-            }
+    func loadData() async {
+        if mediaManager != nil {
+            return
         }
         
-        // 开始扫描动画
-        startScanAnimation()
+        await MainActor.run {
+            startScanAnimation()
+        }
+        
+        let manager = MediaManager()
+        manager.delegate = self
+
+        await MainActor.run {
+            mediaManager = manager
+        }
     }
 
     private func setupInitialItems() {
