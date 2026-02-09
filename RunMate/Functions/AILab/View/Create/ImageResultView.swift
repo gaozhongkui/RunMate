@@ -14,8 +14,11 @@ struct ImageResultView: View {
 
     var body: some View {
         ZStack {
-            // 背景纯黑，突出作品
-            Color.black.ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ).ignoresSafeArea()
             
             // 1. 内容区：让图片带有像列表页一样的大圆角
             contentLayout()

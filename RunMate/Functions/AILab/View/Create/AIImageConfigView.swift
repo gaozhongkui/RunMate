@@ -21,7 +21,11 @@ struct AIImageConfigView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color.black.ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 headerView()

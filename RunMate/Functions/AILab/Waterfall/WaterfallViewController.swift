@@ -93,7 +93,17 @@ class WaterfallViewController: UIViewController,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: "#0A0A0F")
+
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor(hex: "#3A507C").cgColor,
+            UIColor(hex: "#21304A").cgColor
+        ]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1) 
+        gradientLayer.frame = view.bounds
+
+        view.layer.insertSublayer(gradientLayer, at: 0)
 
         setupCollectionView()
         setupHeaderView()

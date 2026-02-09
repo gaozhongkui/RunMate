@@ -30,7 +30,7 @@ class GradientBorderView: UIView {
     }
     
     private func setup() {
-        backgroundColor = UIColor(red: 20 / 255, green: 20 / 255, blue: 25 / 255, alpha: 1.0)
+        backgroundColor = .clear
         layer.addSublayer(gradientLayer)
     }
     

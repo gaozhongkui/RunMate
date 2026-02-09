@@ -17,8 +17,11 @@ struct AIImageProcessingView: View {
 
     var body: some View {
         ZStack {
-            // 背景色统一为黑色
-            Color.black.ignoresSafeArea()
+            LinearGradient(
+                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ).ignoresSafeArea()
             
             // 装饰背景（可选：增加一点紫色的微光效果）
             Circle()
