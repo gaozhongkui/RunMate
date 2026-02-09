@@ -23,7 +23,7 @@ struct PriSpaceBanner: View {
                         Text("绝对安全的")
                         Text("私密空间")
                     }
-                    .font(.system(size: 24, weight: .bold)) // 减小字体适配手机
+                    .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     
                     Text("银行级 AES-256 加密，\n军事级隐私防护。")
@@ -88,8 +88,7 @@ struct CompactPhoneMockup: View {
                 .frame(width: 50, height: 50)
                 .blur(radius: 15)
             
-            Text("👆")
-                .font(.system(size: 24))
+            Text("👆").font(.system(size: 24))
         }
     }
 }

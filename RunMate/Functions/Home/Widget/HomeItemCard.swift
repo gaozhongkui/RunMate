@@ -11,15 +11,18 @@ import SwiftUI
 
 struct HomeItemCard: View {
     let item: HomeItem
-
+    
     @State private var thumbnail: UIImage?
     @State private var isVideo: Bool = false
     @State private var player: AVPlayer?
     @State private var isVisible: Bool = false
     @State private var playerItemObserver: Any?
-
+    @State private var loadTask: Task<Void, Never>?
+    
     var body: some View {
         GeometryReader { geometry in
+            let frame = geometry.frame(in: .global)
+            
             VStack(alignment: .leading, spacing: 0) {
                 // 媒体展示区
                 ZStack {
@@ -34,17 +37,13 @@ struct HomeItemCard: View {
                             .frame(width: geometry.size.width, height: item.viewHeight)
                             .clipped()
                     } else {
-                        // 占位图
                         Rectangle()
                             .fill(Color(hex: "#1A1629"))
                             .frame(width: geometry.size.width, height: item.viewHeight)
-                            .overlay(
-                                ProgressView()
-                                    .tint(.white.opacity(0.5))
-                            )
+                            .overlay(ProgressView().tint(.white.opacity(0.5)))
                     }
                 }
-
+                
                 // 底部信息栏
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
@@ -52,14 +51,12 @@ struct HomeItemCard: View {
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .lineLimit(1)
-
                         if isVideo {
                             Image(systemName: "video.fill")
                                 .font(.system(size: 12))
                                 .foregroundColor(.gray)
                         }
                     }
-
                     Text(item.size)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.gray)
@@ -70,87 +67,148 @@ struct HomeItemCard: View {
             }
             .background(Color(hex: "#1A1A24"))
             .cornerRadius(16)
+            .onChange(of: frame) { _, newFrame in
+                checkVisibility(frame: newFrame)
+            }
         }
         .frame(height: item.viewHeight + 60)
-        // 生命周期管理
         .onAppear {
-            isVisible = true
-            handlePlayback()
+            configureAudioSession()
+            Task { await loadThumbnailIfNeeded() }
         }
         .onDisappear {
-            isVisible = false
-            handlePlayback()
-        }
-        .task {
-            await loadMedia()
-        }
-        // 状态变化监听：核心修复逻辑
-        .onChange(of: player) {
-            handlePlayback()
-        }
-        .onChange(of: isVisible) {
-            handlePlayback()
+            cleanup()
         }
     }
-
-    // MARK: - 播放控制逻辑
-
-    private func handlePlayback() {
+    
+    private func configureAudioSession() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try audioSession.setActive(true)
+        } catch {
+            print("Failed to configure audio session: \(error)")
+        }
+    }
+    
+    // MARK: - 可见性检测
+    
+    private func checkVisibility(frame: CGRect) {
+        let screenBounds = UIScreen.main.bounds
+        
+        // 计算可见比例
+        let visibleHeight = min(frame.maxY, screenBounds.height) - max(frame.minY, 0)
+        let visibilityRatio = visibleHeight / frame.height
+        
+        let shouldBeVisible = visibilityRatio > 0.5 // 50% 以上可见
+        
+        if shouldBeVisible != isVisible {
+            isVisible = shouldBeVisible
+            handleVisibilityChange()
+        }
+    }
+    
+    private func handleVisibilityChange() {
+        // 👇 在这里添加日志
+        print("📍 Visibility changed: \(isVisible), player: \(player != nil), title: \(item.title)")
+        
         if isVisible {
-            // 只有当 player 已经初始化完成且视图可见时才播放
-            if player?.rate == 0 {
+            // 变为可见
+            if player != nil {
+                print("▶️ Resuming existing player for: \(item.title)")
                 player?.play()
+            } else if item.phAsset?.mediaType == .video {
+                print("🔄 Starting to load video for: \(item.title)")
+                // 取消之前的加载任务
+                loadTask?.cancel()
+                // 开始新的加载
+                loadTask = Task {
+                    await loadMedia()
+                }
             }
         } else {
-            player?.pause()
+            // 变为不可见
+            print("⏸️ Stopping player for: \(item.title)")
+            loadTask?.cancel()
+            stopAndReleasePlayer()
         }
     }
-
+    
+    private func stopAndReleasePlayer() {
+        player?.pause()
+        player = nil
+        if let observer = playerItemObserver {
+            NotificationCenter.default.removeObserver(observer)
+            playerItemObserver = nil
+        }
+    }
+    
+    private func cleanup() {
+        loadTask?.cancel()
+        stopAndReleasePlayer()
+    }
+    
     // MARK: - 媒体加载
-
+    
     func loadMedia() async {
-        guard let phAsset = item.phAsset else { return }
-
-        let assetIsVideo = phAsset.mediaType == .video
-        await MainActor.run {
-            self.isVideo = assetIsVideo
+        print("🔍 loadMedia called for: \(item.title)")
+        print("   - phAsset exists: \(item.phAsset != nil)")
+        print("   - phAsset type: \(item.phAsset?.mediaType.rawValue ?? -1)") // 0=unknown, 1=image, 2=video, 3=audio
+        
+        guard let phAsset = item.phAsset else {
+            print("❌ No phAsset for: \(item.title)")
+            await MainActor.run { self.isVideo = false }
+            return
         }
-
-        if assetIsVideo {
-            await loadVideo(phAsset: phAsset)
-        } else {
-            await loadThumbnail(phAsset: phAsset)
+        
+        guard phAsset.mediaType == .video else {
+            print("❌ Not a video asset for: \(item.title), type: \(phAsset.mediaType.rawValue)")
+            await MainActor.run { self.isVideo = false }
+            return
         }
+        
+        print("✅ Valid video asset confirmed for: \(item.title)")
+        await MainActor.run { self.isVideo = true }
+        await loadVideo(phAsset: phAsset)
     }
-
+    
+    private func loadThumbnailIfNeeded() async {
+        guard thumbnail == nil, let phAsset = item.phAsset else { return }
+        await loadThumbnail(phAsset: phAsset)
+    }
+    
     func loadVideo(phAsset: PHAsset) async {
+        print("🎬 loadVideo started for: \(item.title)")
+        
         let options = PHVideoRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .automatic
-
+        
         let fetchedItem: AVPlayerItem? = await withCheckedContinuation { continuation in
             var isResumed = false
-
-            PHImageManager.default().requestPlayerItem(forVideo: phAsset, options: options) { playerItem, _ in
+            PHImageManager.default().requestPlayerItem(forVideo: phAsset, options: options) { playerItem, info in
                 if !isResumed {
                     isResumed = true
+                    print("📦 PlayerItem fetched for: \(self.item.title), success: \(playerItem != nil)")
                     continuation.resume(returning: playerItem)
                 }
             }
         }
-
-        guard let playerItem = fetchedItem else { return }
-
+        
+        guard let playerItem = fetchedItem else {
+            print("❌ Failed to fetch playerItem for: \(item.title)")
+            return
+        }
+        
         await MainActor.run {
-            let avPlayer = AVPlayer(playerItem: playerItem)
-            avPlayer.isMuted = true // 自动播放通常需要静音
-
-            // 移除旧的观察者（如果有）
-            if let oldObserver = playerItemObserver {
-                NotificationCenter.default.removeObserver(oldObserver)
+            guard isVisible else {
+                print("⚠️ Video loaded but no longer visible: \(item.title)")
+                return
             }
-
-            // 设置循环播放
+            
+            let avPlayer = AVPlayer(playerItem: playerItem)
+            avPlayer.isMuted = true
+            
             playerItemObserver = NotificationCenter.default.addObserver(
                 forName: .AVPlayerItemDidPlayToEndTime,
                 object: playerItem,
@@ -159,37 +217,30 @@ struct HomeItemCard: View {
                 avPlayer?.seek(to: .zero)
                 avPlayer?.play()
             }
-
+            
             self.player = avPlayer
+            avPlayer.play()
+            
+            print("✅ Video playing for: \(item.title)")
         }
     }
-
+    
     func loadThumbnail(phAsset: PHAsset) async {
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(
-            width: 300 * scale,
-            height: item.viewHeight * scale
-        )
-
+        let targetSize = CGSize(width: 300 * scale, height: item.viewHeight * scale)
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
-        // 这样闭包通常只会被调用一次，返回最终质量的图片
         options.deliveryMode = .highQualityFormat
-
+        
         let image: UIImage? = await withCheckedContinuation { continuation in
-            var isResumed = false // 状态标记，确保只 resume 一次
-
+            var isResumed = false
             PHImageManager.default().requestImage(for: phAsset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
-                // 如果已经 resume 过了，就不要再执行了
                 if !isResumed {
                     isResumed = true
                     continuation.resume(returning: result)
                 }
             }
         }
-
-        await MainActor.run {
-            self.thumbnail = image
-        }
+        await MainActor.run { self.thumbnail = image }
     }
 }
