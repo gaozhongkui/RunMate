@@ -31,7 +31,7 @@ struct HomeView: View {
                             scanningCard
                         }
                         
-                        PriSpaceBanner().onTapGesture {
+                        PriSpaceBanner().contentShape(Rectangle()).onTapGesture {
                             NavigationManager.shared.push(.priSpace)
                         }
                         
@@ -129,7 +129,7 @@ struct HomeView: View {
         HStack(alignment: .top, spacing: 10) {
             VStack(spacing: 10) {
                 ForEach(viewModel.cardLeftItems, id: \.id) { card in
-                    HomeItemCard(item: card).onTapGesture {
+                    HomeItemCard(item: card).contentShape(Rectangle()).onTapGesture {
                         NavigationManager.shared.push(.videoList(card.items ?? []))
                     }
                 }
@@ -138,7 +138,7 @@ struct HomeView: View {
 
             VStack(spacing: 10) {
                 ForEach(viewModel.cardRightItems, id: \.id) { card in
-                    HomeItemCard(item: card).onTapGesture {
+                    HomeItemCard(item: card).contentShape(Rectangle()).onTapGesture {
                         NavigationManager.shared.push(.videoList(card.items ?? []))
                     }
                 }

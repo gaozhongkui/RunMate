@@ -32,9 +32,15 @@ class HomeViewModel: MediaManagerDelegate {
 
     func loadData() {
         // 创建 MediaManager 并设置代理
-        let manager = MediaManager()
-        manager.delegate = self
-        mediaManager = manager
+       
+        Task {
+            let manager = MediaManager()
+            manager.delegate = self
+            
+            await MainActor.run {
+                mediaManager = manager
+            }
+        }
         
         // 开始扫描动画
         startScanAnimation()

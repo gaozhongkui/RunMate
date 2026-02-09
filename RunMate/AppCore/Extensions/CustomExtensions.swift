@@ -7,6 +7,7 @@
 
 import Photos
 import SwiftUI
+import UIKit
 
 extension UIDevice {
     /// 判断设备是否为全面屏（或刘海屏）
@@ -199,4 +200,13 @@ private func getEstimatedFrameRate(_ asset: PHAsset) -> Double {
     } else {
         return 30.0 // 标准帧率
     }
+}
+
+
+func fetchImage(
+    for asset: PHAsset,
+    targetSize: CGSize,
+    contentMode: PHImageContentMode
+) async -> UIImage? {
+    return await PhotoLoader.shared.requestUIImage(for: asset)
 }
