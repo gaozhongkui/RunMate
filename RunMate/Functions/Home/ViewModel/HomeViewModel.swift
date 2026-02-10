@@ -16,7 +16,6 @@ class HomeViewModel: MediaManagerDelegate {
     var isScanning = true
     var scanProgress: CGFloat = 0.0
     var scannedSize = "0 GB"
-    var totalSize = "0 GB"
 
     private var mediaManager: MediaManager?
     private var progressTimer: Timer?
@@ -173,10 +172,6 @@ class HomeViewModel: MediaManagerDelegate {
             manager.screenshotImageSize
         
         scannedSize = formatBytes(totalScannedBytes)
-        
-        // 这里可以根据缓存或其他方式估算总大小
-        // 暂时使用扫描的大小作为总大小
-        totalSize = formatBytes(totalScannedBytes)
     }
     
     /// 格式化字节大小
@@ -228,21 +223,26 @@ class HomeViewModel: MediaManagerDelegate {
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("短视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
+        
+        updateTotalSize()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("所有视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
+        updateTotalSize()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64) {
         print("录屏更新: \(recordings.count) 个，总大小: \(formatBytes(totalSize))")
+        updateTotalSize()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64) {
         print("截屏更新: \(screenshots.count) 个，总大小: \(formatBytes(totalSize))")
+        updateTotalSize()
     }
 
     @MainActor

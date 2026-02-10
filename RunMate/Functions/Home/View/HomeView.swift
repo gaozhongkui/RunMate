@@ -27,7 +27,7 @@ struct HomeView: View {
                    
                 ScrollView {
                     VStack(spacing: 16) {
-                        AdvancedScanningCard(viewModel: viewModel)
+                        AdvancedScanningCard(viewModel: $viewModel)
                         
                         PriSpaceBanner().contentShape(Rectangle()).padding(.horizontal, 16).onTapGesture {
                             NavigationManager.shared.push(.priSpace)

@@ -10,16 +10,11 @@ import SwiftUI
 struct AdvancedScanningCard: View {
     @State private var isAnimating = false
     @State private var dragOffset = CGSize.zero
-    let viewModel: HomeViewModel
-
-    // 逻辑判断：是否扫描完成
-    private var isFinished: Bool {
-        viewModel.scanProgress >= 1.0
-    }
+    @Binding var viewModel: HomeViewModel
 
     var body: some View {
         VStack {
-            if !isFinished {
+            if viewModel.isScanning {
                 // --- 扫描状态：原始的大卡片布局 ---
                 scanningLayout
                     .transition(.asymmetric(
@@ -37,7 +32,7 @@ struct AdvancedScanningCard: View {
         }
         .frame(maxWidth: .infinity)
         // 关键：动态调整内边距，完成状态下更窄
-        .padding(.vertical, isFinished ? 16 : 40)
+        .padding(.vertical, !viewModel.isScanning ? 16 : 40)
         .padding(.horizontal, 20)
         .background(cardBackground)
         // 保持 3D 效果
@@ -100,7 +95,7 @@ struct AdvancedScanningCard: View {
                 Text("Total:")
                     .font(.system(size: 13))
                     .foregroundColor(.gray)
-                Text(viewModel.totalSize)
+                Text(viewModel.scannedSize)
                     .font(.system(size: 16, weight: .bold, design: .monospaced))
                     .foregroundColor(.cyan)
             }
@@ -114,10 +109,10 @@ struct AdvancedScanningCard: View {
 
     private var cardBackground: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: isFinished ? 20 : 35) // 完成后圆角变小一点
+            RoundedRectangle(cornerRadius: !viewModel.isScanning ? 20 : 35) // 完成后圆角变小一点
                 .fill(Color(hex: "#1A1A24"))
 
-            RoundedRectangle(cornerRadius: isFinished ? 20 : 35)
+            RoundedRectangle(cornerRadius: !viewModel.isScanning ? 20 : 35)
                 .stroke(
                     LinearGradient(
                         colors: [Color.white.opacity(0.2), Color.clear, Color.purple.opacity(0.1)],
@@ -127,7 +122,7 @@ struct AdvancedScanningCard: View {
                 )
         }
         // 整个背景切换高度时增加动画
-        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: isFinished)
+        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: viewModel.isScanning)
     }
 
     private var progressRingSection: some View {
@@ -167,9 +162,8 @@ struct AdvancedScanningCard: View {
 
     private var statusLabels: some View {
         HStack(spacing: 4) {
+            Text("已扫描大小：")
             Text(viewModel.scannedSize)
-            Text("/")
-            Text(viewModel.totalSize)
         }
         .font(.system(size: 13, weight: .medium, design: .monospaced))
         .foregroundColor(.gray.opacity(0.8))
