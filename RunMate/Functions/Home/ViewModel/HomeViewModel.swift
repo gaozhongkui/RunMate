@@ -116,22 +116,28 @@ class HomeViewModel: MediaManagerDelegate {
         }
     }
 
-    /// 核心方法：更新指定分类的 HomeItem
-    private func updateHomeItem(category: PhotoCategory, size: Int64, count: Int, items: [MediaItemViewModel]) {
-        let formattedSize = formatBytes(size)
+    /// 统一更新所有 HomeItem 数据
+    private func updateAllHomeItems() {
+        guard let manager = mediaManager else { return }
         
-        // 更新左侧数组
-        if let index = cardLeftItems.firstIndex(where: { $0.photoCategory == category }) {
-            cardLeftItems[index].size = formattedSize
+        // 更新左侧卡片
+        for index in cardLeftItems.indices {
+            let category = cardLeftItems[index].photoCategory
+            let (size, count, items) = getDataForCategory(category, from: manager)
+            
+            cardLeftItems[index].size = formatBytes(size)
             cardLeftItems[index].count = count
             cardLeftItems[index].phAsset = items.first?.phAsset
             cardLeftItems[index].id = UUID()
             cardLeftItems[index].items = items
         }
         
-        // 更新右侧数组
-        if let index = cardRightItems.firstIndex(where: { $0.photoCategory == category }) {
-            cardRightItems[index].size = formattedSize
+        // 更新右侧卡片
+        for index in cardRightItems.indices {
+            let category = cardRightItems[index].photoCategory
+            let (size, count, items) = getDataForCategory(category, from: manager)
+            
+            cardRightItems[index].size = formatBytes(size)
             cardRightItems[index].count = count
             cardRightItems[index].phAsset = items.first?.phAsset
             cardRightItems[index].id = UUID()
@@ -140,6 +146,20 @@ class HomeViewModel: MediaManagerDelegate {
         
         // 更新总大小显示
         updateTotalSize()
+    }
+    
+    /// 根据分类获取对应的数据
+    private func getDataForCategory(_ category: PhotoCategory, from manager: MediaManager) -> (size: Int64, count: Int, items: [MediaItemViewModel]) {
+        switch category {
+        case .allVideos:
+            return (manager.allVideoSize, manager.allVideoList.count, manager.allVideoList)
+        case .screenshots:
+            return (manager.screenshotImageSize, manager.screenshootList.count, manager.screenshootList)
+        case .recordings:
+            return (manager.screenRecordingVideoSize, manager.screenRecordingVideoList.count, manager.screenRecordingVideoList)
+        case .shortVideos:
+            return (manager.shortVideoSize, manager.shortVideoList.count, manager.shortVideoList)
+        }
     }
     
     /// 更新总扫描大小和总大小
@@ -203,59 +223,26 @@ class HomeViewModel: MediaManagerDelegate {
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool) {
         print("加载状态: \(isLoading)")
-        
-        // 如果加载完成，停止扫描动画
-        if !isLoading {
-            stopScanAnimation()
-        }
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("短视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
-        
-        updateHomeItem(
-            category: .shortVideos(maxDuration: 0.3),
-            size: totalSize,
-            count: videos.count,
-            items: videos
-        )
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("所有视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
-        
-        updateHomeItem(
-            category: .allVideos,
-            size: totalSize,
-            count: videos.count,
-            items: videos
-        )
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64) {
         print("录屏更新: \(recordings.count) 个，总大小: \(formatBytes(totalSize))")
-        
-        updateHomeItem(
-            category: .recordings,
-            size: totalSize,
-            count: recordings.count,
-            items: recordings
-        )
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64) {
         print("截屏更新: \(screenshots.count) 个，总大小: \(formatBytes(totalSize))")
-        
-        updateHomeItem(
-            category: .screenshots,
-            size: totalSize,
-            count: screenshots.count,
-            items: screenshots
-        )
     }
 
     @MainActor
@@ -279,6 +266,9 @@ class HomeViewModel: MediaManagerDelegate {
     @MainActor
     func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double) {
         print("✅ 扫描完成，耗时: \(scanTime) 秒")
+        
+        // 统一更新所有 item 数据
+        updateAllHomeItems()
         
         // 确保动画完成
         stopScanAnimation()
