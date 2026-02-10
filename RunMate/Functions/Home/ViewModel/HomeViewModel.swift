@@ -38,12 +38,19 @@ class HomeViewModel: MediaManagerDelegate {
             startScanAnimation()
         }
         
-        let manager = MediaManager()
-        manager.delegate = self
-
-        await MainActor.run {
-            mediaManager = manager
-        }
+        // 现在可以在后台线程创建了
+        await Task.detached {
+            let manager = MediaManager()
+            
+            // 初始化
+            await manager.initialize()
+            
+            // 设置到主线程
+            await MainActor.run {
+                manager.delegate = self
+                self.mediaManager = manager
+            }
+        }.value
     }
 
     private func setupInitialItems() {

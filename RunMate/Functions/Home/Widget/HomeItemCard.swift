@@ -18,6 +18,11 @@ struct HomeItemCard: View {
     @State private var isVisible: Bool = false
     @State private var playerItemObserver: Any?
     @State private var loadTask: Task<Void, Never>?
+    @State private var videoDelayTask: Task<Void, Never>?
+    @State private var shouldShowVideo: Bool = false
+    
+    // 可配置的延迟时间（秒）
+    private let videoPlayDelay: TimeInterval = 1.5
     
     var body: some View {
         GeometryReader { geometry in
@@ -26,23 +31,25 @@ struct HomeItemCard: View {
             VStack(alignment: .leading, spacing: 0) {
                 // 媒体展示区
                 ZStack {
-                    if isVideo, let player = player {
-                        InnerVideoPlayerView(player: player)
-                            .frame(width: geometry.size.width, height: item.viewHeight)
-                            .clipped()
-                    } else if let image = thumbnail {
+                    // 缩略图或占位符
+                    if let image = thumbnail {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: geometry.size.width, height: item.viewHeight)
-                            .clipped()
                     } else {
                         Rectangle()
                             .fill(Color(hex: "#1A1629"))
-                            .frame(width: geometry.size.width, height: item.viewHeight)
                             .overlay(ProgressView().tint(.white.opacity(0.5)))
                     }
+                    
+                    // 视频播放器叠加在缩略图上方
+                    if isVideo, shouldShowVideo, let player = player {
+                        InnerVideoPlayerView(player: player)
+                            .transition(.opacity)
+                    }
                 }
+                .frame(width: geometry.size.width, height: item.viewHeight)
+                .clipped()
                 
                 // 底部信息栏
                 VStack(alignment: .leading, spacing: 4) {
@@ -62,9 +69,10 @@ struct HomeItemCard: View {
                         .foregroundColor(.gray)
                 }
                 .padding(12)
-                .frame(width: geometry.size.width, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(hex: "#1A1A24"))
             }
+            .frame(width: geometry.size.width)
             .background(Color(hex: "#1A1A24"))
             .cornerRadius(16)
             .onChange(of: frame) { _, newFrame in
@@ -74,6 +82,7 @@ struct HomeItemCard: View {
         .frame(height: item.viewHeight + 60)
         .onAppear {
             configureAudioSession()
+            // 先加载缩略图
             Task { await loadThumbnailIfNeeded() }
         }
         .onDisappear {
@@ -109,29 +118,60 @@ struct HomeItemCard: View {
     }
     
     private func handleVisibilityChange() {
-        // 👇 在这里添加日志
         print("📍 Visibility changed: \(isVisible), player: \(player != nil), title: \(item.title)")
         
         if isVisible {
             // 变为可见
             if player != nil {
+                // 已有播放器，恢复播放
                 print("▶️ Resuming existing player for: \(item.title)")
+                withAnimation(.easeIn(duration: 0.3)) {
+                    shouldShowVideo = true
+                }
                 player?.play()
             } else if item.phAsset?.mediaType == .video {
-                print("🔄 Starting to load video for: \(item.title)")
-                // 取消之前的加载任务
-                loadTask?.cancel()
-                // 开始新的加载
-                loadTask = Task {
-                    await loadMedia()
-                }
+                // 需要加载视频
+                print("🔄 Starting delayed video load for: \(item.title)")
+                startDelayedVideoLoad()
             }
         } else {
             // 变为不可见
             print("⏸️ Stopping player for: \(item.title)")
-            loadTask?.cancel()
+            cancelAllTasks()
             stopAndReleasePlayer()
+            shouldShowVideo = false
         }
+    }
+    
+    private func startDelayedVideoLoad() {
+        // 取消之前的任务
+        cancelAllTasks()
+        
+        // 延迟加载视频
+        videoDelayTask = Task {
+            // 先确保缩略图已加载
+            await loadThumbnailIfNeeded()
+            
+            // 等待指定时间
+            try? await Task.sleep(nanoseconds: UInt64(videoPlayDelay * 1_000_000_000))
+            
+            // 检查任务是否被取消
+            guard !Task.isCancelled, isVisible else {
+                print("⚠️ Video load task cancelled for: \(item.title)")
+                return
+            }
+            
+            // 开始加载视频
+            print("🎬 Delayed video load executing for: \(item.title)")
+            await loadMedia()
+        }
+    }
+    
+    private func cancelAllTasks() {
+        loadTask?.cancel()
+        videoDelayTask?.cancel()
+        loadTask = nil
+        videoDelayTask = nil
     }
     
     private func stopAndReleasePlayer() {
@@ -144,8 +184,9 @@ struct HomeItemCard: View {
     }
     
     private func cleanup() {
-        loadTask?.cancel()
+        cancelAllTasks()
         stopAndReleasePlayer()
+        shouldShowVideo = false
     }
     
     // MARK: - 媒体加载
@@ -153,7 +194,7 @@ struct HomeItemCard: View {
     func loadMedia() async {
         print("🔍 loadMedia called for: \(item.title)")
         print("   - phAsset exists: \(item.phAsset != nil)")
-        print("   - phAsset type: \(item.phAsset?.mediaType.rawValue ?? -1)") // 0=unknown, 1=image, 2=video, 3=audio
+        print("   - phAsset type: \(item.phAsset?.mediaType.rawValue ?? -1)")
         
         guard let phAsset = item.phAsset else {
             print("❌ No phAsset for: \(item.title)")
@@ -174,6 +215,7 @@ struct HomeItemCard: View {
     
     private func loadThumbnailIfNeeded() async {
         guard thumbnail == nil, let phAsset = item.phAsset else { return }
+        print("🖼️ Loading thumbnail for: \(item.title)")
         await loadThumbnail(phAsset: phAsset)
     }
     
@@ -186,7 +228,7 @@ struct HomeItemCard: View {
         
         let fetchedItem: AVPlayerItem? = await withCheckedContinuation { continuation in
             var isResumed = false
-            PHImageManager.default().requestPlayerItem(forVideo: phAsset, options: options) { playerItem, info in
+            PHImageManager.default().requestPlayerItem(forVideo: phAsset, options: options) { playerItem, _ in
                 if !isResumed {
                     isResumed = true
                     print("📦 PlayerItem fetched for: \(self.item.title), success: \(playerItem != nil)")
@@ -219,6 +261,12 @@ struct HomeItemCard: View {
             }
             
             self.player = avPlayer
+            
+            // 先显示视频播放器，再开始播放
+            withAnimation(.easeIn(duration: 0.3)) {
+                shouldShowVideo = true
+            }
+            
             avPlayer.play()
             
             print("✅ Video playing for: \(item.title)")
@@ -241,6 +289,9 @@ struct HomeItemCard: View {
                 }
             }
         }
-        await MainActor.run { self.thumbnail = image }
+        await MainActor.run {
+            self.thumbnail = image
+            print("✅ Thumbnail loaded for: \(item.title)")
+        }
     }
 }

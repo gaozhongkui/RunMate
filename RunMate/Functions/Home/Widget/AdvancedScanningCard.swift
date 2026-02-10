@@ -130,17 +130,38 @@ struct AdvancedScanningCard: View {
         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: isFinished)
     }
 
-    // 原有的进度环代码块...
     private var progressRingSection: some View {
         ZStack {
-            Circle().fill(Color.cyan.opacity(0.15)).frame(width: 110, height: 110).blur(radius: 25).scaleEffect(isAnimating ? 1.3 : 0.9)
-            Circle().stroke(Color.white.opacity(0.05), lineWidth: 1).frame(width: 155, height: 155)
-            Circle().stroke(Color.white.opacity(0.03), lineWidth: 10).frame(width: 130, height: 130)
+            // 背景环
+            Circle()
+                .stroke(Color.white.opacity(0.1), lineWidth: 12)
+                .frame(width: 200, height: 200)
+
+            // 进度环
             Circle()
                 .trim(from: 0, to: viewModel.scanProgress)
-                .stroke(LinearGradient(colors: [.cyan, .purple], startPoint: .topLeading, endPoint: .bottomTrailing), style: StrokeStyle(lineWidth: 10, lineCap: .round))
-                .frame(width: 130, height: 130)
+                .stroke(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.purple]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                )
+                .frame(width: 200, height: 200)
                 .rotationEffect(.degrees(-90))
+                .animation(.easeInOut(duration: 0.3), value: viewModel.scanProgress)
+
+            // 中心文本
+            VStack(spacing: 8) {
+                Text("\(Int(viewModel.scanProgress * 100))%")
+                    .font(.system(size: 48, weight: .bold))
+                    .foregroundColor(.white)
+
+                Text("Analyzing")
+                    .font(.system(size: 14))
+                    .foregroundColor(.white.opacity(0.7))
+            }
         }
     }
 

@@ -36,7 +36,7 @@ struct HomeView: View {
                         cleaningGrid.padding(.horizontal, 16)
                     }
                     .padding(.top, 20)
-                    .padding(.bottom, 100)
+                    .padding(.bottom, 80)
                     .animation(.default, value: viewModel.isScanning)
                 }
             }
