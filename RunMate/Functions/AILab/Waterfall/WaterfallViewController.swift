@@ -220,15 +220,15 @@ class WaterfallViewController: UIViewController,
         // 新数据插入顶部（实时流）
         observer.onNewItemsInserted = { [weak self] indexPaths in
             guard let self else { return }
-
-            self.dataList = observer.images
-
-            // 使用 performBatchUpdates 实现平滑插入
+            
+            let newImages = observer.images
+            
             self.collectionView.performBatchUpdates {
+                // 在这里更新数据源也可以
+                self.dataList = newImages
                 self.collectionView.insertItems(at: indexPaths)
             } completion: { _ in
-                // 可选：滚动到顶部查看新内容
-                // self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+                // 插入完成
             }
         }
 
