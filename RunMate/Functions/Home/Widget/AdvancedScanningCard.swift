@@ -66,7 +66,7 @@ struct AdvancedScanningCard: View {
                 HStack(spacing: 10) {
                     Circle().fill(Color.green).frame(width: 6, height: 6)
                         .shadow(color: .green, radius: isAnimating ? 4 : 0)
-                    Text("AI Scanning...").font(.system(size: 18, weight: .bold)).foregroundColor(.white)
+                    Text("AI Scanning...").font(AppTheme.Fonts.headline()).foregroundColor(AppTheme.Colors.textPrimary)
                 }
                 statusLabels
             }
@@ -84,8 +84,8 @@ struct AdvancedScanningCard: View {
                     .font(.system(size: 18))
 
                 Text("Scan Completed")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.white.opacity(0.9))
+                    .font(AppTheme.Fonts.subheadline(.medium))
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
 
             Spacer()
@@ -93,10 +93,10 @@ struct AdvancedScanningCard: View {
             // 右侧总大小
             HStack(spacing: 4) {
                 Text("Total:")
-                    .font(.system(size: 13))
-                    .foregroundColor(.gray)
+                    .font(AppTheme.Fonts.caption())
+                    .foregroundColor(AppTheme.Colors.textMuted)
                 Text(viewModel.scannedSize)
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .font(AppTheme.Fonts.monospaced())
                     .foregroundColor(.cyan)
             }
             .padding(.horizontal, 12)
@@ -109,17 +109,10 @@ struct AdvancedScanningCard: View {
 
     private var cardBackground: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: !viewModel.isScanning ? 20 : 35) // 完成后圆角变小一点
-                .fill(Color(hex: "#1A1A24"))
-
-            RoundedRectangle(cornerRadius: !viewModel.isScanning ? 20 : 35)
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.2), Color.clear, Color.purple.opacity(0.1)],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1.5
-                )
+            RoundedRectangle(cornerRadius: !viewModel.isScanning ? AppTheme.Radius.lg : AppTheme.Radius.xxl)
+                .fill(AppTheme.Colors.cardBackground)
+            RoundedRectangle(cornerRadius: !viewModel.isScanning ? AppTheme.Radius.lg : AppTheme.Radius.xxl)
+                .stroke(AppTheme.Colors.cardStroke, lineWidth: 1.5)
         }
         // 整个背景切换高度时增加动画
         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: viewModel.isScanning)
@@ -136,11 +129,7 @@ struct AdvancedScanningCard: View {
             Circle()
                 .trim(from: 0, to: viewModel.scanProgress)
                 .stroke(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.blue, Color.purple]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
+                    AppTheme.Colors.progressGradient,
                     style: StrokeStyle(lineWidth: 12, lineCap: .round)
                 )
                 .frame(width: 200, height: 200)
@@ -151,11 +140,10 @@ struct AdvancedScanningCard: View {
             VStack(spacing: 8) {
                 Text("\(Int(viewModel.scanProgress * 100))%")
                     .font(.system(size: 48, weight: .bold))
-                    .foregroundColor(.white)
-
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                 Text("Analyzing")
-                    .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .font(AppTheme.Fonts.subheadline())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
         }
     }
@@ -165,8 +153,8 @@ struct AdvancedScanningCard: View {
             Text("已扫描大小：")
             Text(viewModel.scannedSize)
         }
-        .font(.system(size: 13, weight: .medium, design: .monospaced))
-        .foregroundColor(.gray.opacity(0.8))
+        .font(AppTheme.Fonts.caption(.medium))
+        .foregroundColor(AppTheme.Colors.textMuted.opacity(0.8))
         .padding(.horizontal, 16).padding(.vertical, 8)
         .background(Capsule().stroke(Color.white.opacity(0.1), lineWidth: 1))
     }

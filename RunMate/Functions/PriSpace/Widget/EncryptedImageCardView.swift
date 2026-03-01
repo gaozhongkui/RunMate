@@ -40,16 +40,15 @@ struct EncryptedImageCardView: View {
             
             VStack(alignment: .leading, spacing: 5) {
                 Text(image.fileName)
-                    .font(.headline)
+                    .font(AppTheme.Fonts.headline())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                     .lineLimit(1)
-                
                 Text(image.createdDate, style: .date)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
+                    .font(AppTheme.Fonts.caption())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
                 Text("\(image.encryptedData.count / 1024) KB")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Fonts.caption2())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
             
             Spacer()
@@ -81,9 +80,8 @@ struct EncryptedImageCardView: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .appCardStyle(cornerRadius: AppTheme.Radius.sm + 5)
+        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
         .sheet(isPresented: $showDecryptSheet) {
             DecryptPasswordSheet(
                 password: $decryptPassword,

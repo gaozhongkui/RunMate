@@ -17,14 +17,8 @@ struct ImageEncryptionView: View {
     @State private var isEncrypting = false
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // 背景渐变
-                LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        ZStack {
+            AppTheme.Colors.pageGradient
                 .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
@@ -38,26 +32,22 @@ struct ImageEncryptionView: View {
                             Image(systemName: "photo.badge.plus")
                                 .font(.title2)
                             Text("选择图片加密")
-                                .fontWeight(.semibold)
+                                .font(AppTheme.Fonts.subheadline(.semibold))
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.blue, Color.purple]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .foregroundColor(.white)
-                        .cornerRadius(15)
-                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .appPrimaryButtonStyle()
+                        .shadow(color: AppTheme.Colors.accentStart.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
                     .padding(.horizontal)
                     
                     // 加密图片列表
                     if storageManager.encryptedImages.isEmpty {
-                        EmptyStateView()
+                        EmptyStateView(
+                            icon: "photo.on.rectangle.angled",
+                            title: "还没有加密的图片",
+                            subtitle: "点击上方按钮选择图片开始加密"
+                        )
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 15) {
@@ -69,10 +59,9 @@ struct ImageEncryptionView: View {
                         }
                     }
                 }
-            }
-            .navigationTitle("图片加密保险箱")
-            .navigationBarTitleDisplayMode(.large)
         }
+        .navigationTitle("图片加密保险箱")
+        .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showPasswordInput) {
             PasswordInputSheet(
                 password: $password,

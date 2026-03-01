@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 @MainActor
 @Observable
@@ -65,5 +66,62 @@ class AIViewModel {
                 }
             }
         )
+    }
+
+    /// 为 `imageAIStyles` 中的每一项根据其 `prompt` 生成图片，并以 `image` 字段命名保存到应用的 Documents/AIStyleImages 目录。
+    /// 返回已保存图片的本地 URL 列表。
+    func generateAndSaveAllStyleImages(to directoryURL: URL? = nil, options: PollinationsImageGenerator.GenerationOptions = .default) async throws -> [URL] {
+        let fileManager = FileManager.default
+        let baseDir: URL = directoryURL ?? fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("AIStyleImages", isDirectory: true)
+
+        try fileManager.createDirectory(at: baseDir, withIntermediateDirectories: true)
+
+        var savedURLs: [URL] = []
+
+        for item in imageAIStyles {
+            // 等待单张图片生成结果
+            let genResult = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<PollinationsImageGenerator.GenerationResult, Error>) in
+                PollinationsImageGenerator.shared.generateImage(
+                    prompt: item.prompt,
+                    options: options,
+                    onStateChange: nil,
+                    onProgress: nil,
+                    completion: { result in
+                        switch result {
+                        case .success(let r):
+                            continuation.resume(returning: r)
+                        case .failure(let e):
+                            continuation.resume(throwing: e)
+                        }
+                    }
+                )
+            }
+
+            guard let data = genResult.image.pngData() else {
+                throw PollinationsImageGenerator.GenerationError.invalidImageData
+            }
+
+            let fileURL = baseDir.appendingPathComponent("\(item.image).png")
+            try data.write(to: fileURL)
+            savedURLs.append(fileURL)
+        }
+
+        return savedURLs
+    }
+
+    /// UI 友好的调用封装：在后台生成并在完成后回到主线程回调
+    func generateAndSaveAllStyleImagesInBackground(options: PollinationsImageGenerator.GenerationOptions = .default, completion: @escaping (Result<[URL], Error>) -> Void) {
+        Task {
+            do {
+                let urls = try await generateAndSaveAllStyleImages(options: options)
+                await MainActor.run {
+                    completion(.success(urls))
+                }
+            } catch {
+                await MainActor.run {
+                    completion(.failure(error))
+                }
+            }
+        }
     }
 }

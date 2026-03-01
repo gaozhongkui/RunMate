@@ -12,20 +12,10 @@ struct AIImageConfigView: View {
     @Binding var viewModel: AIViewModel
     var generateAction: () -> Void
 
-    // 对应图中两列布局
-    private let columns = [
-        GridItem(.flexible(), spacing: 10),
-        GridItem(.flexible(), spacing: 10),
-        GridItem(.flexible(), spacing: 10),
-    ]
-
     var body: some View {
         ZStack(alignment: .bottom) {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            AppTheme.Colors.pageGradient
+                .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 headerView()
@@ -33,25 +23,31 @@ struct AIImageConfigView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
-                            Text("Choose Your Sytle").font(.system(size: 18)).foregroundColor(.white).fontWeight(.bold)
+                            Text("Choose Your Style")
+                                .font(AppTheme.Fonts.headline())
+                                .foregroundColor(AppTheme.Colors.textPrimary)
                             Spacer()
-                        }.padding(.horizontal, 16)
-                        // 2. 瀑布流/网格内容
-                        LazyVGrid(columns: columns, spacing: 10) {
+                        }
+                        .padding(.horizontal, 16)
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12),count: 3 ),spacing: 12) {
                             ForEach(viewModel.imageAIStyles, id: \.id) { item in
-                                StyleOptionCard(item: item, isSelected: item.id == viewModel.selectedAIStyleID) {
+                                StyleOptionCard(
+                                    item: item,
+                                    isSelected: item.id
+                                        == viewModel.selectedAIStyleID
+                                ) {
                                     viewModel.selectedAIStyleID = item.id
                                 }
+                                .aspectRatio(1, contentMode: .fit)
                             }
                         }
                         .padding(.horizontal, 16)
 
-                        // 3. 比例选择（放在滚动视图中）
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Aspect Ratio")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.white)
-
+                                .font(AppTheme.Fonts.headline())
+                                .foregroundColor(AppTheme.Colors.textPrimary)
                             AspectRatioSelector()
                         }
                         .padding(.horizontal, 16)
@@ -70,13 +66,16 @@ struct AIImageConfigView: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
+                        .font(AppTheme.Fonts.headline(.semibold))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
                 }
                 Spacer()
-                Text("AI Art Generator").font(.headline).foregroundColor(.white)
+                Text("AI Art Generator").font(AppTheme.Fonts.headline())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                 Spacer()
-                Image(systemName: "person.circle").foregroundColor(.white).font(.title3)
+                Image(systemName: "person.circle").foregroundColor(
+                    AppTheme.Colors.textPrimary
+                ).font(.title3)
             }
             .padding(.horizontal, 16)
 
@@ -95,9 +94,11 @@ struct AIImageConfigView: View {
                             .foregroundColor(.white)
                             .padding(.leading, 10)
 
-                        Text("Describe the action in detail... (e.g. Running on a rainbow bridge)")
-                            .foregroundColor(.white.opacity(0.2))
-                            .font(.system(size: 15))
+                        Text(
+                            "Describe the action in detail... (e.g. Running on a rainbow bridge)"
+                        )
+                        .foregroundColor(.white.opacity(0.2))
+                        .font(.system(size: 15))
 
                         Spacer()
                     }
@@ -105,16 +106,11 @@ struct AIImageConfigView: View {
                     .allowsHitTesting(false)
                 }
             }
-            .background(Color.white.opacity(0.05))
-            .cornerRadius(25)
+            .background(AppTheme.Colors.textPrimary.opacity(0.05))
+            .cornerRadius(AppTheme.Radius.xl + 1)
             .overlay(
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(
-                        LinearGradient(colors: [Color(hex: "#8A2BE2"), Color(hex: "#00FFFF")],
-                                       startPoint: .leading,
-                                       endPoint: .trailing),
-                        lineWidth: 1.5
-                    )
+                RoundedRectangle(cornerRadius: AppTheme.Radius.xl + 1)
+                    .stroke(AppTheme.Colors.borderGradient, lineWidth: 1.5)
             )
             .padding(.horizontal, 16)
         }
@@ -125,24 +121,30 @@ struct AIImageConfigView: View {
     private func bottomLayout() -> some View {
         VStack {
             Spacer()
-            LinearGradient(colors: [.clear, .black.opacity(0.8)], startPoint: .top, endPoint: .bottom)
-                .frame(height: 60)
-                .allowsHitTesting(false)
+            LinearGradient(
+                colors: [.clear, .black.opacity(0.8)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 60)
+            .allowsHitTesting(false)
 
             ZStack {
-                Color.black.opacity(0.8) // 按钮区域背景
+                Color.black.opacity(0.8)  // 按钮区域背景
 
                 Button(action: { generateAction() }) {
                     Text("Generate")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Fonts.headline())
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(
-                            LinearGradient(colors: [Color(hex: "#C260F5"), Color(hex: "#6034E4")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                .cornerRadius(22)
+                        .background(AppTheme.Colors.accentGradient)
+                        .cornerRadius(AppTheme.Radius.lg + 2)
+                        .shadow(
+                            color: AppTheme.Colors.accentEnd.opacity(0.5),
+                            radius: 10,
+                            y: 5
                         )
-                        .shadow(color: Color(hex: "6E50BB").opacity(0.5), radius: 10, y: 5)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 30)

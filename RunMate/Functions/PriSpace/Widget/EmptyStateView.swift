@@ -2,26 +2,35 @@
 //  EmptyStateView.swift
 //  RunMate
 //
-//  Created by gaozhongkui on 2026/2/6.
+//  共享空状态组件 - 统一各页面的空数据展示样式
 //
 
 import SwiftUI
 
 struct EmptyStateView: View {
+    var icon: String = "tray"
+    var title: String = "暂无数据"
+    var subtitle: String?
+    
     var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "photo.on.rectangle.angled")
-                .font(.system(size: 80))
-                .foregroundColor(.gray.opacity(0.5))
+        VStack(spacing: AppTheme.Spacing.xl) {
+            Image(systemName: icon)
+                .font(.system(size: 64))
+                .foregroundColor(AppTheme.Colors.textTertiary)
 
-            Text("还没有加密的图片")
-                .font(.title3)
-                .foregroundColor(.secondary)
+            Text(title)
+                .font(AppTheme.Fonts.headline())
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
 
-            Text("点击上方按钮选择图片开始加密")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(AppTheme.Fonts.caption())
+                    .foregroundColor(AppTheme.Colors.textTertiary)
+                    .multilineTextAlignment(.center)
+            }
         }
+        .padding(AppTheme.Spacing.xxl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

@@ -10,11 +10,7 @@ import SwiftUI
 struct PriSpaceBanner: View {
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(white: 0.15), Color.black]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            AppTheme.Colors.bannerGradient
             
             HStack(alignment: .center, spacing: 0) {
                 // 2. 左侧文字区域
@@ -23,12 +19,11 @@ struct PriSpaceBanner: View {
                         Text("绝对安全的")
                         Text("私密空间")
                     }
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
-                    
+                    .font(AppTheme.Fonts.title())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                     Text("银行级 AES-256 加密，\n军事级隐私防护。")
-                        .font(.system(size: 13))
-                        .foregroundColor(.white.opacity(0.6))
+                        .font(AppTheme.Fonts.caption())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                     
@@ -50,7 +45,7 @@ struct PriSpaceBanner: View {
             }
         }
         .frame(height: 180)
-        .cornerRadius(20)
+        .cornerRadius(AppTheme.Radius.lg)
         .clipped()
         
     }

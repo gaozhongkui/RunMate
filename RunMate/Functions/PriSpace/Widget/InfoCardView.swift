@@ -2,31 +2,29 @@
 //  InfoCardView.swift
 //  RunMate
 //
-//  Created by gaozhongkui on 2026/2/6.
-//
 
 import SwiftUI
 
 struct InfoCardView: View {
     var body: some View {
-        HStack(spacing: 15) {
+        HStack(spacing: AppTheme.Spacing.md) {
             Image(systemName: "lock.shield.fill")
                 .font(.title)
-                .foregroundColor(.blue)
+                .foregroundStyle(AppTheme.Colors.accentGradient)
 
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("安全加密存储")
-                    .font(.headline)
+                    .font(AppTheme.Fonts.headline())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                 Text("使用AES-256加密保护您的图片")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(AppTheme.Fonts.caption())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
 
             Spacer()
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(15)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .appCardStyle(cornerRadius: AppTheme.Radius.sm + 5)
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
     }
 }

@@ -118,26 +118,26 @@ struct VideoEmptyStateView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: AppTheme.Spacing.xl) {
             Image(systemName: systemImage)
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundColor(AppTheme.Colors.textTertiary)
             
             Text(message)
-                .font(.headline)
-                .foregroundColor(.secondary)
+                .font(AppTheme.Fonts.headline())
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .multilineTextAlignment(.center)
             
             if let actionTitle = actionTitle, let action = action {
                 Button(action: action) {
                     Text(actionTitle)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .font(AppTheme.Fonts.subheadline(.semibold))
                         .foregroundColor(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, AppTheme.Spacing.xxl)
+                        .padding(.vertical, AppTheme.Spacing.md)
                         .background {
                             Capsule()
-                                .fill(Color.blue.gradient)
+                                .fill(AppTheme.Colors.accentGradient)
                         }
                 }
             }

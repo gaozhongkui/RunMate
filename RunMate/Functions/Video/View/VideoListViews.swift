@@ -41,16 +41,8 @@ struct VideoListView: View {
     
     var body: some View {
         ZStack {
-            // 背景渐变
-            LinearGradient(
-                colors: [
-                    Color(.systemBackground),
-                    Color(.systemGray6).opacity(0.3)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            AppTheme.Colors.pageGradient
+                .ignoresSafeArea()
                 
             ScrollView {
                 LazyVStack(spacing: 16) {
@@ -149,9 +141,13 @@ struct StatsCardView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                .fill(AppTheme.Colors.cardBackground.opacity(0.9))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                        .stroke(AppTheme.Colors.cardStroke, lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
         }
     }
     
@@ -215,19 +211,18 @@ struct SortPickerView: View {
                         }
                     } label: {
                         Text(option.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(selection == option ? .white : .primary)
+                            .font(AppTheme.Fonts.subheadline(.medium))
+                            .foregroundColor(selection == option ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                             .background {
                                 if selection == option {
                                     Capsule()
-                                        .fill(Color.blue.gradient)
+                                        .fill(AppTheme.Colors.accentGradient)
                                         .matchedGeometryEffect(id: "sort", in: namespace)
                                 } else {
                                     Capsule()
-                                        .fill(Color(.systemGray5))
+                                        .fill(AppTheme.Colors.cardBackgroundAlt.opacity(0.6))
                                 }
                             }
                     }
@@ -355,10 +350,14 @@ struct VideoRowView: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(.tertiary)
         }
-        .padding(12)
+        .padding(AppTheme.Spacing.md)
         .background(content: {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                .fill(AppTheme.Colors.cardBackground.opacity(0.85))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
+                        .stroke(AppTheme.Colors.cardStroke.opacity(0.5), lineWidth: 1)
+                )
                 .shadow(
                     color: .black.opacity(isPressed ? 0.15 : 0.08),
                     radius: isPressed ? 8 : 12,

@@ -16,11 +16,8 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            AppTheme.Colors.pageGradient
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 headerView
@@ -48,8 +45,8 @@ struct HomeView: View {
     private var headerView: some View {
         HStack {
             Text("PhotoVault AI")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.white)
+                .font(AppTheme.Fonts.largeTitle())
+                .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
          
             aiButton
@@ -60,21 +57,14 @@ struct HomeView: View {
        
     private var aiButton: some View {
         HStack(spacing: 0) {
-            Image(systemName: "sparkles").font(.system(size: 12, weight: .semibold))
-            Text("AI").font(.system(size: 14, weight: .bold))
+            Image(systemName: "sparkles").font(AppTheme.Fonts.caption2(.semibold))
+            Text("AI").font(AppTheme.Fonts.subheadline(.bold))
         }
         .foregroundColor(.white)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(
-            LinearGradient(colors: [
-                Color(hex: "#9D50BB"),
-                Color(hex: "#6E48AA")
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing)
-        )
-        .cornerRadius(20)
+        .padding(.horizontal, AppTheme.Spacing.lg)
+        .padding(.vertical, AppTheme.Spacing.sm)
+        .background(AppTheme.Colors.accentGradient)
+        .cornerRadius(AppTheme.Radius.lg)
     }
     
     private var cleaningGrid: some View {

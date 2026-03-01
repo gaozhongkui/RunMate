@@ -14,11 +14,8 @@ struct ImageResultView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            AppTheme.Colors.pageGradient
+                .ignoresSafeArea()
             
             // 1. 内容区：让图片带有像列表页一样的大圆角
             contentLayout()
@@ -40,25 +37,20 @@ struct ImageResultView: View {
         HStack {
             Button(action: { backAction() }) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(AppTheme.Fonts.headline())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                     .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.1))
+                    .background(AppTheme.Colors.textPrimary.opacity(0.1))
                     .clipShape(Circle())
             }
-            
             Spacer()
-            
             Text("Art Ready")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.white)
-            
+                .font(AppTheme.Fonts.headline())
+                .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
-            
-            // 增加一个分享按钮，通常 AI 生成图这里放分享很合适
             Button(action: { /* Share action */ }) {
                 Image(systemName: "square.and.arrow.up")
-                    .foregroundColor(.white)
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                     .frame(width: 44, height: 44)
             }
         }
@@ -73,8 +65,8 @@ struct ImageResultView: View {
             Image("ai_loading") // 这里替换为你生成的真实图片
                 .resizable()
                 .scaledToFit()
-                .cornerRadius(24) // 延续列表页的大圆角风格
-                .shadow(color: Color.purple.opacity(0.3), radius: 20, x: 0, y: 10) // 增加微弱的紫色光晕
+                .cornerRadius(AppTheme.Radius.xl)
+                .shadow(color: AppTheme.Colors.accentEnd.opacity(0.3), radius: 20, x: 0, y: 10)
                 .padding(.horizontal, 20)
                 .zoomable() // 保持你的缩放功能
             Spacer()
@@ -93,19 +85,13 @@ struct ImageResultView: View {
                     Image(systemName: "arrow.down.to.line.circle.fill")
                     Text("Save to Gallery")
                 }
-                .font(.system(size: 18, weight: .bold))
+                .font(AppTheme.Fonts.headline())
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 60)
-                .background(
-                    LinearGradient(
-                        colors: [Color(hex: "9D50BB"), Color(hex: "6E50BB")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .cornerRadius(30)
-                .shadow(color: Color(hex: "6E50BB").opacity(0.5), radius: 12, y: 6)
+                .background(AppTheme.Colors.accentGradient)
+                .cornerRadius(AppTheme.Radius.xxl - 5)
+                .shadow(color: AppTheme.Colors.accentEnd.opacity(0.5), radius: 12, y: 6)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)

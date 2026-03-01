@@ -28,7 +28,7 @@ struct ContentView: View {
                             self.tabItemView(style: .AILab, selected: self.selectedTab == .AILab)
                         }
                     MeView(namespace: self.nameSpace)
-                        .tag(TabStyle.AILab)
+                        .tag(TabStyle.ME)
                         .tabItem {
                             self.tabItemView(style: .ME, selected: self.selectedTab == .ME)
                         }

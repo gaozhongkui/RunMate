@@ -17,15 +17,10 @@ struct AIImageProcessingView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(hex: "#3A507C"), Color(hex: "#21304A")]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ).ignoresSafeArea()
-            
-            // 装饰背景（可选：增加一点紫色的微光效果）
+            AppTheme.Colors.pageGradient
+                .ignoresSafeArea()
             Circle()
-                .fill(Color(hex: "#8A2BE2").opacity(0.15))
+                .fill(Color(hex: "8A2BE2").opacity(0.15))
                 .frame(width: 300, height: 300)
                 .blur(radius: 80)
                 .offset(y: -100)
@@ -42,8 +37,8 @@ struct AIImageProcessingView: View {
                 
                 // 底部提示
                 Text("Artistic creation takes time, please wait...")
-                    .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.4))
+                    .font(AppTheme.Fonts.subheadline())
+                    .foregroundColor(AppTheme.Colors.textTertiary)
                     .padding(.bottom, 40)
             }
         }
@@ -64,18 +59,16 @@ struct AIImageProcessingView: View {
         HStack {
             Button(action: { backAction() }) {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.white)
+                    .font(AppTheme.Fonts.headline(.semibold))
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                     .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.1))
+                    .background(AppTheme.Colors.textPrimary.opacity(0.1))
                     .clipShape(Circle())
             }
-            
             Spacer()
-            
             Text("Generating Art")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.white)
+                .font(AppTheme.Fonts.headline())
+                .foregroundColor(AppTheme.Colors.textPrimary)
             
             Spacer()
             
@@ -95,15 +88,11 @@ struct AIImageProcessingView: View {
                     .stroke(Color.white.opacity(0.05), lineWidth: 15)
                     .frame(width: 180, height: 180)
                 
-                // 2. 进度圆环 (使用与首页一致的渐变色)
+                // 2. 进度圆环 (使用统一主题)
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
-                        LinearGradient(
-                            colors: [Color(hex: "#8A2BE2"), Color(hex: "#00FFFF")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
+                        AppTheme.Colors.borderGradient,
                         style: StrokeStyle(lineWidth: 12, lineCap: .round)
                     )
                     .frame(width: 180, height: 180)
@@ -117,14 +106,13 @@ struct AIImageProcessingView: View {
                     .shadow(color: Color(hex: "#00FFFF").opacity(0.8), radius: 10)
             }
             
-            VStack(spacing: 12) {
+            VStack(spacing: AppTheme.Spacing.md) {
                 Text("Creating your artwork...")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(.white)
-                
+                    .font(AppTheme.Fonts.title())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
                 Text("The AI is painting your thoughts")
-                    .font(.system(size: 15))
-                    .foregroundColor(.white.opacity(0.6))
+                    .font(AppTheme.Fonts.subheadline())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
             }
         }
     }

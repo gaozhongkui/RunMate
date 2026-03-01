@@ -38,7 +38,7 @@ struct HomeItemCard: View {
                             .scaledToFill()
                     } else {
                         Rectangle()
-                            .fill(Color(hex: "#1A1629"))
+                            .fill(AppTheme.Colors.cardBackgroundAlt)
                             .overlay(ProgressView().tint(.white.opacity(0.5)))
                     }
                     
@@ -55,8 +55,8 @@ struct HomeItemCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(item.title)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
+                            .font(AppTheme.Fonts.body(.semibold))
+                            .foregroundColor(AppTheme.Colors.textPrimary)
                             .lineLimit(1)
                         if isVideo {
                             Image(systemName: "video.fill")
@@ -65,16 +65,16 @@ struct HomeItemCard: View {
                         }
                     }
                     Text(item.size)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.gray)
+                        .font(AppTheme.Fonts.subheadline(.medium))
+                        .foregroundColor(AppTheme.Colors.textMuted)
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(hex: "#1A1A24"))
+                .background(AppTheme.Colors.cardBackground)
             }
             .frame(width: geometry.size.width)
-            .background(Color(hex: "#1A1A24"))
-            .cornerRadius(16)
+            .background(AppTheme.Colors.cardBackground)
+            .cornerRadius(AppTheme.Radius.md)
             .onChange(of: frame) { _, newFrame in
                 checkVisibility(frame: newFrame)
             }
