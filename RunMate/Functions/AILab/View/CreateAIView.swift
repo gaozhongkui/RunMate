@@ -22,6 +22,7 @@ struct CreateAIView: View {
             switch aiStep {
             case .Config:
                 AIImageConfigView(viewModel: $viewModel) {
+                    viewModel.doGenerateImage()
                     withAnimation {
                         aiStep = .Processing
                     }
@@ -29,21 +30,46 @@ struct CreateAIView: View {
 
             case .Processing:
                 AIImageProcessingView {
-                    aiStep = .Config
+                    viewModel.cancelGeneration()
+                    withAnimation {
+                        aiStep = .Config
+                    }
                 } processingAction: {
-                    aiStep = .Result
+                    withAnimation {
+                        aiStep = .Result
+                    }
                 }
 
             case .Result:
-                ImageResultView {
-                    
-                } confirmAction: {}
+                ImageResultView(generatedImage: viewModel.generatedImage) {
+                    withAnimation {
+                        aiStep = .Config
+                    }
+                } confirmAction: {
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background {
-            LinearGradient(gradient: Gradient(colors: [Color(hex: "1F1F35"), Color(hex: "121226")]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-        }.navigationBarBackButtonHidden()
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(hex: "1F1F35"), Color(hex: "121226"),
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(.all)
+        }
+        .navigationBarBackButtonHidden()
+        .onChange(of: viewModel.generatedImage) { _, image in
+            if image != nil {
+                withAnimation { aiStep = .Result }
+            }
+        }
+        .onChange(of: viewModel.generationError) { _, error in
+            if error != nil {
+                withAnimation { aiStep = .Config }
+            }
+        }
     }
 }

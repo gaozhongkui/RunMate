@@ -30,7 +30,13 @@ struct AIImageConfigView: View {
                         }
                         .padding(.horizontal, 16)
 
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12),count: 3 ),spacing: 12) {
+                        LazyVGrid(
+                            columns: Array(
+                                repeating: GridItem(.flexible(), spacing: 12),
+                                count: 3
+                            ),
+                            spacing: 12
+                        ) {
                             ForEach(viewModel.imageAIStyles, id: \.id) { item in
                                 StyleOptionCard(
                                     item: item,
@@ -45,10 +51,13 @@ struct AIImageConfigView: View {
                         .padding(.horizontal, 16)
 
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Aspect Ratio")
-                                .font(AppTheme.Fonts.headline())
+                            Text("Aspect Ratio").font(AppTheme.Fonts.headline())
                                 .foregroundColor(AppTheme.Colors.textPrimary)
-                            AspectRatioSelector()
+
+                            AspectRatioSelector(
+                                options: viewModel.ratioArray,
+                                selectedIndex: $viewModel.selectRatioIndex
+                            )
                         }
                         .padding(.horizontal, 16)
                         .padding(.bottom, 120)
@@ -121,17 +130,7 @@ struct AIImageConfigView: View {
     private func bottomLayout() -> some View {
         VStack {
             Spacer()
-            LinearGradient(
-                colors: [.clear, .black.opacity(0.8)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 60)
-            .allowsHitTesting(false)
-
             ZStack {
-                Color.black.opacity(0.8)  // 按钮区域背景
-
                 Button(action: { generateAction() }) {
                     Text("Generate")
                         .font(AppTheme.Fonts.headline())

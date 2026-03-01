@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import UIKit
 import Zoomable
 
 struct ImageResultView: View {
+    var generatedImage: UIImage?
     var backAction: () -> Void
     var confirmAction: () -> Void
 
@@ -62,13 +64,21 @@ struct ImageResultView: View {
     private func contentLayout() -> some View {
         VStack {
             Spacer()
-            Image("ai_loading") // 这里替换为你生成的真实图片
-                .resizable()
-                .scaledToFit()
-                .cornerRadius(AppTheme.Radius.xl)
-                .shadow(color: AppTheme.Colors.accentEnd.opacity(0.3), radius: 20, x: 0, y: 10)
-                .padding(.horizontal, 20)
-                .zoomable() // 保持你的缩放功能
+            if let uiImage = generatedImage {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(AppTheme.Radius.xl)
+                    .shadow(color: AppTheme.Colors.accentEnd.opacity(0.3), radius: 20, x: 0, y: 10)
+                    .padding(.horizontal, 20)
+                    .zoomable()
+            } else {
+                Image("ai_loading")
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(AppTheme.Radius.xl)
+                    .padding(.horizontal, 20)
+            }
             Spacer()
         }
         .padding(.vertical, 80)

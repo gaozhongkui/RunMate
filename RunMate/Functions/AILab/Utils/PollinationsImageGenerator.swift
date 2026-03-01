@@ -6,24 +6,22 @@
 //
 
 import SwiftUI
-
 import UIKit
 
-
 class PollinationsImageGenerator {
-    
+
     // MARK: - Enums
-    
+
     /// 生成状态枚举
     enum GenerationState: Equatable {
-        case idle              // 空闲
-        case preparing         // 准备中
-        case requesting        // 请求中
-        case downloading(Double) // 下载中(进度)
-        case processing        // 处理中
-        case completed         // 完成
-        case failed(String)    // 失败
-        
+        case idle  // 空闲
+        case preparing  // 准备中
+        case requesting  // 请求中
+        case downloading(Double)  // 下载中(进度)
+        case processing  // 处理中
+        case completed  // 完成
+        case failed(String)  // 失败
+
         var isLoading: Bool {
             switch self {
             case .idle, .completed, .failed:
@@ -32,7 +30,7 @@ class PollinationsImageGenerator {
                 return true
             }
         }
-        
+
         var description: String {
             switch self {
             case .idle:
@@ -52,7 +50,7 @@ class PollinationsImageGenerator {
             }
         }
     }
-    
+
     /// 模型选择
     enum Model: String, CaseIterable {
         case flux = "flux"
@@ -60,12 +58,12 @@ class PollinationsImageGenerator {
         case gptimage = "gptimage"
         case seedream = "seedream"
         case kontext = "kontext"
-        
+
         var displayName: String {
             rawValue.capitalized
         }
     }
-    
+
     /// 生成选项
     struct GenerationOptions {
         var model: Model = .flux
@@ -74,41 +72,41 @@ class PollinationsImageGenerator {
         var seed: Int? = nil
         var nologo: Bool = true
         var enhance: Bool = false
-        
+
         static let `default` = GenerationOptions()
     }
-    
+
     /// 生成结果
     struct GenerationResult {
         let image: UIImage
         let imageURL: URL
         let prompt: String
     }
-    
+
     // MARK: - Callback Types
-    
+
     /// 状态变化回调
     typealias StateChangeHandler = (GenerationState) -> Void
-    
+
     /// 进度回调
     typealias ProgressHandler = (Double) -> Void
-    
+
     /// 完成回调
     typealias CompletionHandler = (Result<GenerationResult, Error>) -> Void
-    
+
     // MARK: - Private Properties
-    
+
     private var downloadTask: URLSessionDownloadTask?
     private var stateChangeHandler: StateChangeHandler?
     private var progressHandler: ProgressHandler?
-    
+
     // MARK: - Singleton
     static let shared = PollinationsImageGenerator()
-    
+
     private init() {}
-    
+
     // MARK: - Public Methods
-    
+
     /// 生成图片
     /// - Parameters:
     ///   - prompt: 描述词
@@ -125,55 +123,55 @@ class PollinationsImageGenerator {
     ) {
         self.stateChangeHandler = onStateChange
         self.progressHandler = onProgress
-        
+
         // 异步执行生成任务
         Task {
             // 准备阶段
             await updateState(.preparing)
-            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-            
+            try? await Task.sleep(nanoseconds: 500_000_000)  // 0.5秒
+
             do {
                 // 1. 构建URL
                 let url = try buildURL(prompt: prompt, options: options)
-                
+
                 await updateState(.requesting)
                 print("🔗 图片URL: \(url.absoluteString)")
-                
+
                 // 2. 下载图片
                 let image = try await downloadImage(from: url)
-                
+
                 // 3. 处理完成
                 await updateState(.processing)
-                try? await Task.sleep(nanoseconds: 300_000_000) // 0.3秒
-                
+                try? await Task.sleep(nanoseconds: 300_000_000)  // 0.3秒
+
                 await updateState(.completed)
-                
+
                 let result = GenerationResult(
                     image: image,
                     imageURL: url,
                     prompt: prompt
                 )
-                
+
                 // 回调完成
                 await MainActor.run {
                     completion(.success(result))
                 }
-                
+
                 print("✅ 图片生成成功")
-                
+
             } catch {
                 let errorMsg = error.localizedDescription
                 await updateState(.failed(errorMsg))
-                
+
                 await MainActor.run {
                     completion(.failure(error))
                 }
-                
+
                 print("❌ 生成失败: \(error)")
             }
         }
     }
-    
+
     /// 取消当前生成
     func cancelGeneration() {
         downloadTask?.cancel()
@@ -181,67 +179,71 @@ class PollinationsImageGenerator {
             await updateState(.idle)
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 更新状态
     private func updateState(_ state: GenerationState) async {
         await MainActor.run {
             self.stateChangeHandler?(state)
         }
     }
-    
+
     /// 更新进度
     private func updateProgress(_ progress: Double) async {
         await MainActor.run {
             self.progressHandler?(progress)
         }
     }
-    
+
     /// 构建图片URL
     private func buildURL(
         prompt: String,
         options: GenerationOptions
     ) throws -> URL {
         // URL编码
-        guard let encodedPrompt = prompt.addingPercentEncoding(
-            withAllowedCharacters: .urlPathAllowed
-        ) else {
+        guard
+            let encodedPrompt = prompt.addingPercentEncoding(
+                withAllowedCharacters: .urlPathAllowed
+            )
+        else {
             throw GenerationError.invalidPrompt
         }
-        
+
         // 构建URL组件
         var components = URLComponents(
-            string: "https://image.pollinations.ai/prompt/\(encodedPrompt)"
+            string: "https://gen.pollinations.ai/image/\(encodedPrompt)"
         )!
-        
+
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "model", value: options.model.rawValue),
             URLQueryItem(name: "width", value: "\(options.width)"),
             URLQueryItem(name: "height", value: "\(options.height)"),
         ]
-        
+
         if let seed = options.seed {
             queryItems.append(URLQueryItem(name: "seed", value: "\(seed)"))
         }
-        
+
         if options.nologo {
             queryItems.append(URLQueryItem(name: "nologo", value: "true"))
         }
-        
+
         if options.enhance {
             queryItems.append(URLQueryItem(name: "enhance", value: "true"))
         }
         
+        queryItems.append(URLQueryItem(name: "key", value: "sk_MzPJ2z8NzmreKBi5HzHReRAGF6ICMEhW"))
+
         components.queryItems = queryItems
-        
+
         guard let url = components.url else {
             throw GenerationError.invalidURL
         }
-        
+
         return url
     }
-    
+
     /// 下载图片（带进度）
     private func downloadImage(from url: URL) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
@@ -249,7 +251,7 @@ class PollinationsImageGenerator {
             let config = URLSessionConfiguration.default
             config.timeoutIntervalForRequest = 60
             config.timeoutIntervalForResource = 120
-            
+
             let session = URLSession(
                 configuration: config,
                 delegate: DownloadDelegate { [weak self] progress in
@@ -260,48 +262,58 @@ class PollinationsImageGenerator {
                 },
                 delegateQueue: nil
             )
-            
+
             // 创建下载任务
-            downloadTask = session.downloadTask(with: url) { localURL, response, error in
+            downloadTask = session.downloadTask(with: url) {
+                localURL,
+                response,
+                error in
                 if let error = error {
-                    continuation.resume(throwing: GenerationError.networkError(error))
+                    continuation.resume(
+                        throwing: GenerationError.networkError(error)
+                    )
                     return
                 }
-                
+
                 // 检查HTTP状态
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode != 200 {
                         continuation.resume(
-                            throwing: GenerationError.httpError(httpResponse.statusCode)
+                            throwing: GenerationError.httpError(
+                                httpResponse.statusCode
+                            )
                         )
                         return
                     }
                 }
-                
+
                 // 读取图片
                 guard let localURL = localURL,
-                      let imageData = try? Data(contentsOf: localURL),
-                      let image = UIImage(data: imageData) else {
-                    continuation.resume(throwing: GenerationError.invalidImageData)
+                    let imageData = try? Data(contentsOf: localURL),
+                    let image = UIImage(data: imageData)
+                else {
+                    continuation.resume(
+                        throwing: GenerationError.invalidImageData
+                    )
                     return
                 }
-                
+
                 continuation.resume(returning: image)
             }
-            
+
             downloadTask?.resume()
         }
     }
-    
+
     // MARK: - Error Types
-    
+
     enum GenerationError: LocalizedError {
         case invalidPrompt
         case invalidURL
         case networkError(Error)
         case invalidImageData
         case httpError(Int)
-        
+
         var errorDescription: String? {
             switch self {
             case .invalidPrompt:
@@ -323,11 +335,11 @@ class PollinationsImageGenerator {
 
 private class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
     private let progressHandler: (Double) -> Void
-    
+
     init(progressHandler: @escaping (Double) -> Void) {
         self.progressHandler = progressHandler
     }
-    
+
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
@@ -335,10 +347,11 @@ private class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
         totalBytesWritten: Int64,
         totalBytesExpectedToWrite: Int64
     ) {
-        let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        let progress =
+            Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         progressHandler(progress)
     }
-    
+
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,

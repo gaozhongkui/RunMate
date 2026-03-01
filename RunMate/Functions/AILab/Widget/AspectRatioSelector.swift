@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AspectRatioSelector: View {
-    let options = ["1:1", "4:3", "3:2", "16:9", "8:6"]
+    let options: [String]
 
-    @State private var selectedIndex = 0
+    @Binding var selectedIndex: Int
 
     var body: some View {
         HStack(spacing: 6) {
@@ -21,8 +21,10 @@ struct AspectRatioSelector: View {
                 }) {
                     Text(option)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(selectedIndex == index ? .white : .gray)
-                        .frame(maxWidth: .infinity, minHeight: 36) // 宽度平分，高度固定
+                        .foregroundColor(
+                            selectedIndex == index ? .white : .gray
+                        )
+                        .frame(maxWidth: .infinity, minHeight: 36)  // 宽度平分，高度固定
                         .background(
                             ZStack {
                                 if selectedIndex == index {
