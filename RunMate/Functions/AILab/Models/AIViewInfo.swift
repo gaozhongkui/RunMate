@@ -10,7 +10,7 @@ import SwiftUI
 struct AIViewInfo: Identifiable {
     let id = UUID()
 
-    let title: LocalizedStringKey
+    let title: String
     let image: String
     let prompt: String
 }

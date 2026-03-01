@@ -59,6 +59,11 @@ class AIViewModel {
     var generatedImage: UIImage? = nil
     var generationError: String? = nil
 
+    /// 当前选中风格的名称（用于存储历史记录）
+    var selectedStyleTitle: String {
+        imageAIStyles.first { $0.id == selectedAIStyleID }?.title ?? "AI Art"
+    }
+
     func doGenerateImage() {
         // 1. 获取选中风格
         let selectedStyle = imageAIStyles.first { $0.id == selectedAIStyleID }

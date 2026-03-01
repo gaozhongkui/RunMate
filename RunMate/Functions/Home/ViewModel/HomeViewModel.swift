@@ -40,15 +40,16 @@ class HomeViewModel: MediaManagerDelegate {
         // 现在可以在后台线程创建了
         await Task.detached {
             let manager = MediaManager()
-            
-            // 初始化
-            await manager.initialize()
-            
-            // 设置到主线程
+
+            // 必须先设置 delegate，再调用 initialize
+            // 否则 initialize 内部触发的 readData/fetchAssets 回调全部丢失
             await MainActor.run {
                 manager.delegate = self
                 self.mediaManager = manager
             }
+
+            // delegate 就位后再初始化（会触发扫描并正常回调）
+            await manager.initialize()
         }.value
     }
 
@@ -87,30 +88,30 @@ class HomeViewModel: MediaManagerDelegate {
     private func startScanAnimation() {
         isScanning = true
         scanProgress = 0.0
-        
+
         progressTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            guard let self = self else {
+            guard let self else {
                 timer.invalidate()
                 return
             }
-
-            // 根据实际加载进度更新
-            if self.scanProgress < 0.95 {
-                self.scanProgress += 0.01
+            DispatchQueue.main.async {
+                if self.scanProgress < 0.9 {
+                    self.scanProgress += 0.01
+                }
             }
         }
+        RunLoop.main.add(progressTimer!, forMode: .common)
     }
-    
+
     private func stopScanAnimation() {
         progressTimer?.invalidate()
         progressTimer = nil
-        
-        // 完成动画
-        withAnimation {
+
+        withAnimation(.easeOut(duration: 0.4)) {
             scanProgress = 1.0
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             self.isScanning = false
         }
     }
@@ -164,13 +165,11 @@ class HomeViewModel: MediaManagerDelegate {
     /// 更新总扫描大小和总大小
     private func updateTotalSize() {
         guard let manager = mediaManager else { return }
-        
-        // 计算已扫描的总大小
-        totalScannedBytes = manager.allVideoSize +
-            manager.shortVideoSize +
-            manager.screenRecordingVideoSize +
-            manager.screenshotImageSize
-        
+
+        // allVideoSize 已包含 shortVideoSize 和 screenRecordingVideoSize（三者是包含关系）
+        // 避免重复叠加，只加截图大小
+        totalScannedBytes = manager.allVideoSize + manager.screenshotImageSize
+
         scannedSize = formatBytes(totalScannedBytes)
     }
     
@@ -223,26 +222,25 @@ class HomeViewModel: MediaManagerDelegate {
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("短视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
-        
-        updateTotalSize()
+        updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64) {
         print("所有视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
-        updateTotalSize()
+        updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64) {
         print("录屏更新: \(recordings.count) 个，总大小: \(formatBytes(totalSize))")
-        updateTotalSize()
+        updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64) {
         print("截屏更新: \(screenshots.count) 个，总大小: \(formatBytes(totalSize))")
-        updateTotalSize()
+        updateAllHomeItems()
     }
 
     @MainActor

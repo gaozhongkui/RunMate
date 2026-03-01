@@ -46,6 +46,14 @@ struct CreateAIView: View {
                         aiStep = .Config
                     }
                 } confirmAction: {
+                    // 保存生成的图片到历史记录
+                    if let image = viewModel.generatedImage {
+                        AIImageStore.shared.save(
+                            image: image,
+                            prompt: viewModel.inputText,
+                            styleTitle: viewModel.selectedStyleTitle
+                        )
+                    }
                 }
             }
         }

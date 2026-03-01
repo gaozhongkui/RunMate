@@ -653,11 +653,8 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         // 恢复大小信息用于显示
         screenshotImageSize = cache.screenshotTotalSize
         screenRecordingVideoSize = cache.screenRecordingTotalSize
-        allVideoSize = cache.allVideoTotalSize
+        allVideoSize = cache.allVideoTotalSize   // 已包含录屏和短视频，不能再叠加
         shortVideoSize = cache.shortVideoTotalSize
-
-        // 计算总视频大小
-        allVideoSize = screenRecordingVideoSize + allVideoSize + shortVideoSize
 
         print("从缓存恢复数据 - 截屏: \(screenshotImageSize), 录屏: \(screenRecordingVideoSize), 大视频: \(allVideoSize), 短视频: \(shortVideoSize)")
         
