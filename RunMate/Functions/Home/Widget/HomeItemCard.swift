@@ -91,13 +91,9 @@ struct HomeItemCard: View {
     }
     
     private func configureAudioSession() {
-        do {
-            let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try audioSession.setActive(true)
-        } catch {
-            print("Failed to configure audio session: \(error)")
-        }
+        let audioSession = AVAudioSession.sharedInstance()
+        try? audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        try? audioSession.setActive(true)
     }
     
     // MARK: - 可见性检测
@@ -118,25 +114,16 @@ struct HomeItemCard: View {
     }
     
     private func handleVisibilityChange() {
-        print("📍 Visibility changed: \(isVisible), player: \(player != nil), title: \(item.title)")
-        
         if isVisible {
-            // 变为可见
             if player != nil {
-                // 已有播放器，恢复播放
-                print("▶️ Resuming existing player for: \(item.title)")
                 withAnimation(.easeIn(duration: 0.3)) {
                     shouldShowVideo = true
                 }
                 player?.play()
             } else if item.phAsset?.mediaType == .video {
-                // 需要加载视频
-                print("🔄 Starting delayed video load for: \(item.title)")
                 startDelayedVideoLoad()
             }
         } else {
-            // 变为不可见
-            print("⏸️ Stopping player for: \(item.title)")
             cancelAllTasks()
             stopAndReleasePlayer()
             shouldShowVideo = false
@@ -149,20 +136,9 @@ struct HomeItemCard: View {
         
         // 延迟加载视频
         videoDelayTask = Task {
-            // 先确保缩略图已加载
             await loadThumbnailIfNeeded()
-            
-            // 等待指定时间
             try? await Task.sleep(nanoseconds: UInt64(videoPlayDelay * 1_000_000_000))
-            
-            // 检查任务是否被取消
-            guard !Task.isCancelled, isVisible else {
-                print("⚠️ Video load task cancelled for: \(item.title)")
-                return
-            }
-            
-            // 开始加载视频
-            print("🎬 Delayed video load executing for: \(item.title)")
+            guard !Task.isCancelled, isVisible else { return }
             await loadMedia()
         }
     }
@@ -192,65 +168,46 @@ struct HomeItemCard: View {
     // MARK: - 媒体加载
     
     func loadMedia() async {
-        print("🔍 loadMedia called for: \(item.title)")
-        print("   - phAsset exists: \(item.phAsset != nil)")
-        print("   - phAsset type: \(item.phAsset?.mediaType.rawValue ?? -1)")
-        
         guard let phAsset = item.phAsset else {
-            print("❌ No phAsset for: \(item.title)")
             await MainActor.run { self.isVideo = false }
             return
         }
-        
         guard phAsset.mediaType == .video else {
-            print("❌ Not a video asset for: \(item.title), type: \(phAsset.mediaType.rawValue)")
             await MainActor.run { self.isVideo = false }
             return
         }
-        
-        print("✅ Valid video asset confirmed for: \(item.title)")
         await MainActor.run { self.isVideo = true }
         await loadVideo(phAsset: phAsset)
     }
-    
+
     private func loadThumbnailIfNeeded() async {
         guard thumbnail == nil, let phAsset = item.phAsset else { return }
-        print("🖼️ Loading thumbnail for: \(item.title)")
         await loadThumbnail(phAsset: phAsset)
     }
-    
+
     func loadVideo(phAsset: PHAsset) async {
-        print("🎬 loadVideo started for: \(item.title)")
-        
         let options = PHVideoRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .automatic
-        
+
         let fetchedItem: AVPlayerItem? = await withCheckedContinuation { continuation in
             var isResumed = false
             PHImageManager.default().requestPlayerItem(forVideo: phAsset, options: options) { playerItem, _ in
                 if !isResumed {
                     isResumed = true
-                    print("📦 PlayerItem fetched for: \(self.item.title), success: \(playerItem != nil)")
                     continuation.resume(returning: playerItem)
                 }
             }
         }
-        
-        guard let playerItem = fetchedItem else {
-            print("❌ Failed to fetch playerItem for: \(item.title)")
-            return
-        }
-        
+
+        guard let playerItem = fetchedItem else { return }
+
         await MainActor.run {
-            guard isVisible else {
-                print("⚠️ Video loaded but no longer visible: \(item.title)")
-                return
-            }
-            
+            guard isVisible else { return }
+
             let avPlayer = AVPlayer(playerItem: playerItem)
             avPlayer.isMuted = true
-            
+
             playerItemObserver = NotificationCenter.default.addObserver(
                 forName: .AVPlayerItemDidPlayToEndTime,
                 object: playerItem,
@@ -259,27 +216,22 @@ struct HomeItemCard: View {
                 avPlayer?.seek(to: .zero)
                 avPlayer?.play()
             }
-            
+
             self.player = avPlayer
-            
-            // 先显示视频播放器，再开始播放
             withAnimation(.easeIn(duration: 0.3)) {
                 shouldShowVideo = true
             }
-            
             avPlayer.play()
-            
-            print("✅ Video playing for: \(item.title)")
         }
     }
-    
+
     func loadThumbnail(phAsset: PHAsset) async {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 300 * scale, height: item.viewHeight * scale)
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
-        
+
         let image: UIImage? = await withCheckedContinuation { continuation in
             var isResumed = false
             PHImageManager.default().requestImage(for: phAsset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
@@ -289,9 +241,6 @@ struct HomeItemCard: View {
                 }
             }
         }
-        await MainActor.run {
-            self.thumbnail = image
-            print("✅ Thumbnail loaded for: \(item.title)")
-        }
+        await MainActor.run { self.thumbnail = image }
     }
 }

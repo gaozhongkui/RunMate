@@ -207,68 +207,44 @@ class HomeViewModel: MediaManagerDelegate {
         try await manager.deleteAssets(assets: assets)
     }
 
-    func startCleaning() {
-        print("开始清理...")
-        // TODO: 实现清理逻辑
-    }
-
     // MARK: - MediaManagerDelegate
 
     @MainActor
-    func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool) {
-        print("加载状态: \(isLoading)")
-    }
+    func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool) {}
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {
-        print("短视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
         updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64) {
-        print("所有视频更新: \(videos.count) 个，总大小: \(formatBytes(totalSize))")
         updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64) {
-        print("录屏更新: \(recordings.count) 个，总大小: \(formatBytes(totalSize))")
         updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64) {
-        print("截屏更新: \(screenshots.count) 个，总大小: \(formatBytes(totalSize))")
         updateAllHomeItems()
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didUpdateAuthorizationStatus status: PHAuthorizationStatus) {
-        print("权限状态更新: \(status)")
-        
-        // 处理权限状态变化
         switch status {
-        case .authorized, .limited:
-            print("✅ 已获得相册权限")
         case .denied, .restricted:
-            print("❌ 相册权限被拒绝")
             stopScanAnimation()
-        case .notDetermined:
-            print("⚠️ 尚未请求权限")
-        @unknown default:
+        default:
             break
         }
     }
 
     @MainActor
     func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double) {
-        print("✅ 扫描完成，耗时: \(scanTime) 秒")
-        
-        // 统一更新所有 item 数据
         updateAllHomeItems()
-        
-        // 确保动画完成
         stopScanAnimation()
     }
 }

@@ -42,7 +42,7 @@ struct ImageViewerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("关闭") {
+                    Button("Close") {
                         dismiss()
                     }
                     .foregroundColor(.white)
@@ -58,10 +58,10 @@ struct ImageViewerSheet: View {
                     }
                 }
             }
-            .alert("保存成功", isPresented: $showSaveAlert) {
-                Button("确定", role: .cancel) {}
+            .alert("Saved", isPresented: $showSaveAlert) {
+                Button("OK", role: .cancel) {}
             } message: {
-                Text("图片已保存到相册")
+                Text("Image saved to your photo library")
             }
         }
     }

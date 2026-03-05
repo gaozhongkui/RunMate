@@ -13,7 +13,6 @@ class PhotosUtils {
         await withCheckedContinuation { continuation in
             PHPhotoLibrary.requestAuthorization { status in
                 guard status == .authorized else {
-                    print("gzk 用户拒绝访问相册")
                     continuation.resume(returning: [])
                     return
                 }
@@ -22,7 +21,7 @@ class PhotosUtils {
                 fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
                 let allPhotos = PHAsset.fetchAssets(with: .image, options: fetchOptions)
 
-                // 限制获取数量
+                // Limit the number of results
                 let count = min(limit, allPhotos.count)
                 var selectedAssets: [PHAsset] = []
                 for i in 0 ..< count {

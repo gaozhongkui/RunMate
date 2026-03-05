@@ -106,7 +106,7 @@ struct VideoEmptyStateView: View {
     let action: (() -> Void)?
     
     init(
-        message: String = "暂无视频",
+        message: String = "No Videos",
         systemImage: String = "video.slash",
         actionTitle: String? = nil,
         action: (() -> Void)? = nil
@@ -152,7 +152,7 @@ struct VideoEmptyStateView: View {
 struct LoadingView: View {
     let message: String
     
-    init(message: String = "加载中...") {
+    init(message: String = "Loading...") {
         self.message = message
     }
     
@@ -202,7 +202,7 @@ struct FilterBarView: View {
             
             // 时长筛选
             HStack {
-                Text("时长范围:")
+                Text("Duration Range:")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -269,7 +269,7 @@ struct SelectionToolbarView: View {
     var body: some View {
         HStack(spacing: 16) {
             // 选择状态
-            Text("\(selectedCount)/\(totalCount) 已选择")
+            Text("\(selectedCount)/\(totalCount) selected")
                 .font(.subheadline)
                 .fontWeight(.medium)
             
@@ -348,7 +348,7 @@ struct VideoSearchBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
             
-            TextField("搜索视频...", text: $searchText)
+            TextField("Search videos...", text: $searchText)
                 .focused($isFocused)
                 .textFieldStyle(.plain)
             
@@ -376,8 +376,8 @@ struct ViewModePicker: View {
     @Binding var mode: ViewMode
     
     enum ViewMode: String, CaseIterable {
-        case list = "列表"
-        case grid = "网格"
+        case list = "List"
+        case grid = "Grid"
         
         var icon: String {
             switch self {
@@ -388,7 +388,7 @@ struct ViewModePicker: View {
     }
     
     var body: some View {
-        Picker("视图模式", selection: $mode) {
+        Picker("View Mode", selection: $mode) {
             ForEach(ViewMode.allCases, id: \.self) { mode in
                 Label(mode.rawValue, systemImage: mode.icon)
                     .tag(mode)
@@ -413,9 +413,9 @@ struct ViewModePicker: View {
 
 #Preview("Empty State") {
     VideoEmptyStateView(
-        message: "暂无视频",
+        message: "No Videos",
         systemImage: "video.slash",
-        actionTitle: "导入视频",
+        actionTitle: "Import Video",
         action: {}
     )
 }

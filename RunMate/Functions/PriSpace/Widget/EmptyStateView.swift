@@ -2,14 +2,14 @@
 //  EmptyStateView.swift
 //  RunMate
 //
-//  共享空状态组件 - 统一各页面的空数据展示样式
+//  Shared empty state component – unified empty data display across pages
 //
 
 import SwiftUI
 
 struct EmptyStateView: View {
     var icon: String = "tray"
-    var title: String = "暂无数据"
+    var title: String = "No Data"
     var subtitle: String?
     
     var body: some View {

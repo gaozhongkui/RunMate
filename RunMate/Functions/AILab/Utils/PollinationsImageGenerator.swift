@@ -12,15 +12,14 @@ class PollinationsImageGenerator {
 
     // MARK: - Enums
 
-    /// 生成状态枚举
     enum GenerationState: Equatable {
-        case idle  // 空闲
-        case preparing  // 准备中
-        case requesting  // 请求中
-        case downloading(Double)  // 下载中(进度)
-        case processing  // 处理中
-        case completed  // 完成
-        case failed(String)  // 失败
+        case idle
+        case preparing
+        case requesting
+        case downloading(Double)
+        case processing
+        case completed
+        case failed(String)
 
         var isLoading: Bool {
             switch self {
@@ -34,24 +33,24 @@ class PollinationsImageGenerator {
         var description: String {
             switch self {
             case .idle:
-                return "等待开始"
+                return "Ready"
             case .preparing:
-                return "准备生成..."
+                return "Preparing..."
             case .requesting:
-                return "请求服务器..."
+                return "Requesting server..."
             case .downloading(let progress):
-                return "下载中 \(Int(progress * 100))%"
+                return "Downloading \(Int(progress * 100))%"
             case .processing:
-                return "处理图片..."
+                return "Processing image..."
             case .completed:
-                return "生成完成"
+                return "Done"
             case .failed(let error):
-                return "失败: \(error)"
+                return "Failed: \(error)"
             }
         }
     }
 
-    /// 模型选择
+    /// Model selection
     enum Model: String, CaseIterable {
         case flux = "flux"
         case turbo = "turbo"
@@ -64,7 +63,7 @@ class PollinationsImageGenerator {
         }
     }
 
-    /// 生成选项
+    /// Generation options
     struct GenerationOptions {
         var model: Model = .flux
         var width: Int = 1024
@@ -76,7 +75,7 @@ class PollinationsImageGenerator {
         static let `default` = GenerationOptions()
     }
 
-    /// 生成结果
+    /// Generation result
     struct GenerationResult {
         let image: UIImage
         let imageURL: URL
@@ -135,14 +134,11 @@ class PollinationsImageGenerator {
                 let url = try buildURL(prompt: prompt, options: options)
 
                 await updateState(.requesting)
-                print("🔗 图片URL: \(url.absoluteString)")
 
-                // 2. 下载图片
                 let image = try await downloadImage(from: url)
 
-                // 3. 处理完成
                 await updateState(.processing)
-                try? await Task.sleep(nanoseconds: 300_000_000)  // 0.3秒
+                try? await Task.sleep(nanoseconds: 300_000_000)
 
                 await updateState(.completed)
 
@@ -152,22 +148,16 @@ class PollinationsImageGenerator {
                     prompt: prompt
                 )
 
-                // 回调完成
                 await MainActor.run {
                     completion(.success(result))
                 }
 
-                print("✅ 图片生成成功")
-
             } catch {
                 let errorMsg = error.localizedDescription
                 await updateState(.failed(errorMsg))
-
                 await MainActor.run {
                     completion(.failure(error))
                 }
-
-                print("❌ 生成失败: \(error)")
             }
         }
     }
@@ -317,15 +307,15 @@ class PollinationsImageGenerator {
         var errorDescription: String? {
             switch self {
             case .invalidPrompt:
-                return "描述词无效"
+                return "Invalid prompt"
             case .invalidURL:
-                return "URL创建失败"
+                return "Failed to build URL"
             case .networkError(let error):
-                return "网络错误: \(error.localizedDescription)"
+                return "Network error: \(error.localizedDescription)"
             case .invalidImageData:
-                return "图片数据解析失败"
+                return "Failed to parse image data"
             case .httpError(let code):
-                return "服务器错误: HTTP \(code)"
+                return "Server error: HTTP \(code)"
             }
         }
     }

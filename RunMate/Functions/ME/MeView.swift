@@ -53,21 +53,6 @@ struct MeView: View {
             // 内容
             VStack(spacing: 0) {
 
-                // 设置按钮行
-                HStack {
-                    Spacer()
-                    Button {
-                        // TODO: 设置页
-                    } label: {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 17, weight: .medium))
-                            .foregroundColor(AppTheme.Colors.textTertiary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().fill(Color.white.opacity(0.07)))
-                    }
-                }
-                .padding(.bottom, 8)
-
                 // 头像
                 ZStack {
                     // 最外层脉动光晕

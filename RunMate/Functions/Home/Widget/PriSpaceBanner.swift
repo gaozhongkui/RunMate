@@ -16,12 +16,12 @@ struct PriSpaceBanner: View {
                 // 2. 左侧文字区域
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("绝对安全的")
-                        Text("私密空间")
+                        Text("Absolutely")
+                        Text("Private Space")
                     }
                     .font(AppTheme.Fonts.title())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                    Text("银行级 AES-256 加密，\n军事级隐私防护。")
+                    Text("Bank-grade AES-256 encryption,\nmilitary-level privacy protection.")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                         .lineLimit(2)

@@ -31,7 +31,7 @@ struct ImageEncryptionView: View {
                         HStack {
                             Image(systemName: "photo.badge.plus")
                                 .font(.title2)
-                            Text("选择图片加密")
+                            Text("Select Image to Encrypt")
                                 .font(AppTheme.Fonts.subheadline(.semibold))
                         }
                         .frame(maxWidth: .infinity)
@@ -45,8 +45,8 @@ struct ImageEncryptionView: View {
                     if storageManager.encryptedImages.isEmpty {
                         EmptyStateView(
                             icon: "photo.on.rectangle.angled",
-                            title: "还没有加密的图片",
-                            subtitle: "点击上方按钮选择图片开始加密"
+                            title: "No encrypted images yet",
+                            subtitle: "Tap the button above to select an image to encrypt"
                         )
                     } else {
                         ScrollView {
@@ -60,7 +60,7 @@ struct ImageEncryptionView: View {
                     }
                 }
         }
-        .navigationTitle("图片加密保险箱")
+        .navigationTitle("Image Vault")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showPasswordInput) {
             PasswordInputSheet(
@@ -69,8 +69,8 @@ struct ImageEncryptionView: View {
                 onConfirm: encryptSelectedImage
             )
         }
-        .alert("提示", isPresented: $showAlert) {
-            Button("确定", role: .cancel) {}
+        .alert("Notice", isPresented: $showAlert) {
+            Button("OK", role: .cancel) {}
         } message: {
             Text(alertMessage)
         }
@@ -87,7 +87,7 @@ struct ImageEncryptionView: View {
     
     private func encryptSelectedImage() {
         guard let imageData = selectedImageData, !password.isEmpty else {
-            alertMessage = "请输入密码"
+            alertMessage = "Please enter a password"
             showAlert = true
             return
         }
@@ -113,13 +113,13 @@ struct ImageEncryptionView: View {
                     showPasswordInput = false
                     password = ""
                     selectedImageData = nil
-                    alertMessage = "图片加密成功！"
+                    alertMessage = "Image encrypted successfully!"
                     showAlert = true
                 }
             } catch {
                 DispatchQueue.main.async {
                     isEncrypting = false
-                    alertMessage = "加密失败: \(error.localizedDescription)"
+                    alertMessage = "Encryption failed: \(error.localizedDescription)"
                     showAlert = true
                 }
             }

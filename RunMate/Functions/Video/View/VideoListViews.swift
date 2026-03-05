@@ -14,12 +14,12 @@ struct VideoListView: View {
     @State private var sortOption: SortOption = .dateNewest
     
     enum SortOption: String, CaseIterable {
-        case dateNewest = "最新优先"
-        case dateOldest = "最旧优先"
-        case sizeDesc = "大小(降序)"
-        case sizeAsc = "大小(升序)"
-        case durationDesc = "时长(降序)"
-        case durationAsc = "时长(升序)"
+        case dateNewest = "Newest"
+        case dateOldest = "Oldest"
+        case sizeDesc = "Size ↓"
+        case sizeAsc = "Size ↑"
+        case durationDesc = "Duration ↓"
+        case durationAsc = "Duration ↑"
     }
     
     private var sortedVideos: [MediaItemViewModel] {
@@ -71,7 +71,7 @@ struct VideoListView: View {
                 .padding(.vertical)
             }
         }
-        .navigationTitle("我的视频")
+        .navigationTitle("My Videos")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showCompressSheet) {
             if let video = selectedVideo {
@@ -91,8 +91,8 @@ struct VideoListView: View {
                 VideoPlayerView(video: video, isPresented: $showPlayer)
             }
         }
-        .alert("提示", isPresented: $showAlert) {
-            Button("确定", role: .cancel) {}
+        .alert("Notice", isPresented: $showAlert) {
+            Button("OK", role: .cancel) {}
         } message: {
             Text(alertMessage)
         }
@@ -120,21 +120,21 @@ struct StatsCardView: View {
         HStack(spacing: 16) {
             StatItemView(
                 icon: "video.circle.fill",
-                title: "视频数量",
+                title: "Videos",
                 value: "\(videos.count)",
                 color: .blue
             )
-            
+
             StatItemView(
                 icon: "clock.fill",
-                title: "总时长",
+                title: "Duration",
                 value: formatDuration(totalDuration),
                 color: .green
             )
-            
+
             StatItemView(
                 icon: "square.stack.3d.up.fill",
-                title: "总大小",
+                title: "Total Size",
                 value: formatFileSize(totalSize),
                 color: .orange
             )
@@ -299,7 +299,7 @@ struct VideoRowView: View {
                             VStack(spacing: 8) {
                                 ProgressView()
                                     .tint(.gray)
-                                Text("加载中...")
+                                Text("Loading...")
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                             }
@@ -438,7 +438,7 @@ struct VideoRowView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.locale = Locale.current
         return formatter.string(from: date)
     }
 }

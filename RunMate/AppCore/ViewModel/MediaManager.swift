@@ -6,14 +6,14 @@ import SwiftUI
 let SHORT_VIDEO_TIME: Double = 6.0
 let LARGE_VIDEO_FILE_SIZE: Int64 = 100 * 1024 * 1024
 
-/// 缓存数据结构
+/// Cache data structure
 struct MediaCacheData: Codable {
-    // 截屏
+    // Screenshots
     var screenshotTotalSize: Int64
     var latestScreenshotAssetId: String?
     var screenshotTotalCount: Int
 
-    // 录屏
+    // Screen recordings
     var screenRecordingTotalSize: Int64
     var latestScreenRecordingAssetId: String?
     var screenRecordingTotalCount: Int
@@ -22,7 +22,7 @@ struct MediaCacheData: Codable {
     var latestAllVideoAssetId: String?
     var allVideoTotalCount: Int
 
-    // 短视频
+    // Short videos
     var shortVideoTotalSize: Int64
     var latestShortVideoAssetId: String?
     var shortVideoTotalCount: Int
@@ -43,31 +43,31 @@ struct FetchResult: @unchecked Sendable {
     var videoSize: Int64 = 0
 }
 
-/// 媒体数据更新的回调协议
+/// Callback protocol for media data updates
 protocol MediaManagerDelegate: AnyObject {
-    /// 数据加载状态变化
+    /// Loading state changed
     func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool)
-    
-    /// 短视频数据更新
+
+    /// Short videos data updated
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64)
-    
-    /// 所有视频数据更新
+
+    /// All videos data updated
     func mediaManager(_ manager: MediaManager, didUpdateAllVideos videos: [MediaItemViewModel], totalSize: Int64)
-    
-    /// 录屏视频数据更新
+
+    /// Screen recordings data updated
     func mediaManager(_ manager: MediaManager, didUpdateScreenRecordings recordings: [MediaItemViewModel], totalSize: Int64)
-    
-    /// 截屏图片数据更新
+
+    /// Screenshots data updated
     func mediaManager(_ manager: MediaManager, didUpdateScreenshots screenshots: [MediaItemViewModel], totalSize: Int64)
-    
-    /// 权限状态变化
+
+    /// Authorization status changed
     func mediaManager(_ manager: MediaManager, didUpdateAuthorizationStatus status: PHAuthorizationStatus)
-    
-    /// 扫描完成
+
+    /// Scan completed
     func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double)
 }
 
-// 可选的默认实现
+// Optional default implementations
 extension MediaManagerDelegate {
     func mediaManager(_ manager: MediaManager, didUpdateLoadingState isLoading: Bool) {}
     func mediaManager(_ manager: MediaManager, didUpdateShortVideos videos: [MediaItemViewModel], totalSize: Int64) {}
@@ -78,20 +78,20 @@ extension MediaManagerDelegate {
     func mediaManager(_ manager: MediaManager, didFinishScanWithTime scanTime: Double) {}
 }
 
-// 移除类级别的 @MainActor
+// Remove class-level @MainActor
 class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
     // MARK: - Properties
     
-    /// 短视频(时长 <= 6 秒)
+    /// Short videos (duration <= 6 seconds)
     @MainActor private(set) var shortVideoList: [MediaItemViewModel] = []
-    /// 视频列表
+    /// All videos list
     @MainActor private(set) var allVideoList: [MediaItemViewModel] = []
-    /// 录屏
+    /// Screen recordings
     @MainActor private(set) var screenRecordingVideoList: [MediaItemViewModel] = []
-    /// 截屏
+    /// Screenshots
     @MainActor private(set) var screenshootList: [MediaItemViewModel] = []
 
-    /// 所有视频总大小
+    /// Total size of all videos
     @MainActor private(set) var allVideoSize: Int64 = 0
     @MainActor private(set) var shortVideoSize: Int64 = 0
     @MainActor private(set) var screenRecordingVideoSize: Int64 = 0
@@ -164,8 +164,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                     // 获取被删除的对象的索引
                     if let removedIndexes = changes.removedIndexes, !removedIndexes.isEmpty {
                         let removedAssets = changes.removedObjects
-                        print("检测到删除: \(removedAssets.count) 个资源")
-
                         // 从现有列表中移除
                         let removedIds = Set(removedAssets.map { $0.localIdentifier })
                         self.removeAssets(ids: removedIds)
@@ -223,8 +221,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
     @discardableResult
     nonisolated func deleteAssets(assets: [PHAsset]) async throws -> Bool {
         guard !assets.isEmpty else { return false }
-        print("开始删除 \(assets.count) 个资源")
-
         // 获取 identifiers
         let identifiers = assets.map { $0.localIdentifier }
         // 使用非 Actor 隔离的 Helper 执行删除
@@ -263,7 +259,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
         // 如果有缓存的权限值且与当前权限不同，清空 localCache
         if cachedPermission != 0, cachedPermission != newPermissionValue {
-            print("权限状态变化: \(cachedPermission) -> \(newPermissionValue)，清空缓存")
             localCache = nil
             UserDefaults.standard.removeObject(forKey: cacheKey)
         }
@@ -348,10 +343,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             }
 
             let status = await MainActor.run { self.authorizationStatus }
-            guard status == .authorized || status == .limited else {
-                print("无权限访问照片库")
-                return
-            }
+            guard status == .authorized || status == .limited else { return }
 
             let startTime = Date()
 
@@ -366,8 +358,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                 assets.append(asset)
             }
 
-            print("共找到 \(assets.count) 个资源，是否首次加载: \(isInitialLoad)")
-
             if isInitialLoad {
                 // 首次加载：渐进式更新
                 await self.processAssetsProgressively(assets)
@@ -381,8 +371,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             await MainActor.run {
                 self.scanTime = scanTime
             }
-            print("扫描完成，耗时: \(scanTime) 秒")
-            
             // 通知代理扫描完成
             await MainActor.run {
                 self.delegate?.mediaManager(self, didFinishScanWithTime: scanTime)
@@ -471,7 +459,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             let endIndex = min(processedCount + batchSize, assets.count)
             let batch = Array(assets[startIndex ..< endIndex])
 
-            print("处理批次: \(startIndex)-\(endIndex)")
 
             // 处理当前批次
             await withTaskGroup(of: FetchResult.self) { group in
@@ -504,7 +491,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
                 // 立即更新 UI（渐进式）
                 if !Task.isCancelled {
-                    print("批量更新 - 已处理: \(endIndex)/\(assets.count)")
                     let isFirst = isFirstBatch
 
                     await MainActor.run {
@@ -580,8 +566,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
             // 统计结束 一次性更新 UI
             if !Task.isCancelled {
-                print("统计结束 一次性更新")
-
                 await MainActor.run {
                     self.shortVideoList = finalResult.shortVideoList
                     self.allVideoList = finalResult.allVideoList
@@ -628,7 +612,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
             if let encoded = try? JSONEncoder().encode(cacheData) {
                 UserDefaults.standard.set(encoded, forKey: self.cacheKey)
-                print("缓存已保存")
             }
         }
     }
@@ -638,10 +621,8 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let cacheData = try? JSONDecoder().decode(MediaCacheData.self, from: data)
         else {
-            print("未找到缓存数据")
             return nil
         }
-        print("缓存已加载")
         return cacheData
     }
 
@@ -656,8 +637,6 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         allVideoSize = cache.allVideoTotalSize   // 已包含录屏和短视频，不能再叠加
         shortVideoSize = cache.shortVideoTotalSize
 
-        print("从缓存恢复数据 - 截屏: \(screenshotImageSize), 录屏: \(screenRecordingVideoSize), 大视频: \(allVideoSize), 短视频: \(shortVideoSize)")
-        
         // 通知代理初始数据（仅大小，列表为空）
         delegate?.mediaManager(self, didUpdateShortVideos: [], totalSize: shortVideoSize)
         delegate?.mediaManager(self, didUpdateAllVideos: [], totalSize: allVideoSize)

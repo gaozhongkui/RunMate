@@ -2,7 +2,7 @@
 //  AppTheme.swift
 //  RunMate
 //
-//  统一设计系统 - 保证各页面 UI 展示一致性
+//  Unified design system - ensures consistent UI across all pages
 //
 
 import SwiftUI

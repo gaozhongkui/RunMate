@@ -73,7 +73,6 @@ class WaterfallViewController: UIViewController,
     }()
 
     @objc private func headerTap() {
-        print("gzk  点击头部")
         onHeaderTap?()
     }
 

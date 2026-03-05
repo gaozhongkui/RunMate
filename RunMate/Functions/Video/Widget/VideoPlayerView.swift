@@ -28,7 +28,7 @@ struct VideoPlayerView: View {
             }
             
             if isLoading {
-                ProgressView("正在加载视频...")
+                ProgressView("Loading video...")
                     .tint(.white)
                     .foregroundColor(.white)
             }

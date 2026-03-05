@@ -150,7 +150,7 @@ struct AdvancedScanningCard: View {
 
     private var statusLabels: some View {
         HStack(spacing: 4) {
-            Text("已扫描大小：")
+            Text("Scanned:")
             Text(viewModel.scannedSize)
         }
         .font(AppTheme.Fonts.caption(.medium))

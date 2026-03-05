@@ -21,17 +21,17 @@ struct PasswordInputSheet: View {
                     .foregroundColor(.blue)
                     .padding(.top, 30)
                 
-                Text("设置加密密码")
+                Text("Set Encryption Password")
                     .font(.title2)
                     .fontWeight(.bold)
-                
-                Text("请设置一个强密码来保护您的图片")
+
+                Text("Set a strong password to protect your images")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
-                
-                SecureField("输入密码", text: $password)
+
+                SecureField("Enter password", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -45,7 +45,7 @@ struct PasswordInputSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("开始加密")
+                        Text("Encrypt")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -62,7 +62,7 @@ struct PasswordInputSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("取消") {
+                    Button("Cancel") {
                         dismiss()
                     }
                     .disabled(isEncrypting)

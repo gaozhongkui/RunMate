@@ -94,33 +94,33 @@ struct EncryptedImageCardView: View {
                 ImageViewerSheet(image: decryptedImage)
             }
         }
-        .alert("提示", isPresented: $showAlert) {
-            Button("确定", role: .cancel) {}
+        .alert("Notice", isPresented: $showAlert) {
+            Button("OK", role: .cancel) {}
         } message: {
             Text(alertMessage)
         }
     }
-    
+
     private func decryptImage() {
         guard !decryptPassword.isEmpty else {
-            alertMessage = "请输入密码"
+            alertMessage = "Please enter a password"
             showAlert = true
             return
         }
-        
+
         isDecrypting = true
-        
+
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let decryptedData = try EncryptionManager.shared.decryptImage(
                     image.encryptedData,
                     password: decryptPassword
                 )
-                
+
                 guard let uiImage = UIImage(data: decryptedData) else {
-                    throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法生成图片"])
+                    throw NSError(domain: "ImageError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to render image"])
                 }
-                
+
                 DispatchQueue.main.async {
                     self.decryptedImage = uiImage
                     isDecrypting = false
@@ -131,7 +131,7 @@ struct EncryptedImageCardView: View {
             } catch {
                 DispatchQueue.main.async {
                     isDecrypting = false
-                    alertMessage = "解密失败，请检查密码是否正确"
+                    alertMessage = "Decryption failed. Please check your password."
                     showAlert = true
                 }
             }

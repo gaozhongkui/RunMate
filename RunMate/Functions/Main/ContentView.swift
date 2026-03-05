@@ -35,7 +35,6 @@ struct ContentView: View {
                 }
             }.modifier(NavigationDestinationImage(namespace: self.nameSpace))
         }
-        .onAppear {}
     }
 
     private func tabItemView(style: TabStyle, selected: Bool) -> some View {

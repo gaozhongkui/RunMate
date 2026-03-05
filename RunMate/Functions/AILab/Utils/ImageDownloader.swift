@@ -9,37 +9,31 @@ import Photos
 import UIKit
 
 class ImageDownloader {
-    func downloadAndSaveImage(from urlString: String) {
-        guard let url = URL(string: urlString) else { return }
-        
-        // 1. 异步下载图片数据
+    func downloadAndSaveImage(from urlString: String, completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(false)
+            return
+        }
+
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, let image = UIImage(data: data), error == nil else {
-                print("下载失败: \(error?.localizedDescription ?? "未知错误")")
+                DispatchQueue.main.async { completion(false) }
                 return
             }
-            
-            self.saveToPhotoLibrary(image: image)
+            self.saveToPhotoLibrary(image: image, completion: completion)
         }.resume()
     }
-    
-    private func saveToPhotoLibrary(image: UIImage) {
+
+    private func saveToPhotoLibrary(image: UIImage, completion: @escaping (Bool) -> Void) {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else {
-                print("没有相册权限")
+                DispatchQueue.main.async { completion(false) }
                 return
             }
-            
             PHPhotoLibrary.shared().performChanges({
-                // 创建一个保存图片的请求
                 PHAssetChangeRequest.creationRequestForAsset(from: image)
-            }) { success, error in
-                if success {
-                    print("成功保存到相册！")
-                    // 如果需要通知用户，记得回到主线程弹窗
-                } else {
-                    print("保存失败: \(error?.localizedDescription ?? "")")
-                }
+            }) { success, _ in
+                DispatchQueue.main.async { completion(success) }
             }
         }
     }

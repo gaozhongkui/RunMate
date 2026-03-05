@@ -21,15 +21,15 @@ struct DecryptPasswordSheet: View {
                     .foregroundColor(.green)
                     .padding(.top, 30)
                 
-                Text("输入解密密码")
+                Text("Enter Decryption Password")
                     .font(.title2)
                     .fontWeight(.bold)
-                
-                Text("请输入加密时设置的密码")
+
+                Text("Enter the password you set during encryption")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                
-                SecureField("输入密码", text: $password)
+
+                SecureField("Enter password", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -43,7 +43,7 @@ struct DecryptPasswordSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("解密查看")
+                        Text("Decrypt & View")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -60,7 +60,7 @@ struct DecryptPasswordSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("取消") {
+                    Button("Cancel") {
                         dismiss()
                     }
                     .disabled(isDecrypting)

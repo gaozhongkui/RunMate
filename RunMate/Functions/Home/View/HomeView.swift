@@ -44,7 +44,7 @@ struct HomeView: View {
        
     private var headerView: some View {
         HStack {
-            Text("PhotoVault AI")
+            Text("AuraAI")
                 .font(AppTheme.Fonts.largeTitle())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()

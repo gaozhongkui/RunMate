@@ -9,8 +9,6 @@ import FoundationModels
 
 class AIExpandHelper {
     static func generatePaintingDescription() -> String {
-        // TODO: 这个后期需要接入AI
-
         return randomPaintingDescription()
     }
 

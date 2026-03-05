@@ -16,10 +16,10 @@ struct VideoCompressView: View {
     @Environment(\.dismiss) private var dismiss
     
     enum CompressionQuality: String, CaseIterable {
-        case low = "低质量"
-        case medium = "中等质量"
-        case high = "高质量"
-        
+        case low = "Low Quality"
+        case medium = "Medium Quality"
+        case high = "High Quality"
+
         var preset: String {
             switch self {
             case .low:
@@ -30,15 +30,15 @@ struct VideoCompressView: View {
                 return AVAssetExportPreset1280x720
             }
         }
-        
+
         var description: String {
             switch self {
             case .low:
-                return "最小文件大小,适合网络传输"
+                return "Smallest file size, ideal for sharing"
             case .medium:
-                return "平衡质量和大小"
+                return "Balance between quality and size"
             case .high:
-                return "保持较高画质"
+                return "Maintain higher video quality"
             }
         }
     }
@@ -49,7 +49,7 @@ struct VideoCompressView: View {
                 VStack(spacing: 24) {
                     // 原视频信息
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("原始视频")
+                        Text("Original Video")
                             .font(.headline)
                         
 //                        if let thumbnail = video.thumbnail {
@@ -78,7 +78,7 @@ struct VideoCompressView: View {
                     // 压缩质量选择
                     if !compressor.isCompressing && compressedURL == nil {
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("选择压缩质量")
+                            Text("Select Compression Quality")
                                 .font(.headline)
                             
                             ForEach(CompressionQuality.allCases, id: \.self) { quality in
@@ -102,7 +102,7 @@ struct VideoCompressView: View {
                     if compressor.isCompressing {
                         VStack(spacing: 16) {
                             ProgressView(value: compressor.compressionProgress) {
-                                Text("压缩中...")
+                                Text("Compressing...")
                                     .font(.headline)
                             }
                             .progressViewStyle(.linear)
@@ -126,13 +126,13 @@ struct VideoCompressView: View {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
                                     .font(.title2)
-                                Text("压缩完成")
+                                Text("Compression Complete")
                                     .font(.headline)
                             }
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
-                                    Text("原始大小:")
+                                    Text("Original Size:")
                                         .foregroundColor(.secondary)
                                     Spacer()
 //                                    Text(video.fileSizeString)
@@ -140,7 +140,7 @@ struct VideoCompressView: View {
                                 }
                                 
                                 HStack {
-                                    Text("压缩后:")
+                                    Text("Compressed:")
                                         .foregroundColor(.secondary)
                                     Spacer()
                                     Text(ByteCountFormatter.string(fromByteCount: compressedSize, countStyle: .file))
@@ -151,7 +151,7 @@ struct VideoCompressView: View {
                                 Divider()
                                 
                                 HStack {
-                                    Text("节省空间:")
+                                    Text("Space Saved:")
                                         .foregroundColor(.secondary)
                                     Spacer()
                                     Text(compressionRatio)
@@ -189,7 +189,7 @@ struct VideoCompressView: View {
                             Button {
                                 startCompression()
                             } label: {
-                                Label("开始压缩", systemImage: "arrow.down.circle.fill")
+                                Label("Start Compression", systemImage: "arrow.down.circle.fill")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
@@ -204,7 +204,7 @@ struct VideoCompressView: View {
                                 Button {
                                     saveToPhotoLibrary()
                                 } label: {
-                                    Label("保存到相册", systemImage: "square.and.arrow.down")
+                                    Label("Save to Photos", systemImage: "square.and.arrow.down")
                                         .font(.headline)
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
@@ -220,7 +220,7 @@ struct VideoCompressView: View {
                                         shareVideo(url)
                                     }
                                 } label: {
-                                    Label("分享", systemImage: "square.and.arrow.up")
+                                    Label("Share", systemImage: "square.and.arrow.up")
                                         .font(.headline)
                                         .foregroundColor(.blue)
                                         .frame(maxWidth: .infinity)
@@ -236,11 +236,11 @@ struct VideoCompressView: View {
                 }
                 .padding()
             }
-            .navigationTitle("压缩视频")
+            .navigationTitle("Compress Video")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("关闭") {
+                    Button("Close") {
                         dismiss()
                     }
                 }
@@ -282,9 +282,9 @@ struct VideoCompressView: View {
         compressor.saveToPhotoLibrary(url: url) { success, error in
             DispatchQueue.main.async {
                 if success {
-                    onComplete(true, "视频已保存到相册")
+                    onComplete(true, "Video saved to Photos")
                 } else {
-                    onComplete(false, error?.localizedDescription ?? "保存失败")
+                    onComplete(false, error?.localizedDescription ?? "Save failed")
                 }
             }
         }

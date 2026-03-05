@@ -91,9 +91,11 @@ struct ImageDetailsView: View {
     private func actionButton() -> some View {
         HStack(spacing: 12) {
             Button(action: {
-                print("下载: \(selectedItem.imageURL)")
-                toast = ToastModel(message: "图片下载成功", icon: "checkmark.circle.fill")
-
+                ImageDownloader().downloadAndSaveImage(from: selectedItem.imageURL) { success in
+                    toast = success
+                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
+                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                }
             }) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 22)
@@ -106,8 +108,10 @@ struct ImageDetailsView: View {
                 }
             }
 
-            Button(action: { print("生成相似: \(selectedItem)") }) {
-                Text("Generate Similar")
+            Button(action: {
+                NavigationManager.shared.push(.createAI)
+            }) {
+                Text("Create New")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(height: 60)

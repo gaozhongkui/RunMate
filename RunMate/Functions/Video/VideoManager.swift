@@ -31,9 +31,9 @@ class VideoCompressor {
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
             DispatchQueue.main.async {
                 self.isCompressing = false
-                self.compressionError = "无法创建导出会话"
+                self.compressionError = "Unable to create export session"
             }
-            completion(.failure(NSError(domain: "VideoCompressor", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法创建导出会话"])))
+            completion(.failure(NSError(domain: "VideoCompressor", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to create export session"])))
             return
         }
         
@@ -65,14 +65,14 @@ class VideoCompressor {
                 completion(.success(outputURL))
             case .failed:
                 DispatchQueue.main.async {
-                    self.compressionError = exportSession.error?.localizedDescription ?? "压缩失败"
+                    self.compressionError = exportSession.error?.localizedDescription ?? "Compression failed"
                 }
-                completion(.failure(exportSession.error ?? NSError(domain: "VideoCompressor", code: -2, userInfo: [NSLocalizedDescriptionKey: "压缩失败"])))
+                completion(.failure(exportSession.error ?? NSError(domain: "VideoCompressor", code: -2, userInfo: [NSLocalizedDescriptionKey: "Compression failed"])))
             case .cancelled:
                 DispatchQueue.main.async {
-                    self.compressionError = "压缩已取消"
+                    self.compressionError = "Compression cancelled"
                 }
-                completion(.failure(NSError(domain: "VideoCompressor", code: -3, userInfo: [NSLocalizedDescriptionKey: "压缩已取消"])))
+                completion(.failure(NSError(domain: "VideoCompressor", code: -3, userInfo: [NSLocalizedDescriptionKey: "Compression cancelled"])))
             default:
                 break
             }
@@ -83,7 +83,7 @@ class VideoCompressor {
     func saveToPhotoLibrary(url: URL, completion: @escaping (Bool, Error?) -> Void) {
         PHPhotoLibrary.requestAuthorization { status in
             guard status == .authorized else {
-                completion(false, NSError(domain: "VideoCompressor", code: -4, userInfo: [NSLocalizedDescriptionKey: "没有相册访问权限"]))
+                completion(false, NSError(domain: "VideoCompressor", code: -4, userInfo: [NSLocalizedDescriptionKey: "No photo library access permission"]))
                 return
             }
             
