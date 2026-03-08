@@ -11,6 +11,8 @@ import SwiftUI
 @Observable
 class NavigationManager {
     static let shared = NavigationManager()
+    
+    var selectedTab: TabStyle = .Home
 
     var path = NavigationPath()
 

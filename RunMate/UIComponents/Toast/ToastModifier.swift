@@ -70,7 +70,7 @@ struct ToastModifier: ViewModifier {
     }
 
     private func showToast() {
-        // 取消之前的定时器
+        // Cancel previous timer
         workItem?.cancel()
 
         let task = DispatchWorkItem {

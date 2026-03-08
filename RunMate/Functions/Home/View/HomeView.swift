@@ -64,7 +64,9 @@ struct HomeView: View {
         .padding(.horizontal, AppTheme.Spacing.lg)
         .padding(.vertical, AppTheme.Spacing.sm)
         .background(AppTheme.Colors.accentGradient)
-        .cornerRadius(AppTheme.Radius.lg)
+        .cornerRadius(AppTheme.Radius.lg).onTapGesture {
+            NavigationManager.shared.selectedTab = .AILab
+        }
     }
     
     private var cleaningGrid: some View {

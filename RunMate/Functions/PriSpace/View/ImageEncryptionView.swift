@@ -32,7 +32,7 @@ struct ImageEncryptionView: View {
                             Image(systemName: "photo.badge.plus")
                                 .font(.title2)
                             Text("Select Image to Encrypt")
-                                .font(AppTheme.Fonts.subheadline(.semibold))
+                                .font(AppTheme.Fonts.subheadline(.semibold)).foregroundColor(.white)
                         }
                         .frame(maxWidth: .infinity)
                         .padding()

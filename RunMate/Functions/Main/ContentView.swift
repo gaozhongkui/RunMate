@@ -9,28 +9,27 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var navManager = NavigationManager.shared
-    @State private var selectedTab: TabStyle = .Home
     @Namespace private var nameSpace
 
     var body: some View {
         NavigationStack(path: self.$navManager.path) {
             ZStack(alignment: .bottom) {
-                TabView(selection: self.$selectedTab) {
+                TabView(selection: self.$navManager.selectedTab) {
                     HomeView(namespace: self.nameSpace)
                         .tag(TabStyle.Home)
                         .tabItem {
-                            self.tabItemView(style: .Home, selected: self.selectedTab == .Home)
+                            self.tabItemView(style: .Home, selected: navManager.selectedTab == .Home)
                         }
 
                     AILabView(namespace: self.nameSpace)
                         .tag(TabStyle.AILab)
                         .tabItem {
-                            self.tabItemView(style: .AILab, selected: self.selectedTab == .AILab)
+                            self.tabItemView(style: .AILab, selected: navManager.selectedTab == .AILab)
                         }
                     MeView(namespace: self.nameSpace)
                         .tag(TabStyle.ME)
                         .tabItem {
-                            self.tabItemView(style: .ME, selected: self.selectedTab == .ME)
+                            self.tabItemView(style: .ME, selected: navManager.selectedTab == .ME)
                         }
                 }
             }.modifier(NavigationDestinationImage(namespace: self.nameSpace))
