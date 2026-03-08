@@ -19,6 +19,7 @@ class WaterfallViewController: UIViewController,
     private let maxHeight: CGFloat = 56
     private let minHeight: CGFloat = 44
     private var headerHeightConstraint: NSLayoutConstraint!
+    private var blurGradientMask: CAGradientLayer?
 
     var onHeaderTap: (() -> Void)?
     var onItemTap: (([PollinationFeedItem], PollinationFeedItem) -> Void)?
@@ -33,8 +34,18 @@ class WaterfallViewController: UIViewController,
 
         // 设置渐变色 (青色 -> 紫粉色)
         container.gradientColors = [
-            UIColor(red: 0/255, green: 255/255, blue: 255/255, alpha: 1.0),
-            UIColor(red: 255/255, green: 0/255, blue: 255/255, alpha: 1.0)
+            UIColor(
+                red: 0 / 255,
+                green: 255 / 255,
+                blue: 255 / 255,
+                alpha: 1.0
+            ),
+            UIColor(
+                red: 255 / 255,
+                green: 0 / 255,
+                blue: 255 / 255,
+                alpha: 1.0
+            ),
         ]
 
         // 2. 更新图标为放大镜
@@ -43,7 +54,7 @@ class WaterfallViewController: UIViewController,
         iconView.contentMode = .scaleAspectFit
         NSLayoutConstraint.activate([
             iconView.widthAnchor.constraint(equalToConstant: 20),
-            iconView.heightAnchor.constraint(equalToConstant: 20)
+            iconView.heightAnchor.constraint(equalToConstant: 20),
         ])
 
         // 3. 更新文字内容和颜色
@@ -63,10 +74,22 @@ class WaterfallViewController: UIViewController,
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -20),
-            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
-            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12)
+            stack.leadingAnchor.constraint(
+                equalTo: container.leadingAnchor,
+                constant: 20
+            ),
+            stack.trailingAnchor.constraint(
+                equalTo: container.trailingAnchor,
+                constant: -20
+            ),
+            stack.topAnchor.constraint(
+                equalTo: container.topAnchor,
+                constant: 12
+            ),
+            stack.bottomAnchor.constraint(
+                equalTo: container.bottomAnchor,
+                constant: -12
+            ),
         ])
 
         return container
@@ -78,7 +101,12 @@ class WaterfallViewController: UIViewController,
 
     private let loadingView: DotLottieAnimationView = {
         let config = AnimationConfig(autoplay: true, loop: true)
-        let lottieView = DotLottieAnimationView(dotLottieViewModel: DotLottieAnimation(fileName: "loading", config: config))
+        let lottieView = DotLottieAnimationView(
+            dotLottieViewModel: DotLottieAnimation(
+                fileName: "loading",
+                config: config
+            )
+        )
         return lottieView
     }()
 
@@ -96,10 +124,10 @@ class WaterfallViewController: UIViewController,
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor(hex: "#3A507C").cgColor,
-            UIColor(hex: "#21304A").cgColor
+            UIColor(hex: "#21304A").cgColor,
         ]
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 1) 
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
         gradientLayer.frame = view.bounds
 
         view.layer.insertSublayer(gradientLayer, at: 0)
@@ -121,6 +149,15 @@ class WaterfallViewController: UIViewController,
         let safeTop = view.safeAreaInsets.top
         collectionView.contentInset.top = maxHeight + safeTop
         collectionView.verticalScrollIndicatorInsets.top = maxHeight + safeTop
+
+        // 同步渐变遮罩尺寸
+        if let mask = blurGradientMask,
+            let blurView = mask.superlayer.map({ _ in
+                view.subviews.first(where: { $0 is UIVisualEffectView })
+            })
+        {
+            mask.frame = blurView?.bounds ?? .zero
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -134,48 +171,111 @@ class WaterfallViewController: UIViewController,
         let layout = WaterfallLayout()
         layout.delegate = self
 
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: layout
+        )
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.register(VideoItemCell.self, forCellWithReuseIdentifier: VideoItemCell.identifier)
+        collectionView.register(
+            VideoItemCell.self,
+            forCellWithReuseIdentifier: VideoItemCell.identifier
+        )
 
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor
+            ),
+            collectionView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor
+            ),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 
     private func setupHeaderView() {
         view.addSubview(headerContentView)
-        headerContentView.addSubview(searchBar)
 
+        headerContentView.backgroundColor = .clear
         headerContentView.translatesAutoresizingMaskIntoConstraints = false
+
+        // 1. 毛玻璃视图
+        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(blurView, belowSubview: headerContentView)
+
+        // 2. 渐变遮罩：让毛玻璃底部自然淡出（关键！）
+        let gradientMask = CAGradientLayer()
+        gradientMask.colors = [
+            UIColor.black.cgColor,  // 顶部完全不透明（毛玻璃完全显示）
+            UIColor.black.cgColor,  // 中段保持实
+            UIColor.clear.cgColor,  // 底部完全透明（自然消失）
+        ]
+        gradientMask.locations = [0.0, 0.6, 1.0]  // 60% 位置开始淡出
+        blurView.layer.mask = gradientMask
+
+        self.blurGradientMask = gradientMask
+
+        headerContentView.addSubview(searchBar)
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.isUserInteractionEnabled = true
-        let searchTap = UITapGestureRecognizer(target: self, action: #selector(headerTap))
+        let searchTap = UITapGestureRecognizer(
+            target: self,
+            action: #selector(headerTap)
+        )
         searchBar.addGestureRecognizer(searchTap)
 
-        headerHeightConstraint = headerContentView.heightAnchor.constraint(equalToConstant: maxHeight)
+        headerHeightConstraint = headerContentView.heightAnchor.constraint(
+            equalToConstant: maxHeight
+        )
 
         NSLayoutConstraint.activate([
-            headerContentView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerContentView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor
+            ),
+            headerContentView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor
+            ),
+            headerContentView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor
+            ),
             headerHeightConstraint,
 
-            // SearchBar
-            searchBar.leadingAnchor.constraint(equalTo: headerContentView.leadingAnchor, constant: 16),
-            searchBar.trailingAnchor.constraint(equalTo: headerContentView.trailingAnchor, constant: -16),
-            searchBar.bottomAnchor.constraint(equalTo: headerContentView.bottomAnchor, constant: -10),
-            searchBar.heightAnchor.constraint(equalToConstant: 44)
+            blurView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // 底部延伸多 20pt，给渐变消散留出空间
+            blurView.bottomAnchor.constraint(
+                equalTo: headerContentView.bottomAnchor,
+                constant: 20
+            ),
+
+            searchBar.leadingAnchor.constraint(
+                equalTo: headerContentView.leadingAnchor,
+                constant: 16
+            ),
+            searchBar.trailingAnchor.constraint(
+                equalTo: headerContentView.trailingAnchor,
+                constant: -16
+            ),
+            searchBar.bottomAnchor.constraint(
+                equalTo: headerContentView.bottomAnchor,
+                constant: -10
+            ),
+            searchBar.heightAnchor.constraint(equalToConstant: 44),
         ])
+
+        // 3. 在布局完成后更新 mask 的 frame（必须在 layoutSubviews 里同步）
+        DispatchQueue.main.async {
+            gradientMask.frame = blurView.bounds
+        }
     }
 
     private func setupLoadingView() {
@@ -186,7 +286,7 @@ class WaterfallViewController: UIViewController,
             loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             loadingView.widthAnchor.constraint(equalToConstant: 200),
-            loadingView.heightAnchor.constraint(equalToConstant: 200)
+            loadingView.heightAnchor.constraint(equalToConstant: 200),
         ])
     }
 
@@ -195,8 +295,13 @@ class WaterfallViewController: UIViewController,
         footerLoadingView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            footerLoadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            footerLoadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            footerLoadingView.centerXAnchor.constraint(
+                equalTo: view.centerXAnchor
+            ),
+            footerLoadingView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -20
+            ),
         ])
     }
 
@@ -219,9 +324,9 @@ class WaterfallViewController: UIViewController,
         // 新数据插入顶部（实时流）
         observer.onNewItemsInserted = { [weak self] indexPaths in
             guard let self else { return }
-            
+
             let newImages = observer.images
-            
+
             self.collectionView.performBatchUpdates {
                 // 在这里更新数据源也可以
                 self.dataList = newImages
@@ -267,11 +372,11 @@ class WaterfallViewController: UIViewController,
 
         // 限制在 [minHeight, maxHeight] 之间
         if targetHeight >= maxHeight {
-            headerHeightConstraint.constant = targetHeight // 下拉放大
+            headerHeightConstraint.constant = targetHeight  // 下拉放大
         } else if targetHeight <= minHeight {
-            headerHeightConstraint.constant = minHeight // 最小收缩高度
+            headerHeightConstraint.constant = minHeight  // 最小收缩高度
         } else {
-            headerHeightConstraint.constant = targetHeight // 中间过渡
+            headerHeightConstraint.constant = targetHeight  // 中间过渡
         }
     }
 
@@ -306,35 +411,42 @@ class WaterfallViewController: UIViewController,
 
     // MARK: - DataSource
 
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int
-    {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         dataList.count
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: VideoItemCell.identifier,
-            for: indexPath
-        ) as! VideoItemCell
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell =
+            collectionView.dequeueReusableCell(
+                withReuseIdentifier: VideoItemCell.identifier,
+                for: indexPath
+            ) as! VideoItemCell
         cell.configure(with: dataList[indexPath.item])
         return cell
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        heightForItemAt indexPath: IndexPath,
-                        itemWidth: CGFloat) -> CGFloat
-    {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        heightForItemAt indexPath: IndexPath,
+        itemWidth: CGFloat
+    ) -> CGFloat {
         let item = dataList[indexPath.item]
         let w = CGFloat(item.width ?? 0)
         let h = CGFloat(item.height ?? 0)
         guard w > 0 else { return itemWidth }
-        return itemWidth * max(h/w, 1.0)
+        return itemWidth * max(h / w, 1.0)
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
         let selectedItem = dataList[indexPath.item]
         onItemTap?(dataList, selectedItem)
     }
@@ -342,7 +454,11 @@ class WaterfallViewController: UIViewController,
     /// 滚动到顶部
     func scrollToTop(animated: Bool = true) {
         guard !dataList.isEmpty else { return }
-        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
+        collectionView.scrollToItem(
+            at: IndexPath(item: 0, section: 0),
+            at: .top,
+            animated: animated
+        )
     }
 
     /// 刷新数据
