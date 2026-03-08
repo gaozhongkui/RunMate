@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CreateAIView: View {
     var namespace: Namespace.ID
+    let defaultAIPrompt: String
     @State private var viewModel: AIViewModel = .init()
     @State private var aiStep: CreateAIStep = .Config
 
@@ -78,6 +79,8 @@ struct CreateAIView: View {
             if error != nil {
                 withAnimation { aiStep = .Config }
             }
+        }.onAppear {
+            viewModel.inputText = defaultAIPrompt
         }
     }
 }

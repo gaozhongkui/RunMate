@@ -15,12 +15,12 @@ struct AILabView: View {
 
     var body: some View {
         WaterfallView(onHeaderTap: {
-            NavigationManager.shared.push(.createAI)
+            NavigationManager.shared.push(.createAI(""))
         }, onItemTap: { items, item in
             allItems = items
             currentItem = item
         }).frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea()
-            .sheet(item: $currentItem) { item in
+            .fullScreenCover(item: $currentItem) { item in
                 ImageDetailsView(items: $allItems, selectedItem: item)
             }
     }

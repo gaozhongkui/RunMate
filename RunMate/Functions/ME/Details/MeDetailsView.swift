@@ -9,40 +9,29 @@ import Kingfisher
 import SwiftUI
 import Zoomable
 
-struct ImageDetailsView: View {
-    @Binding var items: [PollinationFeedItem]
-    @State var selectedItem: PollinationFeedItem
-    @State private var scrollID: PollinationFeedItem.ID?
+struct MeDetailsView: View {
+    let record: AIGeneratedImage
+    let store: AIImageStore
+    
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
 
+    @State private var image: UIImage? = nil
+
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
 
-            // 图片横向滚动
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
-                    ForEach(items) { item in
-                        detailContent(for: item)
-                            .containerRelativeFrame(.horizontal)
-                            .id(item.id)
-                    }
-                }
-                .scrollTargetLayout()
-            }
-            .scrollPosition(id: $scrollID)
-            .scrollTargetBehavior(.paging)
-            .ignoresSafeArea()
+            detailContent().ignoresSafeArea()
 
-            // 底部半屏渐变 + prompt文字 + actionButton 整体放在一个 VStack 底部
             VStack(spacing: 0) {
                 Spacer()
 
                 // 渐变 + 内容整体
                 VStack(spacing: 0) {
-                    Text(selectedItem.prompt ?? "")
+                    Text(record.prompt)
                         .font(.system(size: 16))
                         .foregroundColor(.white)
                         .lineLimit(2)
@@ -72,27 +61,34 @@ struct ImageDetailsView: View {
             // 关闭按钮
             closeButton()
         }
-        .onAppear {
-            scrollID = selectedItem.id
-        }
-        .onChange(of: scrollID) { _, newID in
-            if let newID = newID, let item = items.first(where: { $0.id == newID }) {
-                selectedItem = item
-            }
-        }
         .toast(item: $toast)
+        .onAppear {
+            image = store.loadImage(for: record)
+        }
     }
 
     @ViewBuilder
-    private func detailContent(for item: PollinationFeedItem) -> some View {
-        ZStack(alignment: .center) {
-            KFImage.url(URL(string: item.imageURL))
-                .placeholder {
-                    getPlaceholderView()
-                }
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .zoomable()
+    private func detailContent() -> some View {
+        Group {
+            if let img = image {
+                Image(uiImage: img)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+                    .zoomable()
+            } else {
+                LinearGradient(
+                    colors: [Color(hex: "1E1535"), Color(hex: "2A1B50")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .overlay(
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white.opacity(0.2))
+                )
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -119,28 +115,28 @@ struct ImageDetailsView: View {
     private func actionButton() -> some View {
         HStack(spacing: 12) {
             Button(action: {
-                ImageDownloader().downloadAndSaveImage(from: selectedItem.imageURL) { success in
-                    toast = success
-                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
-                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
-                }
+                store.delete(record)
+                dismiss()
             }) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.white.opacity(0.15))
                         .frame(width: 60, height: 60)
                         .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.white.opacity(0.2), lineWidth: 1))
-                    Image(systemName: "arrow.down.to.line")
+                    Image(systemName: "trash")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
 
             Button(action: {
-                NavigationManager.shared.push(.createAI(selectedItem.prompt ?? ""))
-                dismiss()
+                ImageDownloader().downloadAndSaveImage(from: record.fileName) { success in
+                    toast = success
+                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
+                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                }
             }) {
-                Text("Create New")
+                Text("Download")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(height: 60)

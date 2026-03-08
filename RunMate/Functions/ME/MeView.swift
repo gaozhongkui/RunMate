@@ -10,7 +10,7 @@ struct MeView: View {
 
     @State private var store = AIImageStore.shared
     @State private var glowPulse = false
-
+    @State private var currentItem: AIGeneratedImage? = nil
     var body: some View {
         ZStack {
             AppTheme.Colors.pageGradient
@@ -29,6 +29,8 @@ struct MeView: View {
             withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
                 glowPulse = true
             }
+        }.fullScreenCover(item: $currentItem) { item in
+            MeDetailsView(record: item, store: store)
         }
     }
 
@@ -213,7 +215,9 @@ struct MeView: View {
                         spacing: 10
                     ) {
                         ForEach(store.records) { record in
-                            AIHistoryCard(record: record, store: store)
+                            AIHistoryCard(record: record, store: store).onTapGesture {
+                                currentItem = record
+                            }
                         }
                     }
                     .padding(.horizontal, 16)

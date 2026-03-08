@@ -15,8 +15,8 @@ struct NavigationDestinationImage: ViewModifier {
     func body(content: Content) -> some View {
         content.navigationDestination(for: NavigationRoute.self) { node in
             switch node {
-            case .createAI:
-                CreateAIView(namespace: namespace)
+            case .createAI(let prompt):
+                CreateAIView(namespace: namespace,defaultAIPrompt: prompt)
             case .priSpace:
                 ImageEncryptionView(namespace: namespace)
             case .videoList(let videoItems):

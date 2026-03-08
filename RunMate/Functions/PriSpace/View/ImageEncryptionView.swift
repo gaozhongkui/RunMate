@@ -60,8 +60,9 @@ struct ImageEncryptionView: View {
                     }
                 }
         }
-        .navigationTitle("Image Vault")
+        .navigationTitle("Image Safe")
         .navigationBarTitleDisplayMode(.large)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .sheet(isPresented: $showPasswordInput) {
             PasswordInputSheet(
                 password: $password,
