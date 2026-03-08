@@ -11,6 +11,8 @@ struct MeView: View {
     @State private var store = AIImageStore.shared
     @State private var glowPulse = false
     @State private var currentItem: AIGeneratedImage? = nil
+    @State private var showSettings = false  // ← 新增：控制设置页面展示
+
     var body: some View {
         ZStack {
             AppTheme.Colors.pageGradient
@@ -29,8 +31,12 @@ struct MeView: View {
             withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
                 glowPulse = true
             }
-        }.fullScreenCover(item: $currentItem) { item in
+        }
+        .fullScreenCover(item: $currentItem) { item in
             MeDetailsView(record: item, store: store)
+        }
+        .sheet(isPresented: $showSettings) {  // ← 新增：设置页面弹出
+            SettingsView()
         }
     }
 
@@ -86,7 +92,7 @@ struct MeView: View {
                 .padding(.bottom, 16)
 
                 // 名称
-                Text("Creative Artist")
+                Text("AuraAI")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .padding(.bottom, 20)
@@ -131,6 +137,9 @@ struct MeView: View {
                 )
             }
             .padding(20)
+
+            // ← 新增：右上角设置按钮
+            settingsButton
         }
         .background(
             RoundedRectangle(cornerRadius: AppTheme.Radius.xl)
@@ -149,6 +158,32 @@ struct MeView: View {
         )
         .padding(.horizontal, 16)
         .padding(.top, 16)
+    }
+
+    // MARK: - 设置按钮
+
+    private var settingsButton: some View {
+        Button {
+            showSettings = true
+        } label: {
+            ZStack {
+                // 背景磨砂玻璃效果
+                Circle()
+                    .fill(Color(hex: "2D1F4E").opacity(0.85))
+                    .overlay(
+                        Circle()
+                            .stroke(AppTheme.Colors.borderGradient, lineWidth: 1.2)
+                    )
+                    .frame(width: 36, height: 36)
+                    .shadow(color: AppTheme.Colors.accentStart.opacity(0.3), radius: 8, x: 0, y: 4)
+
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(AppTheme.Colors.borderGradient)
+            }
+        }
+        .padding(.top, 14)
+        .padding(.trailing, 14)
     }
 
     // MARK: - 分隔线
