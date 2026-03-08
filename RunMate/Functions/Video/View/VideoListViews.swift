@@ -45,7 +45,7 @@ struct VideoListView: View {
                 .ignoresSafeArea()
                 
             ScrollView {
-                LazyVStack(spacing: 16) {
+                LazyVStack(spacing: 14) {
                     // 统计卡片
                     StatsCardView(videos: videos)
                         .padding(.horizontal)
@@ -65,14 +65,27 @@ struct VideoListView: View {
                                     showPlayer = true
                                 }
                             }
-                         
                     }
                 }
                 .padding(.vertical)
+                // ✅ Fix 2: 底部留出足够空间防止被 TabBar/Home Indicator 遮挡
+                .padding(.bottom, 32)
             }
+            // ✅ Fix 2: 确保 ScrollView 内容延伸到安全区域外但 padding 留出空间
+            .scrollIndicators(.hidden)
         }
         .navigationTitle("My Videos")
         .navigationBarTitleDisplayMode(.large)
+        // ✅ Fix 1: 强制导航栏使用深色外观，使标题和返回按钮呈白色
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .navigationBarBackButtonHidden(false)
+        .toolbar {
+            // 确保 back button 也是白色
+            ToolbarItem(placement: .navigationBarLeading) {
+                EmptyView()
+            }
+        }
+        .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showCompressSheet) {
             if let video = selectedVideo {
                 VideoCompressView(
@@ -97,10 +110,6 @@ struct VideoListView: View {
             Text(alertMessage)
         }
     }
-    
-    private func shareVideo(_ video: MediaItemViewModel) {
-        // 实现分享功能
-    }
 }
 
 // MARK: - Stats Card View
@@ -117,37 +126,47 @@ struct StatsCardView: View {
     }
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 0) {
             StatItemView(
                 icon: "video.circle.fill",
                 title: "Videos",
                 value: "\(videos.count)",
-                color: .blue
+                color: Color(hex: "4E9EFF")
             )
+            
+            Divider()
+                .frame(height: 40)
+                .background(AppTheme.Colors.cardStroke)
 
             StatItemView(
                 icon: "clock.fill",
                 title: "Duration",
                 value: formatDuration(totalDuration),
-                color: .green
+                color: Color(hex: "34D399")
             )
+            
+            Divider()
+                .frame(height: 40)
+                .background(AppTheme.Colors.cardStroke)
 
             StatItemView(
                 icon: "square.stack.3d.up.fill",
                 title: "Total Size",
                 value: formatFileSize(totalSize),
-                color: .orange
+                color: Color(hex: "FB923C")
             )
         }
-        .padding()
+        .padding(.vertical, 18)
+        .padding(.horizontal, 8)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                .fill(AppTheme.Colors.cardBackground.opacity(0.9))
+                // ✅ Fix 3: 使用更深的卡片背景色，增强对比度
+                .fill(Color.white.opacity(0.08))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                        .stroke(AppTheme.Colors.cardStroke, lineWidth: 1)
+                        .stroke(Color.white.opacity(0.18), lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+                .shadow(color: .black.opacity(0.25), radius: 16, y: 8)
         }
     }
     
@@ -179,18 +198,21 @@ struct StatItemView: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.title3)
                 .foregroundStyle(color.gradient)
             
             Text(value)
-                .font(.headline)
-                .fontWeight(.bold)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                // ✅ Fix 3: 数值使用纯白色，确保在深色背景下清晰可见
+                .foregroundColor(.white)
             
             Text(title)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .fontWeight(.medium)
+                // ✅ Fix 3: 次要文字用更高对比度的颜色
+                .foregroundColor(Color.white.opacity(0.6))
         }
         .frame(maxWidth: .infinity)
     }
@@ -200,42 +222,48 @@ struct StatItemView: View {
 
 struct SortPickerView: View {
     @Binding var selection: VideoListView.SortOption
+    @Namespace private var sortNamespace
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 ForEach(VideoListView.SortOption.allCases, id: \.self) { option in
                     Button {
-                        withAnimation(.spring(response: 0.3)) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selection = option
                         }
                     } label: {
                         Text(option.rawValue)
-                            .font(AppTheme.Fonts.subheadline(.medium))
-                            .foregroundColor(selection == option ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
-                            .padding(.horizontal, 16)
+                            .font(.system(size: 13, weight: .semibold))
+                            // ✅ Fix 3: 选中/未选中状态对比更明显
+                            .foregroundColor(selection == option ? .white : Color.white.opacity(0.5))
+                            .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background {
                                 if selection == option {
                                     Capsule()
                                         .fill(AppTheme.Colors.accentGradient)
-                                        .matchedGeometryEffect(id: "sort", in: namespace)
+                                        .matchedGeometryEffect(id: "sort", in: sortNamespace)
                                 } else {
                                     Capsule()
-                                        .fill(AppTheme.Colors.cardBackgroundAlt.opacity(0.6))
+                                        .fill(Color.white.opacity(0.08))
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                        )
                                 }
                             }
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 4)
+            .padding(.vertical, 2)
         }
     }
-    
-    @Namespace private var namespace
 }
 
-// MARK: - Video Row View (Redesigned)
+// MARK: - Video Row View
 
 struct VideoRowView: View {
     let video: MediaItemViewModel
@@ -244,128 +272,37 @@ struct VideoRowView: View {
     @State private var isPressed = false
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 14) {
             // 缩略图容器
-            ZStack {
-                if let thumbnail = thumbnail {
-                    Image(uiImage: thumbnail)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 140, height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay {
-                            // 渐变遮罩
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.clear, .black.opacity(0.4)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                        }
-                        .overlay(alignment: .center) {
-                            // 播放按钮
-                            ZStack {
-                                Circle()
-                                    .fill(.ultraThinMaterial)
-                                    .frame(width: 44, height: 44)
-                                
-                                Image(systemName: "play.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .overlay(alignment: .topTrailing) {
-                            // 时长标签
-                            Text(formatDuration(video.duration))
-                                .font(.caption2)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background {
-                                    Capsule()
-                                        .fill(.black.opacity(0.7))
-                                }
-                                .padding(8)
-                        }
-                } else {
-                    // 加载占位符
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.systemGray5))
-                        .frame(width: 140, height: 100)
-                        .overlay {
-                            VStack(spacing: 8) {
-                                ProgressView()
-                                    .tint(.gray)
-                                Text("Loading...")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                }
-            }
+            thumbnailView
             
             // 视频信息
-            VStack(alignment: .leading, spacing: 8) {
-                // 分辨率
-                HStack(spacing: 4) {
-                    Image(systemName: "rectangle.fill")
-                        .font(.caption2)
-                    Text("\(video.width) × \(video.height)")
-                        .font(.caption)
-                }
-                .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                // 文件大小
-                HStack(spacing: 6) {
-                    Image(systemName: "doc.fill")
-                        .font(.caption)
-                        .foregroundStyle(.blue.gradient)
-                    
-                    Text(formatFileSize(video.size))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                }
-                
-                // 创建日期
-                HStack(spacing: 6) {
-                    Image(systemName: "calendar")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Text(formatDate(video.created))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            infoView
             
             // 右侧箭头
             Image(systemName: "chevron.right")
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.tertiary)
+                .font(.system(size: 11, weight: .semibold))
+                // ✅ Fix 3: 箭头颜色加深，更易识别
+                .foregroundColor(Color.white.opacity(0.4))
+                .padding(.trailing, 2)
         }
         .padding(AppTheme.Spacing.md)
-        .background(content: {
+        .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                .fill(AppTheme.Colors.cardBackground.opacity(0.85))
+                // ✅ Fix 3: 卡片背景更深，与页面背景产生明显层次
+                .fill(Color.white.opacity(isPressed ? 0.12 : 0.09))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                        .stroke(AppTheme.Colors.cardStroke.opacity(0.5), lineWidth: 1)
+                        .stroke(Color.white.opacity(isPressed ? 0.25 : 0.14), lineWidth: 1)
                 )
                 .shadow(
-                    color: .black.opacity(isPressed ? 0.15 : 0.08),
-                    radius: isPressed ? 8 : 12,
-                    y: isPressed ? 2 : 4
+                    color: .black.opacity(isPressed ? 0.3 : 0.2),
+                    radius: isPressed ? 6 : 14,
+                    y: isPressed ? 2 : 6
                 )
-        })
-        .scaleEffect(isPressed ? 0.98 : 1.0)
-        .animation(.spring(response: 0.3), value: isPressed)
+        }
+        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in isPressed = true }
@@ -376,11 +313,122 @@ struct VideoRowView: View {
         }
     }
     
+    // MARK: - Subviews
+    
+    @ViewBuilder
+    private var thumbnailView: some View {
+        ZStack {
+            if let thumbnail = thumbnail {
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 120, height: 90)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(
+                                LinearGradient(
+                                    colors: [.clear, .black.opacity(0.5)],
+                                    startPoint: .center,
+                                    endPoint: .bottom
+                                )
+                            )
+                    }
+                    // 播放按钮
+                    .overlay(alignment: .center) {
+                        ZStack {
+                            Circle()
+                                .fill(.ultraThinMaterial)
+                                .frame(width: 38, height: 38)
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(.white)
+                                .offset(x: 1.5)
+                        }
+                        .shadow(color: .black.opacity(0.3), radius: 4)
+                    }
+                    // 时长标签
+                    .overlay(alignment: .bottomLeading) {
+                        Text(formatDuration(video.duration))
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background {
+                                Capsule()
+                                    .fill(.black.opacity(0.65))
+                            }
+                            .padding(8)
+                    }
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.06))
+                    .frame(width: 120, height: 90)
+                    .overlay {
+                        VStack(spacing: 6) {
+                            ProgressView()
+                                .tint(Color.white.opacity(0.4))
+                                .scaleEffect(0.8)
+                            Text("Loading")
+                                .font(.caption2)
+                                .foregroundColor(Color.white.opacity(0.3))
+                        }
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                    )
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var infoView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 分辨率 badge
+            HStack(spacing: 4) {
+                Image(systemName: "aspectratio.fill")
+                    .font(.system(size: 9))
+                Text("\(video.width) × \(video.height)")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundColor(Color.white.opacity(0.45))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(Color.white.opacity(0.08))
+            )
+            
+            Spacer()
+            
+            // 文件大小 — 主信息，最醒目
+            Text(formatFileSize(video.size))
+                .font(.system(size: 17, weight: .bold, design: .rounded))
+                // ✅ Fix 3: 主要数值使用高亮白色
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            // 创建日期
+            HStack(spacing: 5) {
+                Image(systemName: "calendar")
+                    .font(.system(size: 10))
+                Text(formatDate(video.created))
+                    .font(.system(size: 12))
+            }
+            // ✅ Fix 3: 次要信息有足够对比度但不抢眼
+            .foregroundColor(Color.white.opacity(0.5))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 90)
+    }
+    
     // MARK: - Helper Methods
     
     private func loadThumbnail() async {
         let scale = UIScreen.main.scale
-        let targetSize = CGSize(width: 140 * scale, height: 100 * scale)
+        let targetSize = CGSize(width: 120 * scale, height: 90 * scale)
         
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
@@ -443,15 +491,16 @@ struct VideoRowView: View {
     }
 }
 
+
 // MARK: - Preview
 
 #Preview {
     @Previewable @Namespace var namespace
     
-    VideoListView(
-        namespace: namespace,
-        videos: [
-            // 模拟数据
-        ]
-    )
+    NavigationStack {
+        VideoListView(
+            namespace: namespace,
+            videos: []
+        )
+    }
 }
