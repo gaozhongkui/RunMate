@@ -24,7 +24,7 @@ class ImageDownloader {
         }.resume()
     }
 
-    private func saveToPhotoLibrary(image: UIImage, completion: @escaping (Bool) -> Void) {
+    func saveToPhotoLibrary(image: UIImage, completion: @escaping (Bool) -> Void) {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else {
                 DispatchQueue.main.async { completion(false) }

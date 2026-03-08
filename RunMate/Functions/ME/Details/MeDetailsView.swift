@@ -12,14 +12,13 @@ import Zoomable
 struct MeDetailsView: View {
     let record: AIGeneratedImage
     let store: AIImageStore
-    
+
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
 
     @State private var image: UIImage? = nil
 
-    
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
@@ -47,12 +46,15 @@ struct MeDetailsView: View {
                     // 渐变背景从这个 VStack 顶部向上延伸半屏
                     GeometryReader { geo in
                         LinearGradient(
-                            colors: [Color.black.opacity(0), Color.black.opacity(0.85)],
+                            colors: [
+                                Color.black.opacity(0),
+                                Color.black.opacity(0.85),
+                            ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: geo.size.height * 2) // 向上延伸覆盖两倍高度
-                        .offset(y: -geo.size.height)        // 向上偏移，使渐变从上方淡入
+                        .frame(height: geo.size.height * 2)  // 向上延伸覆盖两倍高度
+                        .offset(y: -geo.size.height)  // 向上偏移，使渐变从上方淡入
                     }
                 )
             }
@@ -69,28 +71,30 @@ struct MeDetailsView: View {
 
     @ViewBuilder
     private func detailContent() -> some View {
-        Group {
-            if let img = image {
-                Image(uiImage: img)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                    .zoomable()
-            } else {
-                LinearGradient(
-                    colors: [Color(hex: "1E1535"), Color(hex: "2A1B50")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .overlay(
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 24))
-                        .foregroundColor(.white.opacity(0.2))
-                )
+        GeometryReader { geo in
+            Group {
+                if let img = image {
+                    Image(uiImage: img)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                        .zoomable()
+                } else {
+                    LinearGradient(
+                        colors: [Color(hex: "1E1535"), Color(hex: "2A1B50")],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .overlay(
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 24))
+                            .foregroundColor(.white.opacity(0.2))
+                    )
+                }
             }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func getPlaceholderView() -> some View {
@@ -103,7 +107,9 @@ struct MeDetailsView: View {
     private func closeButton() -> some View {
         HStack {
             Spacer()
-            Button { dismiss() } label: {
+            Button {
+                dismiss()
+            } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.largeTitle)
                     .foregroundColor(.white.opacity(0.8))
@@ -122,7 +128,12 @@ struct MeDetailsView: View {
                     RoundedRectangle(cornerRadius: 22)
                         .fill(Color.white.opacity(0.15))
                         .frame(width: 60, height: 60)
-                        .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.white.opacity(0.2), lineWidth: 1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 22).stroke(
+                                Color.white.opacity(0.2),
+                                lineWidth: 1
+                            )
+                        )
                     Image(systemName: "trash")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(.white)
@@ -130,10 +141,21 @@ struct MeDetailsView: View {
             }
 
             Button(action: {
-                ImageDownloader().downloadAndSaveImage(from: record.fileName) { success in
-                    toast = success
-                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
-                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                guard let temp = self.image else {
+                    return
+                }
+
+                ImageDownloader().saveToPhotoLibrary(image: temp) { success in
+                    toast =
+                        success
+                        ? ToastModel(
+                            message: "Saved to Photos",
+                            icon: "checkmark.circle.fill"
+                        )
+                        : ToastModel(
+                            message: "Save failed",
+                            icon: "xmark.circle.fill"
+                        )
                 }
             }) {
                 Text("Download")
@@ -142,8 +164,14 @@ struct MeDetailsView: View {
                     .frame(height: 60)
                     .frame(maxWidth: .infinity)
                     .background(
-                        LinearGradient(colors: [Color(hex: "#C260F5"), Color(hex: "#6034E4")], startPoint: .topLeading, endPoint: .bottomTrailing)
-                            .cornerRadius(22)
+                        LinearGradient(
+                            colors: [
+                                Color(hex: "#C260F5"), Color(hex: "#6034E4"),
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .cornerRadius(22)
                     )
             }
         }
