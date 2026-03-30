@@ -85,8 +85,6 @@ struct AnyShape: Shape, @unchecked Sendable {
 struct ImageGalaxyCanvas: View {
     let namespace: Namespace.ID
 
-    private let particleCount = 80
-
     @State private var particles: [ImageParticle] = []
     @State private var images: [UUID: UIImage] = [:]
     @State private var stars: [StarParticle] = []
@@ -336,9 +334,10 @@ struct ImageGalaxyCanvas: View {
 
     // MARK: - 位置计算
     private func positionFor(_ particle: ImageParticle, in size: CGSize) -> SIMD3<Double> {
-        let t = Double(particle.index) / Double(max(particleCount - 1, 1))
+        let total = max(particles.count - 1, 1)
+        let t = Double(particle.index) / Double(total)
         switch currentShape {
-        case .sphere:    return spherePoint(index: particle.index, radius: 155)
+        case .sphere:    return spherePoint(index: particle.index, total: particles.count, radius: 155)
         case .heart:     return heartPoint(t: t, radius: 125)
         case .spiral:    return spiralPoint(index: particle.index, time: animationTime)
         case .dna:       return dnaPoint(index: particle.index, time: animationTime)
@@ -346,8 +345,8 @@ struct ImageGalaxyCanvas: View {
         }
     }
 
-    private func spherePoint(index: Int, radius: Double) -> SIMD3<Double> {
-        let phi   = acos(1 - 2 * Double(index) / Double(particleCount))
+    private func spherePoint(index: Int, total: Int, radius: Double) -> SIMD3<Double> {
+        let phi   = acos(1 - 2 * Double(index) / Double(max(total, 1)))
         let theta = Double(index) * .pi * (3 - sqrt(5))
         return SIMD3(radius * sin(phi) * cos(theta),
                      radius * sin(phi) * sin(theta),
@@ -363,14 +362,14 @@ struct ImageGalaxyCanvas: View {
     }
 
     private func spiralPoint(index: Int, time: Double) -> SIMD3<Double> {
-        let t     = Double(index) / Double(particleCount)
+        let t     = Double(index) / Double(max(particles.count - 1, 1))
         let angle = t * 5 * .pi + time * 0.08
         let r     = 40 + 130 * t
         return SIMD3(r * cos(angle), (t - 0.5) * 320, r * sin(angle))
     }
 
     private func dnaPoint(index: Int, time: Double) -> SIMD3<Double> {
-        let t      = Double(index) / Double(particleCount)
+        let t      = Double(index) / Double(max(particles.count - 1, 1))
         let strand = (index % 2 == 0) ? 0.0 : Double.pi
         let angle  = t * 5 * .pi + strand + time * 0.06
         let r: Double = 80
@@ -423,58 +422,97 @@ struct ImageGalaxyCanvas: View {
 
     private func loadPhotos() {
         Task {
+            // ── Step 1: 权限状态 ──
             let status = PHPhotoLibrary.authorizationStatus()
+            print("[Galaxy] Step1 - 权限状态: \(status.rawValue)  (0=notDetermined 1=restricted 2=denied 3=authorized 4=limited)")
+
             let granted: Bool
             if status == .notDetermined {
                 let result = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
                 granted = result == .authorized || result == .limited
+                print("[Galaxy] Step1 - 请求权限结果: \(result.rawValue)  granted=\(granted)")
             } else {
                 granted = status == .authorized || status == .limited
             }
 
             guard granted else {
-                await MainActor.run { particles = makePlaceholderParticles() }
+                print("[Galaxy] Step1 - 权限被拒绝")
                 return
             }
 
+            // ── Step 2: 查询相册资产 ──
             let opts = PHFetchOptions()
             opts.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-            opts.fetchLimit = particleCount
             opts.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.image.rawValue)
             let result = PHAsset.fetchAssets(with: opts)
 
             var assets: [PHAsset] = []
             result.enumerateObjects { asset, _, _ in assets.append(asset) }
+            print("[Galaxy] Step2 - 查询到资产数量: \(assets.count)")
 
-            let newParticles = (0..<particleCount).map { i in
-                ImageParticle(asset: i < assets.count ? assets[i] : nil, index: i)
+            let newParticles = assets.enumerated().map { i, asset in
+                ImageParticle(asset: asset, index: i)
             }
             await MainActor.run { particles = newParticles }
+            print("[Galaxy] Step2 - particles 已写入 MainActor，总数: \(newParticles.count)")
 
-            // 全部并发加载，PHImageManager 内部自己管队列
+            // ── Step 3: 并发加载缩略图 ──
+            var successCount = 0
+            var failCount = 0
             await withTaskGroup(of: Void.self) { group in
                 for particle in newParticles {
                     guard let asset = particle.asset else { continue }
                     let pid = particle.id
                     group.addTask {
-                        if let img = await self.loadThumbnail(asset) {
-                            await MainActor.run { self.images[pid] = img }
+                        let img = await self.loadThumbnail(asset)
+                        if let img = img {
+                            await MainActor.run {
+                                self.images[pid] = img
+                                successCount += 1
+                                print("[Galaxy] Step3 - 加载成功 [\(successCount)] size=\(img.size)")
+                            }
+                        } else {
+                            await MainActor.run {
+                                failCount += 1
+                                print("[Galaxy] Step3 - 加载失败 [\(failCount)] asset=\(asset.localIdentifier)")
+                            }
                         }
                     }
                 }
             }
+            print("[Galaxy] Step3 - 全部完成 成功:\(successCount) 失败:\(failCount)  images字典数量:\(images.count)")
         }
     }
 
-    private func makePlaceholderParticles() -> [ImageParticle] {
-        (0..<particleCount).map { i in ImageParticle(asset: nil, index: i) }
-    }
-
     private func loadThumbnail(_ asset: PHAsset) async -> UIImage? {
-        await PhotoLoader.shared.requestDegradedImage(
-            for: asset,
-            targetSize: CGSize(width: 200, height: 200),
-            contentMode: .aspectFill
-        )
+        let opts = PHImageRequestOptions()
+        opts.deliveryMode = .opportunistic
+        opts.isNetworkAccessAllowed = true
+        opts.resizeMode = .fast
+        opts.version = .current
+
+        return await withCheckedContinuation { c in
+            var resumed = false
+            PHImageManager.default().requestImage(
+                for: asset,
+                targetSize: CGSize(width: 200, height: 200),
+                contentMode: .aspectFill,
+                options: opts
+            ) { img, info in
+                let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
+                let inCloud    = (info?[PHImageResultIsInCloudKey]  as? Bool) ?? false
+                let error      = info?[PHImageErrorKey] as? Error
+                let cancelled  = (info?[PHImageCancelledKey]        as? Bool) ?? false
+
+                print("[Galaxy] loadThumbnail callback - asset=\(asset.localIdentifier.prefix(8)) img=\(img != nil) isDegraded=\(isDegraded) inCloud=\(inCloud) cancelled=\(cancelled) error=\(error?.localizedDescription ?? "nil")")
+
+                // 还在降级中，等最终结果
+                if isDegraded { return }
+
+                guard !resumed else { return }
+                resumed = true
+                c.resume(returning: img)
+            }
+        }
     }
 }
