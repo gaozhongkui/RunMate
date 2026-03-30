@@ -96,6 +96,8 @@ struct ImageGalaxyCanvas: View {
     @State private var lastInteractionTime: Double = 0
     @State private var isTransitioning = false
 
+    private var isRingMode: Bool { particles.count > 0 && particles.count < 10 }
+
     var body: some View {
         GeometryReader { proxy in
             ZStack {
@@ -119,11 +121,10 @@ struct ImageGalaxyCanvas: View {
                     lastInteractionTime = animationTime
                 }
             )
-            .simultaneousGesture(TapGesture(count: 2).onEnded { switchShape() })
+            .simultaneousGesture(TapGesture(count: 2).onEnded { if !isRingMode { switchShape() } })
             .onReceive(Timer.publish(every: 1/30, on: .main, in: .common).autoconnect()) { _ in
                 animationTime = Date().timeIntervalSinceReferenceDate
-                // 停留 6 秒后自动切换形状
-                if animationTime - lastInteractionTime > 6, !isTransitioning, selectedParticle == nil {
+                if animationTime - lastInteractionTime > 6, !isTransitioning, selectedParticle == nil, !isRingMode {
                     switchShape()
                 }
             }
@@ -176,12 +177,18 @@ struct ImageGalaxyCanvas: View {
     // MARK: - 粒子视图
     @ViewBuilder
     private func particleView(item: ImageParticle, proxy: GeometryProxy) -> some View {
-        let rotY = animationTime * 0.10 + Double(dragOffset.width / 160)
-        let rotX = animationTime * 0.07 + Double(dragOffset.height / 160)
+        let rotY = isRingMode
+            ? animationTime * 0.5 + Double(dragOffset.width) / 55.0
+            : animationTime * 0.10 + Double(dragOffset.width / 160)
+        let rotX = isRingMode
+            ? 0.38
+            : animationTime * 0.07 + Double(dragOffset.height / 160)
         let pos = positionFor(item, in: proxy.size)
         let rotated = rotate(pos, x: rotX, y: rotY)
         let proj = project(rotated, in: proxy.size)
-        let size = CGFloat(55 + 25 * proj.scale)
+        let size = isRingMode
+            ? CGFloat(90 + 55 * proj.scale)
+            : CGFloat(55 + 25 * proj.scale)
 
         particleContent(item: item, img: images[item.id], size: size, proj: proj)
         .position(x: proj.x, y: proj.y)
@@ -235,20 +242,32 @@ struct ImageGalaxyCanvas: View {
                     Text("IMAGE GALAXY")
                         .font(.system(size: 22, weight: .black, design: .rounded))
                         .foregroundStyle(.linearGradient(
-                            colors: currentShape == .heart ? [.pink, .purple] : [.cyan, .purple],
+                            colors: isRingMode ? [.white, .cyan] : (currentShape == .heart ? [.pink, .purple] : [.cyan, .purple]),
                             startPoint: .leading, endPoint: .trailing))
                         .animation(.easeInOut(duration: 0.5), value: currentShape)
 
-                    HStack(spacing: 5) {
-                        Image(systemName: currentShape.icon).font(.caption2)
-                        Text(currentShape.displayName).font(.caption2.weight(.semibold))
-                    }
-                    .foregroundColor(.white.opacity(0.65))
-                    .animation(.easeInOut(duration: 0.3), value: currentShape)
+                    if isRingMode {
+                        HStack(spacing: 5) {
+                            Image(systemName: "arrow.clockwise.circle").font(.caption2)
+                            Text("RING MODE").font(.caption2.weight(.semibold))
+                        }
+                        .foregroundColor(.white.opacity(0.65))
 
-                    Text("Double-tap to transform")
-                        .font(.system(size: 10))
-                        .foregroundColor(.white.opacity(0.38))
+                        Text("Drag to spin")
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.38))
+                    } else {
+                        HStack(spacing: 5) {
+                            Image(systemName: currentShape.icon).font(.caption2)
+                            Text(currentShape.displayName).font(.caption2.weight(.semibold))
+                        }
+                        .foregroundColor(.white.opacity(0.65))
+                        .animation(.easeInOut(duration: 0.3), value: currentShape)
+
+                        Text("Double-tap to transform")
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.38))
+                    }
                 }
             }
             .padding(.horizontal, 24)
@@ -256,16 +275,17 @@ struct ImageGalaxyCanvas: View {
 
             Spacer()
 
-            // 底部形状指示点
-            HStack(spacing: 10) {
-                ForEach(GalaxyShape.allCases, id: \.self) { shape in
-                    Capsule()
-                        .fill(shape == currentShape ? Color.white : Color.white.opacity(0.28))
-                        .frame(width: shape == currentShape ? 18 : 6, height: 6)
-                        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: currentShape)
+            if !isRingMode {
+                HStack(spacing: 10) {
+                    ForEach(GalaxyShape.allCases, id: \.self) { shape in
+                        Capsule()
+                            .fill(shape == currentShape ? Color.white : Color.white.opacity(0.28))
+                            .frame(width: shape == currentShape ? 18 : 6, height: 6)
+                            .animation(.spring(response: 0.35, dampingFraction: 0.7), value: currentShape)
+                    }
                 }
+                .padding(.bottom, 44)
             }
-            .padding(.bottom, 44)
         }
     }
 
@@ -335,6 +355,9 @@ struct ImageGalaxyCanvas: View {
 
     // MARK: - 位置计算
     private func positionFor(_ particle: ImageParticle, in size: CGSize) -> SIMD3<Double> {
+        if isRingMode {
+            return ringPoint(index: particle.index, total: particles.count)
+        }
         let total = max(particles.count - 1, 1)
         let t = Double(particle.index) / Double(total)
         switch currentShape {
@@ -344,6 +367,12 @@ struct ImageGalaxyCanvas: View {
         case .dna:       return dnaPoint(index: particle.index, time: animationTime)
         case .scattered: return scatteredPoint(for: particle, in: size)
         }
+    }
+
+    private func ringPoint(index: Int, total: Int) -> SIMD3<Double> {
+        let angle = 2 * Double.pi * Double(index) / Double(max(total, 1))
+        let radius: Double = 160
+        return SIMD3(radius * sin(angle), 0, radius * cos(angle))
     }
 
     private func spherePoint(index: Int, total: Int, radius: Double) -> SIMD3<Double> {
