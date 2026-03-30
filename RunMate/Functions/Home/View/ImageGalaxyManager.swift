@@ -104,7 +104,7 @@ struct ImageGalaxyCanvas: View {
                 backgroundLayer(proxy: proxy)
                 nebulaLayer(proxy: proxy)
 
-                ForEach(particles) { item in
+                ForEach(depthSortedParticles(in: proxy)) { item in
                     particleView(item: item, proxy: proxy)
                 }
 
@@ -350,6 +350,19 @@ struct ImageGalaxyCanvas: View {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
             isTransitioning = false
+        }
+    }
+
+    // MARK: - 深度排序（z 轴从大到小 = 从远到近，保证近处粒子后渲染覆盖远处）
+    private func depthSortedParticles(in proxy: GeometryProxy) -> [ImageParticle] {
+        let rotY = isRingMode
+            ? animationTime * 0.5 + Double(dragOffset.width) / 55.0
+            : animationTime * 0.10 + Double(dragOffset.width / 160)
+        let rotX = isRingMode ? 0.38 : animationTime * 0.07 + Double(dragOffset.height / 160)
+        return particles.sorted { a, b in
+            let za = rotate(positionFor(a, in: proxy.size), x: rotX, y: rotY).z
+            let zb = rotate(positionFor(b, in: proxy.size), x: rotX, y: rotY).z
+            return za > zb  // z 越大越远，越早渲染，压在最底层
         }
     }
 
