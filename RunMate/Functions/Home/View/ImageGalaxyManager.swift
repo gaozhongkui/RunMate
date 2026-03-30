@@ -447,9 +447,13 @@ struct ImageGalaxyCanvas: View {
             opts.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.image.rawValue)
             let result = PHAsset.fetchAssets(with: opts)
 
+            let maxParticles = 200
             var assets: [PHAsset] = []
-            result.enumerateObjects { asset, _, _ in assets.append(asset) }
-            print("[Galaxy] Step2 - 查询到资产数量: \(assets.count)")
+            result.enumerateObjects { asset, _, stop in
+                assets.append(asset)
+                if assets.count >= maxParticles { stop.pointee = true }
+            }
+            print("[Galaxy] Step2 - 查询到资产数量: \(assets.count)  (上限 \(maxParticles))")
 
             let newParticles = assets.enumerated().map { i, asset in
                 ImageParticle(asset: asset, index: i)
