@@ -32,7 +32,7 @@ struct HomeView: View {
 
                         imageGalaxyBanner
                             .padding(.horizontal, 16)
-                            .padding(.vertical, 6)
+                            .padding(.vertical, 16)
 
                         cleaningGrid.padding(.horizontal, 16)
                     }

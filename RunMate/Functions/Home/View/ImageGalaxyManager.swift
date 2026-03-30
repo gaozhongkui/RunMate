@@ -252,7 +252,7 @@ struct ImageGalaxyCanvas: View {
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.top, proxy.safeAreaInsets.top + 16)
+            .padding(.top, proxy.safeAreaInsets.top + 56)
 
             Spacer()
 
