@@ -193,7 +193,7 @@ struct ImageGalaxyCanvas: View {
             }
             lastInteractionTime = animationTime
         }
-        .allowsHitTesting(selectedParticle == nil)
+        .allowsHitTesting(selectedParticle == nil && !isTransitioning)
     }
 
     private var glowColor: Color {
