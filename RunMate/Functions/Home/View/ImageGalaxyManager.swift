@@ -106,7 +106,7 @@ struct ImageGalaxyCanvas: View {
                     particleView(item: item, proxy: proxy)
                 }
 
-                overlayUI()
+                overlayUI(proxy: proxy)
 
                 if let particle = selectedParticle {
                     fullScreenViewer(particle: particle, proxy: proxy)
@@ -227,7 +227,7 @@ struct ImageGalaxyCanvas: View {
 
     // MARK: - UI 叠加层
     @ViewBuilder
-    private func overlayUI() -> some View {
+    private func overlayUI(proxy: GeometryProxy) -> some View {
         VStack {
             HStack {
                 Spacer()
@@ -251,7 +251,8 @@ struct ImageGalaxyCanvas: View {
                         .foregroundColor(.white.opacity(0.38))
                 }
             }
-            .padding(.horizontal, 24).padding(.top, 16)
+            .padding(.horizontal, 24)
+            .padding(.top, proxy.safeAreaInsets.top + 16)
 
             Spacer()
 
@@ -280,12 +281,12 @@ struct ImageGalaxyCanvas: View {
                     Spacer()
                     Button(action: dismissViewer) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(.white.opacity(0.75))
-                            .padding(16)
+                            .font(.largeTitle)
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding()
                     }
                 }
-                .padding(.top, proxy.safeAreaInsets.top)
+                .padding(.top, proxy.safeAreaInsets.top + 32)
 
                 Spacer()
 
