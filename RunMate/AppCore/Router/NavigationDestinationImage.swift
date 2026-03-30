@@ -21,7 +21,8 @@ struct NavigationDestinationImage: ViewModifier {
                 ImageEncryptionView(namespace: namespace)
             case .videoList(let videoItems):
                 VideoListView(namespace: namespace,videos: videoItems)
-                
+            case .imageGalaxy:
+                ImageGalaxyCanvas(namespace: namespace)
             }
         }
     }

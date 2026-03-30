@@ -14,4 +14,6 @@ enum NavigationRoute: Hashable {
     case priSpace
     /// 视频列表
     case videoList([MediaItemViewModel])
+    /// 星河相册
+    case imageGalaxy
 }
