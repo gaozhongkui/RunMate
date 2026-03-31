@@ -15,17 +15,18 @@ struct ContentView: View {
         NavigationStack(path: self.$navManager.path) {
             ZStack(alignment: .bottom) {
                 TabView(selection: self.$navManager.selectedTab) {
-                    HomeView(namespace: self.nameSpace)
-                        .tag(TabStyle.Home)
+                    AILabView(namespace: self.nameSpace)
+                        .tag(TabStyle.Create)
                         .tabItem {
-                            self.tabItemView(style: .Home, selected: navManager.selectedTab == .Home)
+                            self.tabItemView(style: .Create, selected: navManager.selectedTab == .Create)
                         }
 
-                    AILabView(namespace: self.nameSpace)
-                        .tag(TabStyle.AILab)
+                    ImageEncryptionView(namespace: self.nameSpace)
+                        .tag(TabStyle.Vault)
                         .tabItem {
-                            self.tabItemView(style: .AILab, selected: navManager.selectedTab == .AILab)
+                            self.tabItemView(style: .Vault, selected: navManager.selectedTab == .Vault)
                         }
+
                     MeView(namespace: self.nameSpace)
                         .tag(TabStyle.ME)
                         .tabItem {
@@ -53,22 +54,22 @@ enum TabStyle: Int, CaseIterable, Identifiable {
         return self.rawValue
     }
 
-    case Home = 0
-    case AILab = 1
+    case Create = 0
+    case Vault = 1
     case ME = 2
 
     var imageName: String {
         switch self {
-        case .Home: return "house"
-        case .AILab: return "wand.and.stars"
+        case .Create: return "wand.and.stars"
+        case .Vault: return "lock.shield.fill"
         case .ME: return "person"
         }
     }
 
     var tabTitle: LocalizedStringKey {
         switch self {
-        case .Home: return LocalizedStringKey("Home")
-        case .AILab: return LocalizedStringKey("AILab")
+        case .Create: return LocalizedStringKey("Create")
+        case .Vault: return LocalizedStringKey("Vault")
         case .ME: return LocalizedStringKey("Me")
         }
     }

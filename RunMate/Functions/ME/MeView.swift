@@ -277,7 +277,7 @@ struct MeView: View {
                 Text("No artworks yet")
                     .font(AppTheme.Fonts.subheadline(.semibold))
                     .foregroundColor(AppTheme.Colors.textSecondary)
-                Text("Generate your first AI artwork\nin the AI Lab tab")
+                Text("Generate your first AI artwork\nin the Create tab")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textMuted)
                     .multilineTextAlignment(.center)

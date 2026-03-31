@@ -69,7 +69,7 @@ struct HomeView: View {
         .padding(.vertical, AppTheme.Spacing.sm)
         .background(AppTheme.Colors.accentGradient)
         .cornerRadius(AppTheme.Radius.lg).onTapGesture {
-            NavigationManager.shared.selectedTab = .AILab
+            NavigationManager.shared.selectedTab = .Create
         }
     }
     

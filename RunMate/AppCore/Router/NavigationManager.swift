@@ -12,7 +12,7 @@ import SwiftUI
 class NavigationManager {
     static let shared = NavigationManager()
     
-    var selectedTab: TabStyle = .Home
+    var selectedTab: TabStyle = .Create
 
     var path = NavigationPath()
 
