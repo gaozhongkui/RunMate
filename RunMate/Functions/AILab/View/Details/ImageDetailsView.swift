@@ -12,35 +12,31 @@ import Zoomable
 struct ImageDetailsView: View {
     @Binding var items: [PollinationFeedItem]
     @State var selectedItem: PollinationFeedItem
-    @State private var scrollID: PollinationFeedItem.ID?
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
+    // 切换页面后重置上一页缩放，避免放大状态残留
+    @State private var zoomResetIDs: [PollinationFeedItem.ID: UUID] = [:]
 
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
 
-            // 图片横向滚动
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
-                    ForEach(items) { item in
-                        detailContent(for: item)
-                            .containerRelativeFrame(.horizontal)
-                            .id(item.id)
-                    }
+            // 使用 TabView(.page) 替代 ScrollView，
+            // UIPageViewController 能正确识别内嵌 UIScrollView 的边界，
+            // 缩放比例为 1 时手势自然传递给翻页控制器，不再卡在一半。
+            TabView(selection: $selectedItem) {
+                ForEach(items) { item in
+                    detailContent(for: item)
+                        .tag(item)
                 }
-                .scrollTargetLayout()
             }
-            .scrollPosition(id: $scrollID)
-            .scrollTargetBehavior(.paging)
+            .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea()
 
-            // 底部半屏渐变 + prompt文字 + actionButton 整体放在一个 VStack 底部
             VStack(spacing: 0) {
                 Spacer()
 
-                // 渐变 + 内容整体
                 VStack(spacing: 0) {
                     Text(selectedItem.prompt ?? "")
                         .font(.system(size: 16))
@@ -55,30 +51,24 @@ struct ImageDetailsView: View {
                         .padding(.bottom, 40)
                 }
                 .background(
-                    // 渐变背景从这个 VStack 顶部向上延伸半屏
                     GeometryReader { geo in
                         LinearGradient(
                             colors: [Color.black.opacity(0), Color.black.opacity(0.85)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: geo.size.height * 2) // 向上延伸覆盖两倍高度
-                        .offset(y: -geo.size.height)        // 向上偏移，使渐变从上方淡入
+                        .frame(height: geo.size.height * 2)
+                        .offset(y: -geo.size.height)
                     }
                 )
             }
             .ignoresSafeArea(edges: .bottom)
 
-            // 关闭按钮
             closeButton()
         }
-        .onAppear {
-            scrollID = selectedItem.id
-        }
-        .onChange(of: scrollID) { _, newID in
-            if let newID = newID, let item = items.first(where: { $0.id == newID }) {
-                selectedItem = item
-            }
+        .onChange(of: selectedItem) { old, _ in
+            // 离开该页时重置其缩放状态，下次再进入时从 1x 开始
+            zoomResetIDs[old.id] = UUID()
         }
         .toast(item: $toast)
     }
@@ -95,6 +85,8 @@ struct ImageDetailsView: View {
                 .zoomable()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // id 变化时 SwiftUI 重建此视图，Zoomable 状态随之重置
+        .id(zoomResetIDs[item.id]?.uuidString ?? item.id)
     }
 
     private func getPlaceholderView() -> some View {
