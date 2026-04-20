@@ -7,6 +7,78 @@
 
 import Foundation
 
+// MARK: - CivitAI 数据模型
+
+struct CivitAIResponse: Codable {
+    let items: [CivitAIImage]?
+    let metadata: CivitAIMetadata?
+
+    var images: [CivitAIImage] {
+        return items ?? []
+    }
+}
+
+struct CivitAIMetadata: Codable {
+    let totalItems: Int?
+    let currentPage: Int?
+    let pageSize: Int?
+    let totalPages: Int?
+    let nextCursor: String?
+    let nextPage: String?
+}
+
+struct CivitAIImage: Codable {
+    let id: Int?
+    let url: String?
+    let nsfw: Bool?
+    let nsfwLevel: String?
+    let width: Int?
+    let height: Int?
+    let hash: String?
+    let type: String?
+    let browsingLevel: Int?
+    let meta: CivitAIMeta?
+    let username: String?
+    let createdAt: String?
+    let postId: Int?
+    let stats: CivitAIStats?
+
+    enum CodingKeys: String, CodingKey {
+        case id, url, nsfw, width, height, hash, meta, username, stats, type, postId
+        case nsfwLevel = "nsfwLevel"
+        case createdAt = "createdAt"
+        case browsingLevel = "browsingLevel"
+    }
+}
+
+struct CivitAIMeta: Codable {
+    let prompt: String?
+    let negativePrompt: String?
+    let seed: Int64?
+    let model: String?
+    let sampler: String?
+    let cfgScale: Double?
+    let steps: Int?
+    let size: String?
+    let clipSkip: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case prompt, seed, model, sampler, steps, size
+        case negativePrompt = "negativePrompt"
+        case cfgScale = "cfgScale"
+        case clipSkip = "clipSkip"
+    }
+}
+
+struct CivitAIStats: Codable {
+    let cryCount: Int?
+    let laughCount: Int?
+    let likeCount: Int?
+    let dislikeCount: Int?
+    let heartCount: Int?
+    let commentCount: Int?
+}
+
 class CivitAIDataSource: FeedDataSource {
     // MARK: - FeedDataSource 协议实现
     
