@@ -33,8 +33,8 @@ final class RemoteConfigManager {
         Key.huggingFaceToken.rawValue    : "" as NSObject,
         Key.civitaiBaseURL.rawValue      : "https://civitai.com/api/v1/images" as NSObject,
         Key.civitaiApiKey.rawValue       : "" as NSObject,
-        Key.privacyURL.rawValue          : "https://www.yourapp.com/privacy" as NSObject,
-        Key.termsURL.rawValue            : "https://www.yourapp.com/terms" as NSObject,
+        Key.privacyURL.rawValue          : "https://velvety-manatee-9d0a84.netlify.app/privacy.html" as NSObject,
+        Key.termsURL.rawValue            : "https://velvety-manatee-9d0a84.netlify.app/terms.html" as NSObject,
         Key.feedbackEmail.rawValue       : "gzkhhy@gmail.com" as NSObject,
     ]
 
