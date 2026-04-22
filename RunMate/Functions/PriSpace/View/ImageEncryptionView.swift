@@ -91,11 +91,20 @@ struct ImageEncryptionView: View {
             Text("Remove the original photo from your photo library? It will only be viewable inside this app.")
         }
         .onChange(of: selectedItem) { _, newItem in
-            selectedAssetIdentifier = newItem?.itemIdentifier
+            guard let newItem else { return }
+            selectedAssetIdentifier = newItem.itemIdentifier
             Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                    selectedImageData = data
+                // 加载原始数据后统一转换为 JPEG，避免 HEIC 等格式解密后无法渲染
+                if let rawData = try? await newItem.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: rawData),
+                   let jpegData = uiImage.jpegData(compressionQuality: 0.92) {
+                    selectedImageData = jpegData
                     showPasswordInput = true
+                } else {
+                    alertMessage = "Failed to load image. Please try another photo."
+                    showAlert = true
+                    selectedItem = nil
+                    selectedAssetIdentifier = nil
                 }
             }
         }

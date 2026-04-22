@@ -13,11 +13,18 @@ class StorageManager {
     var encryptedImages: [EncryptedImage] = []
     
     private let storageFileName = "encryptedImages.json"
-    private var documentsPath: URL {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
-        return appSupport
-    }
+    private let documentsPath: URL = {
+        let fm = FileManager.default
+        let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        if !fm.fileExists(atPath: appSupport.path) {
+            try? fm.createDirectory(at: appSupport, withIntermediateDirectories: true, attributes: nil)
+        }
+        // 如果 Application Support 不可用，降级到 Documents
+        if fm.fileExists(atPath: appSupport.path) {
+            return appSupport
+        }
+        return fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }()
     
     init() {
         loadImages()
