@@ -11,7 +11,7 @@ struct MeView: View {
     @State private var store = AIImageStore.shared
     @State private var glowPulse = false
     @State private var currentItem: AIGeneratedImage? = nil
-    @State private var showSettings = false  // ← 新增：控制设置页面展示
+    @State private var showSettings = false  // ← Added: controls settings page presentation
 
     var body: some View {
         ZStack {
@@ -35,17 +35,17 @@ struct MeView: View {
         .fullScreenCover(item: $currentItem) { item in
             MeDetailsView(record: item, store: store)
         }
-        .sheet(isPresented: $showSettings) {  // ← 新增：设置页面弹出
+        .sheet(isPresented: $showSettings) {  // ← Added: settings page sheet
             SettingsView()
         }
     }
 
-    // MARK: - 个人信息浮动卡片
+    // MARK: - Profile Floating Card
 
     private var profileHeroCard: some View {
         ZStack(alignment: .topTrailing) {
 
-            // 背景紫色光晕装饰
+            // Background purple glow decoration
             Circle()
                 .fill(Color(hex: "9D50BB").opacity(0.18))
                 .frame(width: 220, height: 220)
@@ -58,23 +58,23 @@ struct MeView: View {
                 .blur(radius: 50)
                 .offset(x: 80, y: 60)
 
-            // 内容
+            // Content
             VStack(spacing: 0) {
 
-                // 头像
+                // Avatar
                 ZStack {
-                    // 最外层脉动光晕
+                    // Outermost pulsing glow
                     Circle()
                         .fill(AppTheme.Colors.accentStart.opacity(glowPulse ? 0.25 : 0.08))
                         .frame(width: 108, height: 108)
                         .blur(radius: 12)
 
-                    // 渐变描边环
+                    // Gradient stroke ring
                     Circle()
                         .stroke(AppTheme.Colors.borderGradient, lineWidth: 2.5)
                         .frame(width: 94, height: 94)
 
-                    // 头像主体
+                    // Avatar body
                     Circle()
                         .fill(
                             LinearGradient(
@@ -91,13 +91,13 @@ struct MeView: View {
                 }
                 .padding(.bottom, 16)
 
-                // 名称
+                // Name
                 Text("AuraAI")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .padding(.bottom, 20)
 
-                // 数据统计栏
+                // Stats bar
                 HStack(spacing: 0) {
                     statCell(
                         value: "\(store.records.count)",
@@ -138,7 +138,7 @@ struct MeView: View {
             }
             .padding(20)
 
-            // ← 新增：右上角设置按钮
+            // ← Added: top-right settings button
             settingsButton
         }
         .background(
@@ -160,14 +160,14 @@ struct MeView: View {
         .padding(.top, 16)
     }
 
-    // MARK: - 设置按钮
+    // MARK: - Settings Button
 
     private var settingsButton: some View {
         Button {
             showSettings = true
         } label: {
             ZStack {
-                // 背景磨砂玻璃效果
+                // Background frosted-glass effect
                 Circle()
                     .fill(Color(hex: "2D1F4E").opacity(0.85))
                     .overlay(
@@ -186,7 +186,7 @@ struct MeView: View {
         .padding(.trailing, 14)
     }
 
-    // MARK: - 分隔线
+    // MARK: - Divider
 
     private var sectionDivider: some View {
         HStack(spacing: 12) {
@@ -232,7 +232,7 @@ struct MeView: View {
         .padding(.vertical, 24)
     }
 
-    // MARK: - 创作历史
+    // MARK: - Creation History
 
     private var creationsSection: some View {
         Group {
@@ -261,7 +261,7 @@ struct MeView: View {
         }
     }
 
-    // MARK: - 空状态
+    // MARK: - Empty State
 
     private var emptyState: some View {
         VStack(spacing: 16) {
@@ -287,7 +287,7 @@ struct MeView: View {
         .padding(.vertical, 60)
     }
 
-    // MARK: - 统计格子
+    // MARK: - Stat Cell
 
     private func statCell(value: String, label: String, icon: String) -> some View {
         VStack(spacing: 4) {

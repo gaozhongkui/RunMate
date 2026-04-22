@@ -38,7 +38,7 @@ class PhotosUtils {
 
                 for asset in selectedAssets {
                     group.enter()
-                    // 建议不要用最大尺寸，防止内存爆掉
+                    // Avoid using maximum size to prevent memory overflow
                     manager.requestImage(for: asset,
                                          targetSize: CGSize(width: 500, height: 500),
                                          contentMode: .aspectFill,
@@ -69,8 +69,8 @@ class PhotosUtils {
                 let fetchOptions = PHFetchOptions()
                 fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
 
-                // --- 核心修改：处理限制数量 ---
-                // 如果传入 -1，则 fetchLimit 设为 0 (Photos 框架中 0 代表不限制)
+                // --- Core change: handle count limit ---
+                // If -1 is passed, set fetchLimit to 0 (0 means no limit in the Photos framework)
                 fetchOptions.fetchLimit = limit < 0 ? 0 : limit
 
                 var fetchResult: PHFetchResult<PHAsset>
@@ -99,12 +99,12 @@ class PhotosUtils {
         }
     }
 
-    // 辅助方法：安全获取 Collection 中的资源
+    // Helper: safely fetch assets from a Collection
     private static func fetchAssetsInCollection(_ collection: PHAssetCollection?, options: PHFetchOptions) -> PHFetchResult<PHAsset> {
         if let collection = collection {
             return PHAsset.fetchAssets(in: collection, options: options)
         }
-        // 返回一个空的结果集
+        // Return an empty result set
         return PHAsset.fetchAssets(with: .image, options: options)
     }
 
@@ -118,7 +118,7 @@ class PhotosUtils {
         var images: [UIImage] = []
         let imageQueue = DispatchQueue(label: "com.photosutils.images")
 
-        // fetchResult.count 已经受 fetchLimit 影响了，所以直接遍历即可
+        // fetchResult.count is already affected by fetchLimit, so enumerate directly
         fetchResult.enumerateObjects { asset, _, _ in
             group.enter()
             manager.requestImage(for: asset,

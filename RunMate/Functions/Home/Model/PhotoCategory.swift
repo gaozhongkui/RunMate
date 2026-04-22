@@ -13,7 +13,7 @@ enum PhotoCategory: Equatable {
     case recordings
     case shortVideos(maxDuration: Double)
     
-    // 自定义相等性比较，忽略 maxDuration 的具体值
+    // Custom equality comparison, ignoring the specific value of maxDuration
     static func == (lhs: PhotoCategory, rhs: PhotoCategory) -> Bool {
         switch (lhs, rhs) {
         case (.allVideos, .allVideos):
@@ -23,7 +23,7 @@ enum PhotoCategory: Equatable {
         case (.recordings, .recordings):
             return true
         case (.shortVideos, .shortVideos):
-            return true  // 只要都是 shortVideos 就认为相等
+            return true  // Treat as equal as long as both are shortVideos
         default:
             return false
         }

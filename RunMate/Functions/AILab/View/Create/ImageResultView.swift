@@ -36,7 +36,7 @@ struct ImageResultView: View {
                 bottomLayout()
             }
 
-            // 成功/失败 Toast
+            // Success/Failure Toast
             if showToast {
                 toastView
                     .transition(.move(edge: .top).combined(with: .opacity))
@@ -62,7 +62,7 @@ struct ImageResultView: View {
                 .font(AppTheme.Fonts.headline())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
-            // 分享按钮
+            // Share button
             Button(action: { shareImage() }) {
                 Image(systemName: "square.and.arrow.up")
                     .foregroundColor(AppTheme.Colors.textPrimary)
@@ -202,7 +202,7 @@ struct ImageResultView: View {
             DispatchQueue.main.async {
                 if success {
                     saveState = .success
-                    confirmAction()   // 同步保存到 AIImageStore 历史记录
+                    confirmAction()   // Sync save to AIImageStore history
                     showToastMessage()
                 } else {
                     showFailure(error?.localizedDescription ?? "Save failed")
@@ -214,7 +214,7 @@ struct ImageResultView: View {
     private func showFailure(_ message: String) {
         saveState = .failed(message)
         showToastMessage()
-        // 失败后允许重试
+        // Allow retry after failure
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             saveState = .idle
         }
@@ -281,7 +281,7 @@ struct ImageResultView: View {
     }
 }
 
-// SaveState Equatable 支持 disabled 判断
+// SaveState Equatable support for disabled judgment
 extension ImageResultView.SaveState: Equatable {
     static func == (lhs: ImageResultView.SaveState, rhs: ImageResultView.SaveState) -> Bool {
         switch (lhs, rhs) {

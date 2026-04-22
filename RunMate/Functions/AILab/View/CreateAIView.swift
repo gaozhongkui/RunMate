@@ -47,7 +47,7 @@ struct CreateAIView: View {
                         aiStep = .Config
                     }
                 } confirmAction: {
-                    // 保存生成的图片到历史记录
+                    // Save the generated image to history
                     if let image = viewModel.generatedImage {
                         AIImageStore.shared.save(
                             image: image,

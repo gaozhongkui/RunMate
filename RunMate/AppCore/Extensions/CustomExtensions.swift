@@ -10,19 +10,19 @@ import SwiftUI
 import UIKit
 
 extension UIDevice {
-    /// 判断设备是否为全面屏（或刘海屏）
+    /// Determines whether the device has a notch or full-screen design
     var hasNotch: Bool {
         if UIDevice.current.model.contains("iPad") {
             return false
         }
-        // 使用 connectedScenes 获取当前活跃的 UIWindowScene
+        // Use connectedScenes to get the currently active UIWindowScene
         let scenes = UIApplication.shared.connectedScenes
         guard let windowScene = scenes.first as? UIWindowScene else { return false }
 
-        // 获取主窗口
+        // Get the main window
         guard let window = windowScene.windows.first else { return false }
 
-        // 如果底部安全区域大于 0，则为全面屏设备
+        // If the bottom safe area inset is greater than 0, it is a full-screen device
         return window.safeAreaInsets.bottom > 0
     }
 }
@@ -143,7 +143,7 @@ public actor CachedFileSizeCalculator {
     }
 }
 
-/// 获取单个 PHAsset 的原始资源大小（异步读取）
+/// Fetch the original resource size of a single PHAsset (async)
 public func fetchAssetSize(_ asset: PHAsset) async -> Int64 {
     return await CachedFileSizeCalculator.getAssetSize(asset)
 }
@@ -161,44 +161,44 @@ private func estimateVideoSize(_ asset: PHAsset) -> Int64 {
     let height = Int64(asset.pixelHeight)
     let duration = asset.duration
 
-    // 直接使用像素总数计算
+    // Calculate directly from total pixel count
     let totalPixels = width * height
 
-    // 每像素每秒的比特数（根据分辨率调整）
+    // Bits per pixel per second (adjusted by resolution)
     let bitsPerPixelPerSecond = getBitsPerPixel(totalPixels: totalPixels)
 
-    // 估算帧率
+    // Estimate frame rate
     let estimatedFrameRate = getEstimatedFrameRate(asset)
 
-    // 计算比特率
+    // Calculate bit rate
     let bitrate =
         Double(totalPixels) * bitsPerPixelPerSecond * estimatedFrameRate
 
-    // 计算文件大小（字节）
+    // Calculate file size in bytes
     let sizeInBytes = Int64(bitrate * duration / 8)
 
     return sizeInBytes
 }
 
 private func getBitsPerPixel(totalPixels: Int64) -> Double {
-    // 分辨率越高，每像素压缩效率越好
+    // Higher resolution means better per-pixel compression efficiency
     switch totalPixels {
-    case 0..<500_000: return 0.25 // 低分辨率
-    case 500_000..<1_000_000: return 0.20 // 中等分辨率
-    case 1_000_000..<2_000_000: return 0.15 // 高分辨率
-    case 2_000_000..<5_000_000: return 0.12 // 全高清
+    case 0..<500_000: return 0.25 // Low resolution
+    case 500_000..<1_000_000: return 0.20 // Medium resolution
+    case 1_000_000..<2_000_000: return 0.15 // High resolution
+    case 2_000_000..<5_000_000: return 0.12 // Full HD
     case 5_000_000..<10_000_000: return 0.10 // 2K/4K
-    default: return 0.08 // 超高分辨率
+    default: return 0.08 // Ultra-high resolution
     }
 }
 
 private func getEstimatedFrameRate(_ asset: PHAsset) -> Double {
     if asset.mediaSubtypes.contains(.videoHighFrameRate) {
-        return 60.0 // 高帧率
+        return 60.0 // High frame rate
     } else if asset.mediaSubtypes.contains(.videoTimelapse) {
-        return 24.0 // 延时摄影
+        return 24.0 // Time-lapse
     } else {
-        return 30.0 // 标准帧率
+        return 30.0 // Standard frame rate
     }
 }
 

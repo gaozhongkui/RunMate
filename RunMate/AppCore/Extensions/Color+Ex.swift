@@ -59,14 +59,14 @@ extension UIColor {
     convenience init(hex: String) {
         var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
 
-        // 去掉 # 前缀
+        // Remove # prefix
         if cString.hasPrefix("#") {
             cString.remove(at: cString.startIndex)
         }
 
-        // 检查长度是否合法
+        // Validate length
         if cString.count != 6, cString.count != 8 {
-            self.init(white: 0.5, alpha: 1.0) // 长度不合法时返回灰色
+            self.init(white: 0.5, alpha: 1.0) // Return gray for invalid length
             return
         }
 
@@ -74,7 +74,7 @@ extension UIColor {
         Scanner(string: cString).scanHexInt64(&rgbValue)
 
         if cString.count == 6 {
-            // 处理 6 位 Hex: #RRGGBB
+            // Handle 6-digit hex: #RRGGBB
             self.init(
                 red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
                 green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -82,7 +82,7 @@ extension UIColor {
                 alpha: 1.0
             )
         } else {
-            // 处理 8 位 Hex: #RRGGBBAA
+            // Handle 8-digit hex: #RRGGBBAA
             self.init(
                 red: CGFloat((rgbValue & 0xFF000000) >> 24) / 255.0,
                 green: CGFloat((rgbValue & 0x00FF0000) >> 16) / 255.0,

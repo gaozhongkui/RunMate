@@ -1,45 +1,45 @@
 //
 //  FeedDataSource.swift
-//  统一的数据源协议和管理器
+//  Unified data source protocol and manager
 //
 //  Created by Claude on 2026/2/3.
 //
 
 import Foundation
 
-// MARK: - 数据源协议
+// MARK: - Data Source Protocol
 
-/// 统一的数据源协议
+/// Unified data source protocol
 protocol FeedDataSource: AnyObject {
-    /// 数据源名称
+    /// Data source name
     var name: String { get }
-    
-    /// 数据源优先级（数字越小优先级越高）
+
+    /// Data source priority (smaller number = higher priority)
     var priority: Int { get }
-    
-    /// 是否可用
+
+    /// Whether the source is available
     var isAvailable: Bool { get }
-    
-    /// 开始获取数据
+
+    /// Start fetching data
     func startFetching() async throws
-    
-    /// 停止获取数据
+
+    /// Stop fetching data
     func stopFetching()
-    
-    /// 加载更多历史数据
+
+    /// Load more historical data
     func loadMore() async throws -> [PollinationFeedItem]
-    
-    /// 刷新数据
+
+    /// Refresh data
     func refresh() async throws -> [PollinationFeedItem]
-    
-    /// 数据回调
+
+    /// Data callback
     var onNewItems: (([PollinationFeedItem]) -> Void)? { get set }
-    
-    /// 错误回调
+
+    /// Error callback
     var onError: ((Error) -> Void)? { get set }
 }
 
-// MARK: - 数据源错误类型
+// MARK: - Data Source Error Types
 
 enum FeedDataSourceError: Error, LocalizedError {
     case networkError(underlying: Error)
@@ -47,32 +47,32 @@ enum FeedDataSourceError: Error, LocalizedError {
     case noDataAvailable
     case allSourcesFailed
     case sourceUnavailable
-    
+
     var errorDescription: String? {
         switch self {
         case .networkError(let error):
-            return "网络错误: \(error.localizedDescription)"
+            return "Network error: \(error.localizedDescription)"
         case .parseError(let error):
-            return "数据解析错误: \(error.localizedDescription)"
+            return "Data parse error: \(error.localizedDescription)"
         case .noDataAvailable:
-            return "暂无可用数据"
+            return "No data available"
         case .allSourcesFailed:
-            return "所有数据源均不可用"
+            return "All data sources are unavailable"
         case .sourceUnavailable:
-            return "数据源不可用"
+            return "Data source unavailable"
         }
     }
 }
 
-// MARK: - 数据源状态
+// MARK: - Data Source Status
 
 enum DataSourceStatus {
-    case idle           // 空闲
-    case fetching       // 正在获取数据
-    case available      // 可用
-    case unavailable    // 不可用
-    case error(Error)   // 错误状态
-    
+    case idle           // Idle
+    case fetching       // Fetching data
+    case available      // Available
+    case unavailable    // Unavailable
+    case error(Error)   // Error state
+
     var isHealthy: Bool {
         switch self {
         case .idle, .fetching, .available:

@@ -14,58 +14,58 @@ enum AppTheme {
     // MARK: - Colors
     
     enum Colors {
-        /// 主背景渐变 - 左上到右下
+        /// Main background gradient - top-left to bottom-right
         static let pageGradient = LinearGradient(
             colors: [Color(hex: "3A507C"), Color(hex: "21304A")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         
-        /// 卡片背景
+        /// Card background
         static let cardBackground = Color(hex: "1A1A24")
-        
-        /// 卡片背景（深色变体）
+
+        /// Card background (dark variant)
         static let cardBackgroundAlt = Color(hex: "1A1629")
-        
-        /// 主强调渐变（紫色系）
+
+        /// Primary accent gradient (purple tones)
         static let accentGradient = LinearGradient(
             colors: [Color(hex: "9D50BB"), Color(hex: "6E48AA")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         
-        /// 主强调色（用于按钮、选中状态）
+        /// Primary accent color (used for buttons, selected states)
         static let accentStart = Color(hex: "9D50BB")
         static let accentEnd = Color(hex: "6E48AA")
-        
-        /// 边框/装饰渐变（青紫）
+
+        /// Border/decoration gradient (cyan-purple)
         static let borderGradient = LinearGradient(
             colors: [Color(hex: "8A2BE2"), Color(hex: "00FFFF")],
             startPoint: .leading,
             endPoint: .trailing
         )
         
-        /// 主文字（浅色背景下）
+        /// Primary text (on light backgrounds)
         static let textPrimary = Color.white
         static let textSecondary = Color.white.opacity(0.7)
         static let textTertiary = Color.white.opacity(0.5)
         static let textMuted = Color.gray
-        
-        /// Banner 深色渐变
+
+        /// Banner dark gradient
         static let bannerGradient = LinearGradient(
             colors: [Color(white: 0.15), Color.black],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         
-        /// 进度环/进度条
+        /// Progress ring / progress bar
         static let progressGradient = LinearGradient(
             colors: [Color.blue, Color.purple],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         
-        /// 卡片描边
+        /// Card stroke
         static let cardStroke = LinearGradient(
             colors: [
                 Color.white.opacity(0.2),
@@ -80,42 +80,42 @@ enum AppTheme {
     // MARK: - Typography
     
     enum Fonts {
-        /// 大标题 (28pt)
+        /// Large title (28pt)
         static func largeTitle(_ weight: Font.Weight = .bold) -> Font {
             .system(size: 28, weight: weight)
         }
         
-        /// 标题 (22pt)
+        /// Title (22pt)
         static func title(_ weight: Font.Weight = .bold) -> Font {
             .system(size: 22, weight: weight)
         }
         
-        /// 副标题 (18pt)
+        /// Headline / subheading (18pt)
         static func headline(_ weight: Font.Weight = .bold) -> Font {
             .system(size: 18, weight: weight)
         }
         
-        /// 正文 (16pt)
+        /// Body text (16pt)
         static func body(_ weight: Font.Weight = .regular) -> Font {
             .system(size: 16, weight: weight)
         }
         
-        /// 小正文 (14pt)
+        /// Small body text (14pt)
         static func subheadline(_ weight: Font.Weight = .regular) -> Font {
             .system(size: 14, weight: weight)
         }
         
-        /// 说明文字 (13pt)
+        /// Caption text (13pt)
         static func caption(_ weight: Font.Weight = .regular) -> Font {
             .system(size: 13, weight: weight)
         }
         
-        /// 辅助文字 (12pt)
+        /// Auxiliary text (12pt)
         static func caption2(_ weight: Font.Weight = .regular) -> Font {
             .system(size: 12, weight: weight)
         }
         
-        /// 数字/等宽
+        /// Numeric / monospaced
         static func monospaced(size: CGFloat = 16, weight: Font.Weight = .bold) -> Font {
             .system(size: size, weight: weight, design: .monospaced)
         }

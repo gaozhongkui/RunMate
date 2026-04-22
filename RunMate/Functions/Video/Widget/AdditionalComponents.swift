@@ -182,7 +182,7 @@ struct FilterBarView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     FilterChip(
-                        title: "全部",
+                        title: "All",
                         isSelected: selectedResolution == nil,
                         action: { selectedResolution = nil }
                     )

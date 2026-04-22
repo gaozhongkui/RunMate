@@ -21,7 +21,7 @@ struct SettingsView: View {
             AppTheme.Colors.pageGradient
                 .ignoresSafeArea()
 
-            // 背景光晕装饰
+            // Background glow decoration
             Circle()
                 .fill(Color(hex: "9D50BB").opacity(0.12))
                 .frame(width: 280, height: 280)
@@ -37,15 +37,15 @@ struct SettingsView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // 顶部导航栏
+                // Top navigation bar
                 navigationBar
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
-                        // 用户信息卡片
+                        // User info card
                         userCard
 
-                        // 设置列表
+                        // Settings list
                         settingsGroup
                     }
                     .padding(.horizontal, 16)
@@ -59,12 +59,12 @@ struct SettingsView: View {
                 glowPulse = true
             }
         }
-        // Safari 内嵌浏览器（隐私协议 & 服务条款）
+        // In-app Safari browser (Privacy Policy & Terms of Service)
         .sheet(item: $safariURL) { url in
             SafariView(url: url)
                 .ignoresSafeArea()
         }
-        // 用户反馈 Alert
+        // User feedback alert
         .alert("Send Feedback", isPresented: $showFeedbackAlert) {
             Button("Email Us") {
                 openMailFeedback()
@@ -78,7 +78,7 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - 导航栏
+    // MARK: - Navigation Bar
 
     private var navigationBar: some View {
         HStack {
@@ -112,7 +112,7 @@ struct SettingsView: View {
 
             Spacer()
 
-            // 占位，保持标题居中
+            // Placeholder to keep title centered
             Color.clear
                 .frame(width: 70, height: 36)
         }
@@ -121,11 +121,11 @@ struct SettingsView: View {
         .padding(.bottom, 8)
     }
 
-    // MARK: - 用户信息卡片
+    // MARK: - User Info Card
 
     private var userCard: some View {
         HStack(spacing: 14) {
-            // 头像
+            // Avatar
             ZStack {
                 Circle()
                     .fill(AppTheme.Colors.accentStart.opacity(glowPulse ? 0.2 : 0.06))

@@ -13,7 +13,7 @@ struct PriSpaceBanner: View {
             AppTheme.Colors.bannerGradient
             
             HStack(alignment: .center, spacing: 0) {
-                // 2. 左侧文字区域
+                // 2. Left text area
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Absolutely")
@@ -52,7 +52,7 @@ struct PriSpaceBanner: View {
     
 }
 
-// 小巧的图标标签
+// Compact icon tag
 struct MiniTag: View {
     let icon: String
     var body: some View {
@@ -64,11 +64,11 @@ struct MiniTag: View {
     }
 }
 
-// 适配手机尺寸的 Mockup
+// Phone-sized mockup
 struct CompactPhoneMockup: View {
     var body: some View {
         ZStack {
-            // 手机外框
+            // Phone bezel
             RoundedRectangle(cornerRadius: 18)
                 .fill(Color(white: 0.05))
                 .frame(width: 80, height: 140)
@@ -76,8 +76,8 @@ struct CompactPhoneMockup: View {
                     RoundedRectangle(cornerRadius: 18)
                         .stroke(Color.white.opacity(0.15), lineWidth: 1)
                 )
-            
-            // 呼吸光晕效果
+
+            // Breathing glow effect
             Circle()
                 .fill(Color.blue.opacity(0.4))
                 .frame(width: 50, height: 50)

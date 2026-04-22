@@ -15,14 +15,14 @@ struct AdvancedScanningCard: View {
     var body: some View {
         VStack {
             if viewModel.isScanning {
-                // --- 扫描状态：原始的大卡片布局 ---
+                // --- Scanning state: original large-card layout ---
                 scanningLayout
                     .transition(.asymmetric(
                         insertion: .opacity,
                         removal: .move(edge: .top).combined(with: .opacity)
                     ))
             } else {
-                // --- 完成状态：紧凑的小条布局 ---
+                // --- Completed state: compact strip layout ---
                 completedCompactLayout
                     .transition(.asymmetric(
                         insertion: .move(edge: .bottom).combined(with: .opacity),
@@ -31,7 +31,7 @@ struct AdvancedScanningCard: View {
             }
         }
         .frame(maxWidth: .infinity)
-        // 关键：动态调整内边距，完成状态下更窄
+        // Key: dynamically adjust padding — narrower when completed
         .padding(.vertical, !viewModel.isScanning ? 16 : 40)
         .padding(.horizontal, 20)
         .background(cardBackground)
@@ -55,11 +55,11 @@ struct AdvancedScanningCard: View {
         }
     }
 
-    // MARK: - 扫描中的布局 (抽取原代码)
+    // MARK: - Scanning Layout (extracted from original code)
 
     private var scanningLayout: some View {
         VStack(spacing: 28) {
-            // ... 这里放你原来的 ZStack 进度环代码 ...
+            // ... place the original ZStack progress ring code here ...
             progressRingSection
 
             VStack(spacing: 16) {
@@ -73,7 +73,7 @@ struct AdvancedScanningCard: View {
         }
     }
 
-    // MARK: - 完成后的紧凑小条布局
+    // MARK: - Compact Strip Layout After Completion
 
     private var completedCompactLayout: some View {
         HStack {
@@ -105,7 +105,7 @@ struct AdvancedScanningCard: View {
         }
     }
 
-    // MARK: - 通用背景
+    // MARK: - General Background
 
     private var cardBackground: some View {
         ZStack {
@@ -114,18 +114,18 @@ struct AdvancedScanningCard: View {
             RoundedRectangle(cornerRadius: !viewModel.isScanning ? AppTheme.Radius.lg : AppTheme.Radius.xxl)
                 .stroke(AppTheme.Colors.cardStroke, lineWidth: 1.5)
         }
-        // 整个背景切换高度时增加动画
+        // Animate the entire background when height changes
         .animation(.spring(response: 0.6, dampingFraction: 0.8), value: viewModel.isScanning)
     }
 
     private var progressRingSection: some View {
         ZStack {
-            // 背景环
+            // Background ring
             Circle()
                 .stroke(Color.white.opacity(0.1), lineWidth: 12)
                 .frame(width: 200, height: 200)
 
-            // 进度环
+            // Progress ring
             Circle()
                 .trim(from: 0, to: viewModel.scanProgress)
                 .stroke(
@@ -136,7 +136,7 @@ struct AdvancedScanningCard: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut(duration: 0.3), value: viewModel.scanProgress)
 
-            // 中心文本
+            // Center text
             VStack(spacing: 8) {
                 Text("\(Int(viewModel.scanProgress * 100))%")
                     .font(.system(size: 48, weight: .bold))

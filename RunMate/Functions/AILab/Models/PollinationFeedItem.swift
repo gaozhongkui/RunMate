@@ -8,8 +8,8 @@
 import Foundation
 
 struct PollinationFeedItem: Codable, Identifiable, Hashable {
-    // 使用计算属性，避免解码器寻找 "id" 键
-    var id: String { imageURL } // 使用 imageURL 作为唯一标识更合理
+    // Use a computed property to avoid the decoder looking for an "id" key
+    var id: String { imageURL } // Using imageURL as the unique identifier is more appropriate
     
     let imageURL: String
     let prompt: String?
@@ -24,20 +24,20 @@ struct PollinationFeedItem: Codable, Identifiable, Hashable {
     let status: String?
     let nsfw: Bool?
     
-    // 数据库专用字段（不参与 JSON 解码/编码）
-    var dbId: Int64? // 数据库自增 ID，用于精确分页
-    var dbTimestamp: Date? // 数据库存储时间
-    
-    // 用于时间戳分页的计算属性
+    // Database-only fields (not included in JSON encoding/decoding)
+    var dbId: Int64? // Database auto-increment ID for precise pagination
+    var dbTimestamp: Date? // Database storage timestamp
+
+    // Computed property for timestamp-based pagination
     var timestamp: Date {
         return dbTimestamp ?? Date()
     }
     
-    // 映射 JSON 键名（只包含需要编解码的字段）
+    // Maps JSON key names (only includes fields that need encoding/decoding)
     enum CodingKeys: String, CodingKey {
         case imageURL
         case prompt, width, height, seed, model, enhance, safe, nologo, quality, status, nsfw
-        // 注意：dbId 和 dbTimestamp 不在这里，所以不会参与 JSON 编解码
+        // Note: dbId and dbTimestamp are not listed here, so they are excluded from JSON encoding/decoding
     }
     
     func hash(into hasher: inout Hasher) {

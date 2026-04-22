@@ -21,7 +21,7 @@ struct HomeItemCard: View {
     @State private var videoDelayTask: Task<Void, Never>?
     @State private var shouldShowVideo: Bool = false
     
-    // 可配置的延迟时间（秒）
+    // Configurable delay duration (seconds)
     private let videoPlayDelay: TimeInterval = 1.5
     
     var body: some View {
@@ -29,9 +29,9 @@ struct HomeItemCard: View {
             let frame = geometry.frame(in: .global)
             
             VStack(alignment: .leading, spacing: 0) {
-                // 媒体展示区
+                // Media display area
                 ZStack {
-                    // 缩略图或占位符
+                    // Thumbnail or placeholder
                     if let image = thumbnail {
                         Image(uiImage: image)
                             .resizable()
@@ -42,7 +42,7 @@ struct HomeItemCard: View {
                             .overlay(ProgressView().tint(.white.opacity(0.5)))
                     }
                     
-                    // 视频播放器叠加在缩略图上方
+                    // Video player overlaid on top of the thumbnail
                     if isVideo, shouldShowVideo, let player = player {
                         InnerVideoPlayerView(player: player)
                             .transition(.opacity)
@@ -51,7 +51,7 @@ struct HomeItemCard: View {
                 .frame(width: geometry.size.width, height: item.viewHeight)
                 .clipped()
                 
-                // 底部信息栏
+                // Bottom info bar
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(item.title)
@@ -82,7 +82,7 @@ struct HomeItemCard: View {
         .frame(height: item.viewHeight + 60)
         .onAppear {
             configureAudioSession()
-            // 先加载缩略图
+            // Load thumbnail first
             Task { await loadThumbnailIfNeeded() }
         }
         .onDisappear {
@@ -96,16 +96,16 @@ struct HomeItemCard: View {
         try? audioSession.setActive(true)
     }
     
-    // MARK: - 可见性检测
-    
+    // MARK: - Visibility Detection
+
     private func checkVisibility(frame: CGRect) {
         let screenBounds = UIScreen.main.bounds
-        
-        // 计算可见比例
+
+        // Calculate visible ratio
         let visibleHeight = min(frame.maxY, screenBounds.height) - max(frame.minY, 0)
         let visibilityRatio = visibleHeight / frame.height
-        
-        let shouldBeVisible = visibilityRatio > 0.5 // 50% 以上可见
+
+        let shouldBeVisible = visibilityRatio > 0.5 // visible when more than 50%
         
         if shouldBeVisible != isVisible {
             isVisible = shouldBeVisible
@@ -131,10 +131,10 @@ struct HomeItemCard: View {
     }
     
     private func startDelayedVideoLoad() {
-        // 取消之前的任务
+        // Cancel previous tasks
         cancelAllTasks()
-        
-        // 延迟加载视频
+
+        // Load video with delay
         videoDelayTask = Task {
             await loadThumbnailIfNeeded()
             try? await Task.sleep(nanoseconds: UInt64(videoPlayDelay * 1_000_000_000))
@@ -165,7 +165,7 @@ struct HomeItemCard: View {
         shouldShowVideo = false
     }
     
-    // MARK: - 媒体加载
+    // MARK: - Media Loading
     
     func loadMedia() async {
         guard let phAsset = item.phAsset else {

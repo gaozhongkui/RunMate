@@ -3,7 +3,7 @@ import Photos
 import UIKit
 import Combine
 
-// MARK: - 形状模式
+// MARK: - Shape Mode
 enum GalaxyShape: CaseIterable, Hashable {
     case sphere, heart, spiral, dna, scattered
 
@@ -33,7 +33,7 @@ enum GalaxyShape: CaseIterable, Hashable {
     }
 }
 
-// MARK: - 数据模型
+// MARK: - Data Models
 private struct ImageParticle: Identifiable {
     let id = UUID()
     let asset: PHAsset?
@@ -49,7 +49,7 @@ private struct StarParticle: Identifiable {
     let twinkleOffset: Double
 }
 
-// MARK: - 心形 Shape
+// MARK: - Heart Shape
 struct HeartShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -74,14 +74,14 @@ struct HeartShape: Shape {
     }
 }
 
-// MARK: - AnyShape 类型擦除
+// MARK: - AnyShape Type Erasure
 struct AnyShape: Shape, @unchecked Sendable {
     private let _path: @Sendable (CGRect) -> Path
     init<S: Shape>(_ shape: S) { _path = { shape.path(in: $0) } }
     func path(in rect: CGRect) -> Path { _path(rect) }
 }
 
-// MARK: - 图片星系主视图
+// MARK: - Image Galaxy Main View
 struct ImageGalaxyCanvas: View {
     let namespace: Namespace.ID
 
@@ -133,7 +133,7 @@ struct ImageGalaxyCanvas: View {
         .onAppear(perform: setup)
     }
 
-    // MARK: - 背景星空
+    // MARK: - Background Starfield
     @ViewBuilder
     private func backgroundLayer(proxy: GeometryProxy) -> some View {
         ZStack {
@@ -157,7 +157,7 @@ struct ImageGalaxyCanvas: View {
         }
     }
 
-    // MARK: - 星云光晕
+    // MARK: - Nebula Glow
     @ViewBuilder
     private func nebulaLayer(proxy: GeometryProxy) -> some View {
         let pulse = 0.12 + 0.05 * sin(animationTime * 0.25)
@@ -174,7 +174,7 @@ struct ImageGalaxyCanvas: View {
         .allowsHitTesting(false)
     }
 
-    // MARK: - 粒子视图
+    // MARK: - Particle View
     @ViewBuilder
     private func particleView(item: ImageParticle, proxy: GeometryProxy) -> some View {
         let rotY = isRingMode
@@ -232,7 +232,7 @@ struct ImageGalaxyCanvas: View {
         }
     }
 
-    // MARK: - UI 叠加层
+    // MARK: - UI Overlay Layer
     @ViewBuilder
     private func overlayUI(proxy: GeometryProxy) -> some View {
         VStack {
@@ -289,7 +289,7 @@ struct ImageGalaxyCanvas: View {
         }
     }
 
-    // MARK: - 全屏查看器
+    // MARK: - Full-Screen Viewer
     @ViewBuilder
     private func fullScreenViewer(particle: ImageParticle, proxy: GeometryProxy) -> some View {
         ZStack {
@@ -340,7 +340,7 @@ struct ImageGalaxyCanvas: View {
         lastInteractionTime = animationTime
     }
 
-    // MARK: - 形状切换
+    // MARK: - Shape Switch
     private func switchShape() {
         guard !isTransitioning else { return }
         isTransitioning = true
@@ -353,7 +353,7 @@ struct ImageGalaxyCanvas: View {
         }
     }
 
-    // MARK: - 深度排序（z 轴从大到小 = 从远到近，保证近处粒子后渲染覆盖远处）
+    // MARK: - Depth Sort (z-axis from large to small = from far to near, ensuring near particles render on top)
     private func depthSortedParticles(in proxy: GeometryProxy) -> [ImageParticle] {
         let rotY = isRingMode
             ? animationTime * 0.5 + Double(dragOffset.width) / 55.0
@@ -362,11 +362,11 @@ struct ImageGalaxyCanvas: View {
         return particles.sorted { a, b in
             let za = rotate(positionFor(a, in: proxy.size), x: rotX, y: rotY).z
             let zb = rotate(positionFor(b, in: proxy.size), x: rotX, y: rotY).z
-            return za > zb  // z 越大越远，越早渲染，压在最底层
+            return za > zb  // larger z = farther away, rendered earlier, stays at the bottom layer
         }
     }
 
-    // MARK: - 位置计算
+    // MARK: - Position Calculation
     private func positionFor(_ particle: ImageParticle, in size: CGSize) -> SIMD3<Double> {
         if isRingMode {
             return ringPoint(index: particle.index, total: particles.count)
@@ -398,7 +398,7 @@ struct ImageGalaxyCanvas: View {
 
     private func heartPoint(t: Double, radius: Double) -> SIMD3<Double> {
         let a = t * 2 * .pi
-        // 经典心形参数方程
+        // Classic heart parametric equations
         let x =  radius * 0.85 * pow(sin(a), 3)
         let y = -radius * 0.78 * (13*cos(a) - 5*cos(2*a) - 2*cos(3*a) - cos(4*a)) / 16.0
         return SIMD3(x, y, 0)
@@ -427,7 +427,7 @@ struct ImageGalaxyCanvas: View {
         return SIMD3(x, y, z)
     }
 
-    // MARK: - 3D 变换
+    // MARK: - 3D Transform
     private func rotate(_ p: SIMD3<Double>, x: Double, y: Double) -> SIMD3<Double> {
         let (sY, cY) = (sin(y), cos(y))
         let (sX, cX) = (sin(x), cos(x))
@@ -444,7 +444,7 @@ struct ImageGalaxyCanvas: View {
                 CGFloat(s))
     }
 
-    // MARK: - 初始化
+    // MARK: - Initialization
     private func setup() {
         setupStars()
         loadPhotos()
@@ -465,25 +465,25 @@ struct ImageGalaxyCanvas: View {
 
     private func loadPhotos() {
         Task {
-            // ── Step 1: 权限状态 ──
+            // ── Step 1: Authorization Status ──
             let status = PHPhotoLibrary.authorizationStatus()
-            print("[Galaxy] Step1 - 权限状态: \(status.rawValue)  (0=notDetermined 1=restricted 2=denied 3=authorized 4=limited)")
+            print("[Galaxy] Step1 - Auth status: \(status.rawValue)  (0=notDetermined 1=restricted 2=denied 3=authorized 4=limited)")
 
             let granted: Bool
             if status == .notDetermined {
                 let result = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
                 granted = result == .authorized || result == .limited
-                print("[Galaxy] Step1 - 请求权限结果: \(result.rawValue)  granted=\(granted)")
+                print("[Galaxy] Step1 - Auth request result: \(result.rawValue)  granted=\(granted)")
             } else {
                 granted = status == .authorized || status == .limited
             }
 
             guard granted else {
-                print("[Galaxy] Step1 - 权限被拒绝")
+                print("[Galaxy] Step1 - Permission denied")
                 return
             }
 
-            // ── Step 2: 查询相册资产 ──
+            // ── Step 2: Fetch Photo Library Assets ──
             let opts = PHFetchOptions()
             opts.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             opts.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.image.rawValue)
@@ -495,15 +495,15 @@ struct ImageGalaxyCanvas: View {
                 assets.append(asset)
                 if assets.count >= maxParticles { stop.pointee = true }
             }
-            print("[Galaxy] Step2 - 查询到资产数量: \(assets.count)  (上限 \(maxParticles))")
+            print("[Galaxy] Step2 - Assets fetched: \(assets.count)  (limit \(maxParticles))")
 
             let newParticles = assets.enumerated().map { i, asset in
                 ImageParticle(asset: asset, index: i)
             }
             await MainActor.run { particles = newParticles }
-            print("[Galaxy] Step2 - particles 已写入 MainActor，总数: \(newParticles.count)")
+            print("[Galaxy] Step2 - particles written to MainActor, total: \(newParticles.count)")
 
-            // ── Step 3: 并发加载缩略图 ──
+            // ── Step 3: Concurrent Thumbnail Loading ──
             var successCount = 0
             var failCount = 0
             await withTaskGroup(of: Void.self) { group in
@@ -516,18 +516,18 @@ struct ImageGalaxyCanvas: View {
                             await MainActor.run {
                                 self.images[pid] = img
                                 successCount += 1
-                                print("[Galaxy] Step3 - 加载成功 [\(successCount)] size=\(img.size)")
+                                print("[Galaxy] Step3 - Load success [\(successCount)] size=\(img.size)")
                             }
                         } else {
                             await MainActor.run {
                                 failCount += 1
-                                print("[Galaxy] Step3 - 加载失败 [\(failCount)] asset=\(asset.localIdentifier)")
+                                print("[Galaxy] Step3 - Load failed [\(failCount)] asset=\(asset.localIdentifier)")
                             }
                         }
                     }
                 }
             }
-            print("[Galaxy] Step3 - 全部完成 成功:\(successCount) 失败:\(failCount)  images字典数量:\(images.count)")
+            print("[Galaxy] Step3 - All done  success:\(successCount) failed:\(failCount)  images count:\(images.count)")
         }
     }
 
@@ -553,7 +553,7 @@ struct ImageGalaxyCanvas: View {
 
                 print("[Galaxy] loadThumbnail callback - asset=\(asset.localIdentifier.prefix(8)) img=\(img != nil) isDegraded=\(isDegraded) inCloud=\(inCloud) cancelled=\(cancelled) error=\(error?.localizedDescription ?? "nil")")
 
-                // 还在降级中，等最终结果
+                // Still degraded, wait for the final result
                 if isDegraded { return }
 
                 guard !resumed else { return }

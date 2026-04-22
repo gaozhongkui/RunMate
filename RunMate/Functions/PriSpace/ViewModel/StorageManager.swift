@@ -46,7 +46,7 @@ class StorageManager {
             let data = try JSONEncoder().encode(encryptedImages)
             try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
         } catch {
-            print("保存失败: \(error)")
+            print("Save failed: \(error)")
         }
     }
     

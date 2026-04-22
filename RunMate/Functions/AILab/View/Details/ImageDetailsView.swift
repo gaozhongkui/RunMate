@@ -15,16 +15,16 @@ struct ImageDetailsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
-    // 切换页面后重置上一页缩放，避免放大状态残留
+    // Reset zoom of the previous page after switching, to avoid leftover magnified state
     @State private var zoomResetIDs: [PollinationFeedItem.ID: UUID] = [:]
 
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
 
-            // 使用 TabView(.page) 替代 ScrollView，
-            // UIPageViewController 能正确识别内嵌 UIScrollView 的边界，
-            // 缩放比例为 1 时手势自然传递给翻页控制器，不再卡在一半。
+            // Use TabView(.page) instead of ScrollView;
+            // UIPageViewController correctly recognizes the bounds of the embedded UIScrollView,
+            // so gestures naturally pass to the page controller when zoom is at 1x without getting stuck halfway.
             TabView(selection: $selectedItem) {
                 ForEach(items) { item in
                     detailContent(for: item)
@@ -67,7 +67,7 @@ struct ImageDetailsView: View {
             closeButton()
         }
         .onChange(of: selectedItem) { old, _ in
-            // 离开该页时重置其缩放状态，下次再进入时从 1x 开始
+            // Reset the zoom state when leaving the page, so it starts at 1x on next visit
             zoomResetIDs[old.id] = UUID()
         }
         .toast(item: $toast)
@@ -85,7 +85,7 @@ struct ImageDetailsView: View {
                 .zoomable()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        // id 变化时 SwiftUI 重建此视图，Zoomable 状态随之重置
+        // When the id changes, SwiftUI rebuilds this view and the Zoomable state resets accordingly
         .id(zoomResetIDs[item.id]?.uuidString ?? item.id)
     }
 

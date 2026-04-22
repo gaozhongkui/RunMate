@@ -1,13 +1,13 @@
 //
 //  CivitAIDataSource.swift
-//  CivitAI REST API 数据源实现
+//  CivitAI REST API data source implementation
 //
 //  Created by Claude on 2026/2/3.
 //
 
 import Foundation
 
-// MARK: - CivitAI 数据模型
+// MARK: - CivitAI Data Models
 
 struct CivitAIResponse: Codable {
     let items: [CivitAIImage]?
@@ -80,36 +80,36 @@ struct CivitAIStats: Codable {
 }
 
 class CivitAIDataSource: FeedDataSource {
-    // MARK: - FeedDataSource 协议实现
-    
+    // MARK: - FeedDataSource Protocol Implementation
+
     let name = "CivitAI"
-    let priority = 2  // 优先级2（较低）
-    
+    let priority = 2  // Priority 2 (lower)
+
     private(set) var isAvailable = true
-    
+
     var onNewItems: (([PollinationFeedItem]) -> Void)?
     var onError: ((Error) -> Void)?
-    
-    // MARK: - 私有属性
-    
+
+    // MARK: - Private Properties
+
     private var pollingTask: Task<Void, Never>?
     private var currentCursor: String?
     private var hasMorePages = true
     private let pageSize = 20
-    private let pollingInterval: TimeInterval = 30  // 30秒轮询一次
+    private let pollingInterval: TimeInterval = 30  // Poll every 30 seconds
     private var consecutiveErrors = 0
     private let maxConsecutiveErrors = 3
-    
-    // MARK: - 公共方法
-    
+
+    // MARK: - Public Methods
+
     func startFetching() async throws {
         stopFetching()
-        
-        // 先加载一次数据
+
+        // Load data once first
         let items = try await fetchData(cursor: nil)
         onNewItems?(items)
-        
-        // 开始轮询
+
+        // Start polling
         pollingTask = Task {
             await startPolling()
         }
@@ -134,34 +134,34 @@ class CivitAIDataSource: FeedDataSource {
         return try await fetchData(cursor: nil)
     }
     
-    // MARK: - 私有方法
-    
+    // MARK: - Private Methods
+
     private func startPolling() async {
         while !Task.isCancelled {
             do {
-                // 每次轮询获取最新数据（无游标）
+                // Fetch the latest data on each poll (no cursor)
                 let items = try await fetchData(cursor: nil)
-                
+
                 if !items.isEmpty {
                     onNewItems?(items)
                     consecutiveErrors = 0
                     isAvailable = true
                 }
-                
-                // 等待下次轮询
+
+                // Wait for the next poll
                 try await Task.sleep(nanoseconds: UInt64(pollingInterval * 1_000_000_000))
-                
+
             } catch {
                 consecutiveErrors += 1
-                
+
                 if consecutiveErrors >= maxConsecutiveErrors {
                     isAvailable = false
-                    print("❌ [\(name)] 连续失败 \(consecutiveErrors) 次，标记为不可用")
+                    print("❌ [\(name)] Failed \(consecutiveErrors) consecutive times, marked as unavailable")
                 }
-                
+
                 onError?(error)
-                
-                // 等待后重试
+
+                // Wait before retrying
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
             }
         }
@@ -181,6 +181,10 @@ class CivitAIDataSource: FeedDataSource {
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 30
+        let apiKey = RemoteConfigManager.shared.civitaiApiKey
+        if !apiKey.isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -196,15 +200,15 @@ class CivitAIDataSource: FeedDataSource {
             currentCursor = civitResponse.metadata?.nextCursor
             hasMorePages = civitResponse.metadata?.nextCursor != nil
             
-            // 转换为统一格式
+            // Convert to unified format
             let items = civitResponse.images.compactMap { image -> PollinationFeedItem? in
                 guard let url = image.url else { return nil }
                 return convertToFeedItem(image, url: url)
             }
-            
-            print("✅ [\(name)] 获取了 \(items.count) 条数据")
-            
-            // 保存到数据库
+
+            print("✅ [\(name)] Fetched \(items.count) records")
+
+            // Save to database
             if !items.isEmpty {
                 await PollinationDatabase.shared.saveItems(items, maxKeepCount: 1000)
             }

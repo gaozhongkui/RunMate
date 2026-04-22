@@ -8,24 +8,24 @@
 import UIKit
 
 enum DeviceUI {
-    /// 获取当前窗口的安全区域间距
+    /// Get the safe area insets of the current window
     static var safeAreaInsets: UIEdgeInsets {
         let scenes = UIApplication.shared.connectedScenes
         let windowScene = scenes.first as? UIWindowScene
         return windowScene?.windows.first(where: { $0.isKeyWindow })?.safeAreaInsets ?? .zero
     }
 
-    /// 顶部安全区域高度（刘海高度）
+    /// Top safe area height (notch height)
     static var topInset: CGFloat {
         safeAreaInsets.top
     }
 
-    /// 底部安全区域高度（底部横条高度）
+    /// Bottom safe area height (home indicator height)
     static var bottomInset: CGFloat {
         safeAreaInsets.bottom
     }
 
-    /// 判断是否为刘海屏/全面屏
+    /// Determine whether the device has a notch or full-screen design
     static var hasNotch: Bool {
         bottomInset > 0
     }

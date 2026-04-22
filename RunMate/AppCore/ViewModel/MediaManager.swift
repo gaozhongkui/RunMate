@@ -103,20 +103,20 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    // 这些属性不需要主线程隔离
+    // These properties do not require main-thread isolation
     private(set) var localCache: MediaCacheData?
-    
-    // 使用 actor-safe 的方式管理 fetchTask
+
+    // Manage fetchTask in an actor-safe manner
     private let fetchTaskLock = NSLock()
     private var _fetchTask: Task<Void, Never>?
     
     private var allAssetsFetchResult: PHFetchResult<PHAsset>?
 
-    // 缓存键
+    // Cache keys
     private let cacheKey = "AssetsLibraryCache"
     private let cachePermissionKey = "PhotoLibraryPermissionCache"
 
-    /// 扫描统计
+    /// Scan statistics
     @MainActor private(set) var scanTime: Double = 0.0
 
     @MainActor private(set) var authorizationStatus: PHAuthorizationStatus = .notDetermined {
@@ -135,13 +135,13 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
-    // init 标记为 nonisolated，不在主线程执行
+    // init is marked nonisolated — does not run on the main thread
     nonisolated override init() {
         super.init()
-        // 不在 init 中做任何耗时操作
+        // Do not perform any time-consuming work inside init
     }
-    
-    // 新增：显式的初始化方法
+
+    // Explicit initialization method
     nonisolated func initialize() async {
         await checkAuthorization()
     }
@@ -158,13 +158,13 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             if let fetchResult = self.allAssetsFetchResult,
                let changes = changeInstance.changeDetails(for: fetchResult)
             {
-                // 更新保存的 FetchResult
+                // Update the stored FetchResult
                 self.allAssetsFetchResult = changes.fetchResultAfterChanges
                 if changes.hasIncrementalChanges {
-                    // 获取被删除的对象的索引
+                    // Get indices of removed objects
                     if let removedIndexes = changes.removedIndexes, !removedIndexes.isEmpty {
                         let removedAssets = changes.removedObjects
-                        // 从现有列表中移除
+                        // Remove from existing lists
                         let removedIds = Set(removedAssets.map { $0.localIdentifier })
                         self.removeAssets(ids: removedIds)
                     }
@@ -185,16 +185,16 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
     @MainActor
     func readData() {
-        // 先加载缓存数据
+        // Load cached data first
         restoreFromCache()
 
         Task.detached(priority: .userInitiated) { [weak self] in
-            // 后台静默更新
+            // Silent background update
             await self?.fetchAssets()
         }
     }
 
-    /// 外部调用，申请权限
+    /// Request authorization (called externally)
     nonisolated func requestAuthorization() async -> PHAuthorizationStatus {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if status == .notDetermined {
@@ -214,20 +214,20 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         return await MainActor.run { self.authorizationStatus }
     }
 
-    /// 删除指定的资源（从照片库和内存中删除）
-    /// - Parameter assets: 要删除的 PHAsset 数组
-    /// - Returns: 是否删除成功
-    /// - Throws: 删除过程中的错误
+    /// Delete specified assets (removes from both photo library and memory)
+    /// - Parameter assets: Array of PHAssets to delete
+    /// - Returns: Whether deletion succeeded
+    /// - Throws: Errors encountered during deletion
     @discardableResult
     nonisolated func deleteAssets(assets: [PHAsset]) async throws -> Bool {
         guard !assets.isEmpty else { return false }
-        // 获取 identifiers
+        // Get identifiers
         let identifiers = assets.map { $0.localIdentifier }
-        // 使用非 Actor 隔离的 Helper 执行删除
+        // Use a non-actor-isolated helper to perform the deletion
         let success = try await AssetDeleter.deleteAssets(identifiers: identifiers)
 
         if success {
-            // 从内存中移除并更新统计
+            // Remove from memory and update statistics
             let ids = Set(identifiers)
             await MainActor.run {
                 self.removeAssets(ids: ids)
@@ -239,11 +239,11 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
 
     // MARK: - Private Methods
 
-    /// 已有权限时注册相册变更监听
+    /// Register photo library change observer when permission is already granted
     private nonisolated func checkAuthorization() async {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if status != .notDetermined {
-            // 检查权限是否发生变化
+            // Check whether the permission status has changed
             await checkPermissionChange(newStatus: status)
             await MainActor.run {
                 self.authorizationStatus = status
@@ -252,18 +252,18 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    /// 检查权限变化，如果变化则清空缓存
+    /// Check for permission changes and clear cache if changed
     private nonisolated func checkPermissionChange(newStatus: PHAuthorizationStatus) async {
         let cachedPermission = UserDefaults.standard.integer(forKey: cachePermissionKey)
         let newPermissionValue = newStatus.rawValue
 
-        // 如果有缓存的权限值且与当前权限不同，清空 localCache
+        // If a cached permission value exists and differs from the current one, clear localCache
         if cachedPermission != 0, cachedPermission != newPermissionValue {
             localCache = nil
             UserDefaults.standard.removeObject(forKey: cacheKey)
         }
 
-        // 保存当前权限状态
+        // Save current permission status
         UserDefaults.standard.set(newPermissionValue, forKey: cachePermissionKey)
     }
 
@@ -277,7 +277,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    /// 从所有列表中移除指定 ID 的资源
+    /// Remove assets with the specified IDs from all lists
     @MainActor
     private func removeAssets(ids: Set<String>) {
         // Short Video
@@ -286,8 +286,8 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             shortVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = shortToRemove.reduce(0) { $0 + $1.size }
             shortVideoSize -= sizeToRemove
-            
-            // 通知代理
+
+            // Notify delegate
             delegate?.mediaManager(self, didUpdateShortVideos: shortVideoList, totalSize: shortVideoSize)
         }
 
@@ -296,8 +296,8 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             allVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = allVideoToRemove.reduce(0) { $0 + $1.size }
             allVideoSize -= sizeToRemove
-            
-            // 通知代理
+
+            // Notify delegate
             delegate?.mediaManager(self, didUpdateAllVideos: allVideoList, totalSize: allVideoSize)
         }
 
@@ -306,8 +306,8 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             screenRecordingVideoList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = screenRecordingToRemove.reduce(0) { $0 + $1.size }
             screenRecordingVideoSize -= sizeToRemove
-            
-            // 通知代理
+
+            // Notify delegate
             delegate?.mediaManager(self, didUpdateScreenRecordings: screenRecordingVideoList, totalSize: screenRecordingVideoSize)
         }
 
@@ -316,17 +316,17 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             screenshootList.removeAll { ids.contains($0.phAsset.localIdentifier) }
             let sizeToRemove = screenshotToRemove.reduce(0) { $0 + $1.size }
             screenshotImageSize -= sizeToRemove
-            
-            // 通知代理
+
+            // Notify delegate
             delegate?.mediaManager(self, didUpdateScreenshots: screenshootList, totalSize: screenshotImageSize)
         }
 
-        // 保存缓存
+        // Save cache
         saveCache()
     }
 
     private nonisolated func fetchAssets(isInitialLoad: Bool = true) async {
-        // 使用线程安全的方式取消之前的任务
+        // Cancel the previous task in a thread-safe manner
         fetchTaskLock.lock()
         _fetchTask?.cancel()
         fetchTaskLock.unlock()
@@ -359,10 +359,10 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             }
 
             if isInitialLoad {
-                // 首次加载：渐进式更新
+                // Initial load: progressive update
                 await self.processAssetsProgressively(assets)
             } else {
-                // 相册变更：静默读取，一次性更新
+                // Photo library change: silent fetch, one-shot update
                 await self.processAssetsAtOnce(assets)
             }
 
@@ -371,13 +371,13 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             await MainActor.run {
                 self.scanTime = scanTime
             }
-            // 通知代理扫描完成
+            // Notify delegate that scan is complete
             await MainActor.run {
                 self.delegate?.mediaManager(self, didFinishScanWithTime: scanTime)
             }
         }
-        
-        // 保存任务引用
+
+        // Save task reference
         fetchTaskLock.lock()
         _fetchTask = task
         fetchTaskLock.unlock()
@@ -446,7 +446,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    /// 首次加载：分批渐进式更新
+    /// Initial load: process in batches with progressive UI updates
     private nonisolated func processAssetsProgressively(_ assets: [PHAsset]) async {
         let batchSize = 100
         var processedCount = 0
@@ -460,7 +460,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             let batch = Array(assets[startIndex ..< endIndex])
 
 
-            // 处理当前批次
+            // Process the current batch
             await withTaskGroup(of: FetchResult.self) { group in
                 for asset in batch {
                     if Task.isCancelled { break }
@@ -469,7 +469,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                     }
                 }
 
-                // 收集当前批次的结果
+                // Collect results for the current batch
                 var batchResult = FetchResult()
                 for await result in group {
                     if Task.isCancelled { break }
@@ -489,12 +489,12 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                     batchResult.videoSize += result.videoSize
                 }
 
-                // 立即更新 UI（渐进式）
+                // Immediately update UI (progressive)
                 if !Task.isCancelled {
                     let isFirst = isFirstBatch
 
                     await MainActor.run {
-                        // 只在第一批时清空列表，避免白屏
+                        // Clear lists only on the first batch to avoid a blank screen
                         if isFirst {
                             self.shortVideoList = []
                             self.allVideoList = []
@@ -517,7 +517,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                         self.screenRecordingVideoSize += batchResult.screenRecordingVideoSize
                         self.screenshotImageSize += batchResult.screenshotImageSize
                         
-                        // 通知代理数据更新
+                        // Notify delegate of data update
                         self.delegate?.mediaManager(self, didUpdateShortVideos: self.shortVideoList, totalSize: self.shortVideoSize)
                         self.delegate?.mediaManager(self, didUpdateAllVideos: self.allVideoList, totalSize: self.allVideoSize)
                         self.delegate?.mediaManager(self, didUpdateScreenRecordings: self.screenRecordingVideoList, totalSize: self.screenRecordingVideoSize)
@@ -531,11 +531,11 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             processedCount = endIndex
         }
 
-        // 处理完成后保存缓存
+        // Save cache after processing is complete
         saveCache()
     }
 
-    /// 相册变更：静默读取，一次性更新
+    /// Photo library change: silent fetch, one-shot UI update
     private nonisolated func processAssetsAtOnce(_ assets: [PHAsset]) async {
         await withTaskGroup(of: FetchResult.self) { group in
             for asset in assets {
@@ -564,7 +564,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                 finalResult.videoSize += result.videoSize
             }
 
-            // 统计结束 一次性更新 UI
+            // Aggregation complete — update UI all at once
             if !Task.isCancelled {
                 await MainActor.run {
                     self.shortVideoList = finalResult.shortVideoList
@@ -577,7 +577,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
                     self.screenRecordingVideoSize = finalResult.screenRecordingVideoSize
                     self.screenshotImageSize = finalResult.screenshotImageSize
                     
-                    // 通知代理数据更新
+                    // Notify delegate of data update
                     self.delegate?.mediaManager(self, didUpdateShortVideos: self.shortVideoList, totalSize: self.shortVideoSize)
                     self.delegate?.mediaManager(self, didUpdateAllVideos: self.allVideoList, totalSize: self.allVideoSize)
                     self.delegate?.mediaManager(self, didUpdateScreenRecordings: self.screenRecordingVideoList, totalSize: self.screenRecordingVideoSize)
@@ -586,13 +586,13 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
             }
         }
 
-        // 处理完成后保存缓存
+        // Save cache after processing is complete
         saveCache()
     }
 
     // MARK: - Cache Methods
 
-    /// 保存缓存数据
+    /// Save cache data
     private nonisolated func saveCache() {
         Task { @MainActor in
             let cacheData = MediaCacheData(
@@ -616,7 +616,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         }
     }
 
-    /// 加载缓存数据
+    /// Load cache data
     private nonisolated func loadCache() -> MediaCacheData? {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let cacheData = try? JSONDecoder().decode(MediaCacheData.self, from: data)
@@ -626,15 +626,15 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
         return cacheData
     }
 
-    /// 从缓存恢复数据（仅恢复大小信息，数组保持为空等待后台更新）
+    /// Restore data from cache (size info only; arrays remain empty pending background update)
     @MainActor
     private func restoreFromCache() {
         guard let cache = loadCache() else { return }
         localCache = cache
-        // 恢复大小信息用于显示
+        // Restore size info for display
         screenshotImageSize = cache.screenshotTotalSize
         screenRecordingVideoSize = cache.screenRecordingTotalSize
-        allVideoSize = cache.allVideoTotalSize   // 已包含录屏和短视频，不能再叠加
+        allVideoSize = cache.allVideoTotalSize   // Already includes recordings and short videos — do not add again
         shortVideoSize = cache.shortVideoTotalSize
 
         // 通知代理初始数据（仅大小，列表为空）
@@ -645,7 +645,7 @@ class MediaManager: NSObject, PHPhotoLibraryChangeObserver {
     }
 }
 
-/// 隔离 MainActor
+/// MainActor-isolated helper
 enum AssetDeleter {
     static func deleteAssets(identifiers: [String]) async throws -> Bool {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in

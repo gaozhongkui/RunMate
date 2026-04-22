@@ -92,13 +92,13 @@ class PollinationsImageGenerator {
         var seed: Int? = nil
         var nologo: Bool = true
         var enhance: Bool = false
-        /// 可选的 HuggingFace Token，填写后可获得更高速率限制（免费账号可申请）
+        /// Optional HuggingFace token; providing it grants higher rate limits (free accounts can apply)
         var huggingFaceToken: String? = nil
 
         static let `default` = GenerationOptions()
 
-        /// 根据选定模型自动生成 provider 优先链：
-        /// 先用指定 Pollinations 模型，再依次尝试其余模型，最后 HuggingFace 兜底
+        /// Automatically generates the provider priority chain based on the selected model:
+        /// Tries the specified Pollinations model first, then the remaining models in order, with HuggingFace as the final fallback
         var providerChain: [ImageProvider] {
             var chain: [ImageProvider] = [.pollinations(model)]
             for m in Model.allCases where m != model {
@@ -115,7 +115,7 @@ class PollinationsImageGenerator {
 
     struct GenerationResult {
         let image: UIImage
-        let imageURL: URL?       // Pollinations 有 URL；HuggingFace 为 nil
+        let imageURL: URL?       // Pollinations provides a URL; HuggingFace returns nil
         let prompt: String
         let usedProvider: ImageProvider
     }
@@ -128,7 +128,7 @@ class PollinationsImageGenerator {
 
     // MARK: - Provider Cooldown Tracking
 
-    /// 失败后的冷却时间（秒），冷却期间跳过该 Provider
+    /// Cooldown duration (in seconds) after a failure; the provider is skipped during this period
     private let cooldownDuration: TimeInterval = 5 * 60
     private var providerCooldowns: [ImageProvider: Date] = [:]
 
@@ -145,7 +145,7 @@ class PollinationsImageGenerator {
 
     // MARK: - Public API
 
-    /// 生成图片，自动按 provider 链依次尝试，配额耗尽时自动切换
+    /// Generate an image, automatically trying each provider in the chain and switching when quota is exhausted
     func generateImage(
         prompt: String,
         options: GenerationOptions = .default,
@@ -191,7 +191,7 @@ class PollinationsImageGenerator {
                         markCooldown(provider)
                         print("[ImageGenerator] Provider \(provider) throttled, switching next.")
                     } else {
-                        // 非配额类错误（如网络、图片解析）也尝试下一个
+                        // Non-quota errors (e.g. network, image parsing) also fall through to the next provider
                         print("[ImageGenerator] Provider \(provider) failed: \(error.localizedDescription)")
                     }
                 }
@@ -202,7 +202,7 @@ class PollinationsImageGenerator {
         }
     }
 
-    /// 取消当前生成任务
+    /// Cancel the current generation task
     func cancelGeneration() {
         downloadTask?.cancel()
         Task { await updateState(.idle) }
@@ -219,7 +219,7 @@ class PollinationsImageGenerator {
         providerCooldowns[provider] = Date().addingTimeInterval(cooldownDuration)
     }
 
-    /// 判断该错误是否应触发切换（配额 / 服务不可用）
+    /// Determine whether the error should trigger a provider switch (quota exceeded / service unavailable)
     private func shouldMarkCooldown(for error: Error) -> Bool {
         if let e = error as? GenerationError, case .httpError(let code) = e {
             return code == 429 || code == 503 || (code >= 500 && code < 600)
@@ -293,8 +293,8 @@ class PollinationsImageGenerator {
 
     // MARK: - HuggingFace Inference API
 
-    /// 使用 HuggingFace Inference API 生成图片
-    /// - 不填 token 可免费使用，但速率较低；填写免费账号 token 后速率提升
+    /// Generate an image using the HuggingFace Inference API
+    /// - Without a token it can be used for free but with lower rate limits; providing a free account token increases the rate limit
     private func generateWithHuggingFace(
         prompt: String,
         model: HuggingFaceModel,
@@ -308,14 +308,14 @@ class PollinationsImageGenerator {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 120
 
-        // 优先用调用方传入的 token，其次用 Remote Config 下发的
+        // Prefer the token passed by the caller; fall back to the one from Remote Config
         let effectiveToken = options.huggingFaceToken
             ?? (RemoteConfigManager.shared.huggingFaceToken.isEmpty ? nil : RemoteConfigManager.shared.huggingFaceToken)
         if let token = effectiveToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        // 构建请求体，宽高适配 HF 参数格式
+        // Build request body, width/height adapted to HF parameter format
         let body: [String: Any] = [
             "inputs": prompt,
             "parameters": [
@@ -333,7 +333,7 @@ class PollinationsImageGenerator {
         let (data, response) = try await URLSession(configuration: config).data(for: request)
 
         if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-            // 503 表示模型冷启动（loading），也当作配额不足处理，触发切换
+            // 503 means the model is cold-starting (loading); treat it as quota exhaustion to trigger a switch
             throw GenerationError.httpError(http.statusCode)
         }
 

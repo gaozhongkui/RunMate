@@ -21,7 +21,7 @@ class MediaItemViewModel: Identifiable, Hashable {
     var size: Int64
     let created: Date
     
-    // 额外的便利属性
+    // Additional convenience properties
     var isLoading: Bool = false
     
     // MARK: - Initialization
@@ -36,7 +36,7 @@ class MediaItemViewModel: Identifiable, Hashable {
         self.size = 0
         self.selected = false
         
-        // 异步加载文件大小
+        // Asynchronously load file size
         Task {
             await loadFileSize()
         }
@@ -51,14 +51,14 @@ class MediaItemViewModel: Identifiable, Hashable {
         let resources = PHAssetResource.assetResources(for: phAsset)
         
         if let resource = resources.first {
-            // 方法1: 尝试从资源获取大小
+            // Method 1: try to get size from asset resource
             if let unsignedSize = resource.value(forKey: "fileSize") as? Int64 {
                 size = unsignedSize
                 isLoading = false
                 return
             }
-            
-            // 方法2: 通过请求数据获取大小
+
+            // Method 2: retrieve size by requesting asset data
             let options = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
             options.version = .current
@@ -81,7 +81,7 @@ class MediaItemViewModel: Identifiable, Hashable {
                         continuation.resume(returning: fileSize)
                     }
                     catch {
-                        // 如果获取失败,使用估算值
+                        // Fall back to estimated size if retrieval fails
                         let estimatedSize = Int64(
                             Double(self.width * self.height) * self.duration * 0.5
                         )
@@ -165,7 +165,7 @@ class MediaItemViewModel: Identifiable, Hashable {
     }
     
     private func formatFileSize(_ bytes: Int64) -> String {
-        guard bytes > 0 else { return "计算中..." }
+        guard bytes > 0 else { return "Calculating..." }
         
         let formatter = ByteCountFormatter()
         formatter.allowedUnits = [.useGB, .useMB, .useKB]
@@ -177,30 +177,30 @@ class MediaItemViewModel: Identifiable, Hashable {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         
-        // 如果是今天,显示时间
+        // If today, show time
         if Calendar.current.isDateInToday(date) {
-            formatter.dateFormat = "今天 HH:mm"
+            formatter.dateFormat = "HH:mm 'Today'"
         }
-        // 如果是昨天
+        // If yesterday
         else if Calendar.current.isDateInYesterday(date) {
-            formatter.dateFormat = "昨天 HH:mm"
+            formatter.dateFormat = "HH:mm 'Yesterday'"
         }
-        // 如果是本周
+        // If within the past week
         else if let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()),
                 date > weekAgo
         {
             formatter.dateFormat = "EEEE HH:mm"
         }
-        // 如果是今年
+        // If this year
         else if Calendar.current.component(.year, from: date) == Calendar.current.component(.year, from: Date()) {
-            formatter.dateFormat = "MM月dd日 HH:mm"
+            formatter.dateFormat = "MMM dd HH:mm"
         }
-        // 其他
+        // Otherwise
         else {
-            formatter.dateFormat = "yyyy年MM月dd日"
+            formatter.dateFormat = "yyyy MMM dd"
         }
-        
-        formatter.locale = Locale(identifier: "zh_CN")
+
+        formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: date)
     }
     
@@ -251,14 +251,14 @@ actor ThumbnailCache {
     static let shared = ThumbnailCache()
     
     private var cache: [String: UIImage] = [:]
-    private let maxCacheSize = 100 // 最多缓存100个缩略图
+    private let maxCacheSize = 100 // Cache at most 100 thumbnails
     
     func getThumbnail(for id: String) -> UIImage? {
         cache[id]
     }
     
     func setThumbnail(_ image: UIImage, for id: String) {
-        // 如果缓存超过限制,清除最旧的一半
+        // If cache exceeds the limit, remove the oldest half
         if cache.count >= maxCacheSize {
             let keysToRemove = Array(cache.keys.prefix(maxCacheSize / 2))
             keysToRemove.forEach { cache.removeValue(forKey: $0) }
@@ -276,7 +276,7 @@ actor ThumbnailCache {
 
 extension MediaItemViewModel {
     func loadThumbnail(size: CGSize = CGSize(width: 140, height: 100)) async -> UIImage? {
-        // 先检查缓存
+        // Check cache first
         if let cached = await ThumbnailCache.shared.getThumbnail(for: id) {
             return cached
         }
@@ -314,7 +314,7 @@ extension MediaItemViewModel {
             }
         }
         
-        // 缓存结果
+        // Cache the result
         if let image = image {
             await ThumbnailCache.shared.setThumbnail(image, for: id)
         }

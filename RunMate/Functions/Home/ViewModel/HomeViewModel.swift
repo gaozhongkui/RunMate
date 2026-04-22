@@ -20,7 +20,7 @@ class HomeViewModel: MediaManagerDelegate {
     private var mediaManager: MediaManager?
     private var progressTimer: Timer?
     
-    // 记录总扫描的大小（用于进度计算）
+    // Track total scanned size (used for progress calculation)
     private var totalScannedBytes: Int64 = 0
     private var estimatedTotalBytes: Int64 = 0
     
@@ -37,18 +37,18 @@ class HomeViewModel: MediaManagerDelegate {
             startScanAnimation()
         }
         
-        // 现在可以在后台线程创建了
+        // Can now be created on a background thread
         await Task.detached {
             let manager = MediaManager()
 
-            // 必须先设置 delegate，再调用 initialize
-            // 否则 initialize 内部触发的 readData/fetchAssets 回调全部丢失
+            // Must set delegate before calling initialize,
+            // otherwise all readData/fetchAssets callbacks triggered inside initialize are lost
             await MainActor.run {
                 manager.delegate = self
                 self.mediaManager = manager
             }
 
-            // delegate 就位后再初始化（会触发扫描并正常回调）
+            // Initialize after delegate is in place (triggers scanning and callbacks normally)
             await manager.initialize()
         }.value
     }
@@ -116,11 +116,11 @@ class HomeViewModel: MediaManagerDelegate {
         }
     }
 
-    /// 统一更新所有 HomeItem 数据
+    /// Update all HomeItem data uniformly
     private func updateAllHomeItems() {
         guard let manager = mediaManager else { return }
-        
-        // 更新左侧卡片
+
+        // Update left-side cards
         for index in cardLeftItems.indices {
             let category = cardLeftItems[index].photoCategory
             let (size, count, items) = getDataForCategory(category, from: manager)
@@ -132,7 +132,7 @@ class HomeViewModel: MediaManagerDelegate {
             cardLeftItems[index].items = items
         }
         
-        // 更新右侧卡片
+        // Update right-side cards
         for index in cardRightItems.indices {
             let category = cardRightItems[index].photoCategory
             let (size, count, items) = getDataForCategory(category, from: manager)
@@ -144,11 +144,11 @@ class HomeViewModel: MediaManagerDelegate {
             cardRightItems[index].items = items
         }
         
-        // 更新总大小显示
+        // Update total size display
         updateTotalSize()
     }
-    
-    /// 根据分类获取对应的数据
+
+    /// Get data for the specified category
     private func getDataForCategory(_ category: PhotoCategory, from manager: MediaManager) -> (size: Int64, count: Int, items: [MediaItemViewModel]) {
         switch category {
         case .allVideos:
@@ -162,18 +162,18 @@ class HomeViewModel: MediaManagerDelegate {
         }
     }
     
-    /// 更新总扫描大小和总大小
+    /// Update total scanned size and total size
     private func updateTotalSize() {
         guard let manager = mediaManager else { return }
 
-        // allVideoSize 已包含 shortVideoSize 和 screenRecordingVideoSize（三者是包含关系）
-        // 避免重复叠加，只加截图大小
+        // allVideoSize already includes shortVideoSize and screenRecordingVideoSize (they are subsets)
+        // Avoid double-counting — only add screenshot size
         totalScannedBytes = manager.allVideoSize + manager.screenshotImageSize
 
         scannedSize = formatBytes(totalScannedBytes)
     }
     
-    /// 格式化字节大小
+    /// Format byte size as a human-readable string
     private func formatBytes(_ bytes: Int64) -> String {
         guard bytes > 0 else { return "--" }
         
@@ -185,7 +185,7 @@ class HomeViewModel: MediaManagerDelegate {
         return formatter.string(fromByteCount: bytes)
     }
     
-    /// 获取指定分类的资产列表
+    /// Get the asset list for the specified category
     func getAssets(for category: PhotoCategory) -> [MediaItemViewModel] {
         guard let manager = mediaManager else { return [] }
         
@@ -201,7 +201,7 @@ class HomeViewModel: MediaManagerDelegate {
         }
     }
     
-    /// 删除资产
+    /// Delete assets
     func deleteAssets(_ assets: [PHAsset]) async throws {
         guard let manager = mediaManager else { return }
         try await manager.deleteAssets(assets: assets)

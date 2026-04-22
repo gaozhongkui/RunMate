@@ -8,12 +8,12 @@
 import SwiftUI
 
 enum NavigationRoute: Hashable {
-    /// 创建图片AI
+    /// Create AI image
     case createAI(String)
-    /// 图片加密
+    /// Private image space (encryption)
     case priSpace
-    /// 视频列表
+    /// Video list
     case videoList([MediaItemViewModel])
-    /// 星河相册
+    /// Galaxy photo album
     case imageGalaxy
 }

@@ -21,33 +21,33 @@ struct InnerVideoPlayerView: UIViewRepresentable {
         playerLayer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(playerLayer)
         
-        // 👇 保存引用到 view 自身，而不是 coordinator
+        // 👇 Save reference to the view itself, not the coordinator
         view.playerLayer = playerLayer
         
         return view
     }
     
     func updateUIView(_ uiView: PlayerContainerView, context: Context) {
-        // 👇 确保 playerLayer 的 player 是最新的
+        // 👇 Ensure playerLayer's player is up to date
         if uiView.playerLayer?.player !== player {
             uiView.playerLayer?.player = player
         }
         
-        // 👇 直接更新 frame，不需要异步
+        // 👇 Update frame directly, no async needed
         uiView.playerLayer?.frame = uiView.bounds
     }
     
-    // 👇 使用自定义 UIView 类来管理 playerLayer
+    // 👇 Use a custom UIView subclass to manage playerLayer
     class PlayerContainerView: UIView {
         var playerLayer: AVPlayerLayer?
-        
+
         override func layoutSubviews() {
             super.layoutSubviews()
-            // 👇 在布局时自动更新 frame
+            // 👇 Automatically update frame during layout
             playerLayer?.frame = bounds
         }
-        
-        // 👇 清理资源
+
+        // 👇 Clean up resources
         deinit {
             playerLayer?.player = nil
             playerLayer?.removeFromSuperlayer()

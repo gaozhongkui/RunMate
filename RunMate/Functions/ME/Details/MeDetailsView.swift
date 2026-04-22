@@ -28,7 +28,7 @@ struct MeDetailsView: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                // 渐变 + 内容整体
+                // Gradient + content block
                 VStack(spacing: 0) {
                     Text(record.prompt)
                         .font(.system(size: 16))
@@ -43,7 +43,7 @@ struct MeDetailsView: View {
                         .padding(.bottom, 40)
                 }
                 .background(
-                    // 渐变背景从这个 VStack 顶部向上延伸半屏
+                    // Gradient background extends upward from the top of this VStack by half a screen
                     GeometryReader { geo in
                         LinearGradient(
                             colors: [
@@ -53,14 +53,14 @@ struct MeDetailsView: View {
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: geo.size.height * 2)  // 向上延伸覆盖两倍高度
-                        .offset(y: -geo.size.height)  // 向上偏移，使渐变从上方淡入
+                        .frame(height: geo.size.height * 2)  // Extend upward to cover twice the height
+                        .offset(y: -geo.size.height)  // Offset upward so the gradient fades in from above
                     }
                 )
             }
             .ignoresSafeArea(edges: .bottom)
 
-            // 关闭按钮
+            // Close button
             closeButton()
         }
         .toast(item: $toast)

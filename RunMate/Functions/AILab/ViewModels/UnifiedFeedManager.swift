@@ -1,6 +1,6 @@
 //
 //  UnifiedFeedManager.swift
-//  统一的多数据源管理器，支持自动切换和容错
+//  Unified multi-data-source manager with automatic switching and fault tolerance
 //
 //  Created by Claude on 2026/2/3.
 //
@@ -9,15 +9,15 @@ import Foundation
 import UIKit
 
 class UnifiedFeedManager {
-    // MARK: - 单例
-    
+    // MARK: - Singleton
+
     static let shared = UnifiedFeedManager()
     
     private init() {
         setupDataSources()
     }
     
-    // MARK: - 属性
+    // MARK: - Properties
     
     private(set) var images: [PollinationFeedItem] = [] {
         didSet {
@@ -31,21 +31,21 @@ class UnifiedFeedManager {
     private var activeSource: FeedDataSource?
     private var sourceHealthCheck: Task<Void, Never>?
     
-    // 配置参数
+    // Configuration parameters
     private let memoryLimit = 200
     private let initialLoadCount = 50
-    private let healthCheckInterval: TimeInterval = 60 // 每分钟检查一次健康状态
-    
-    // 回调
+    private let healthCheckInterval: TimeInterval = 60 // Check health once per minute
+
+    // Callbacks
     var onDataUpdate: (([PollinationFeedItem]) -> Void)?
     var onNewItemsInserted: (([IndexPath]) -> Void)?
     var onOldItemsAppended: (([IndexPath]) -> Void)?
-    var onSourceChanged: ((String) -> Void)? // 数据源切换通知
-    
-    // MARK: - 设置数据源
-    
+    var onSourceChanged: ((String) -> Void)? // Data source switch notification
+
+    // MARK: - Setup Data Sources
+
     private func setupDataSources() {
-        // 添加所有可用的数据源，按优先级排序
+        // Add all available data sources, sorted by priority
         dataSources = [
            // PollinationDataSource(),
             CivitAIDataSource()
@@ -82,7 +82,7 @@ class UnifiedFeedManager {
             
             DispatchQueue.main.async {
                 self.images = cachedItems
-                print("📦 加载了 \(cachedItems.count) 条本地缓存数据")
+                print("📦 Loaded \(cachedItems.count) items from local cache")
             }
             
             // 2. 尝试启动数据源
@@ -121,7 +121,7 @@ class UnifiedFeedManager {
                     completion?()
                 }
             } catch {
-                print("❌ 刷新失败: \(error.localizedDescription)")
+                print("❌ Refresh failed: \(error.localizedDescription)")
                 
                 // 尝试切换到其他数据源
                 await switchToNextAvailableSource()
@@ -165,7 +165,7 @@ class UnifiedFeedManager {
                     }
                 }
             } catch {
-                print("❌ 加载更多失败: \(error.localizedDescription)")
+                print("❌ Load more failed: \(error.localizedDescription)")
             }
             
             DispatchQueue.main.async {
@@ -178,7 +178,7 @@ class UnifiedFeedManager {
     func switchToSource(named name: String) {
         Task {
             guard let newSource = dataSources.first(where: { $0.name == name }) else {
-                print("❌ 找不到数据源: \(name)")
+                print("❌ Data source not found: \(name)")
                 return
             }
             
@@ -190,11 +190,11 @@ class UnifiedFeedManager {
                 try await newSource.startFetching()
                 activeSource = newSource
                 
-                print("✅ 已切换到数据源: \(name)")
+                print("✅ Switched to data source: \(name)")
                 onSourceChanged?(name)
                 
             } catch {
-                print("❌ 切换到数据源 \(name) 失败: \(error.localizedDescription)")
+                print("❌ Failed to switch to data source \(name): \(error.localizedDescription)")
                 
                 // 切换失败，尝试其他源
                 await startBestAvailableSource()
@@ -218,7 +218,7 @@ class UnifiedFeedManager {
     private func startBestAvailableSource() async {
         for source in dataSources {
             guard source.isAvailable else {
-                print("⚠️ 数据源 [\(source.name)] 不可用，跳过")
+                print("⚠️ Data source [\(source.name)] unavailable, skipping")
                 continue
             }
             
@@ -226,17 +226,17 @@ class UnifiedFeedManager {
                 try await source.startFetching()
                 activeSource = source
                 
-                print("✅ 成功启动数据源: [\(source.name)]")
+                print("✅ Successfully started data source: [\(source.name)]")
                 onSourceChanged?(source.name)
                 return
                 
             } catch {
-                print("❌ 启动数据源 [\(source.name)] 失败: \(error.localizedDescription)")
+                print("❌ Failed to start data source [\(source.name)]: \(error.localizedDescription)")
                 continue
             }
         }
-        
-        print("❌ 所有数据源均不可用")
+
+        print("❌ All data sources unavailable")
     }
     
     /// 切换到下一个可用数据源
@@ -255,17 +255,17 @@ class UnifiedFeedManager {
                 try await source.startFetching()
                 activeSource = source
                 
-                print("✅ 已切换到备用数据源: [\(source.name)]")
+                print("✅ Switched to fallback data source: [\(source.name)]")
                 onSourceChanged?(source.name)
                 return
                 
             } catch {
-                print("❌ 启动备用数据源 [\(source.name)] 失败: \(error.localizedDescription)")
+                print("❌ Failed to start fallback data source [\(source.name)]: \(error.localizedDescription)")
                 continue
             }
         }
         
-        print("❌ 没有可用的备用数据源")
+        print("❌ No available fallback data sources")
         activeSource = nil
     }
     
@@ -291,16 +291,16 @@ class UnifiedFeedManager {
             if self.images.count > self.memoryLimit {
                 let removeCount = self.images.count - self.memoryLimit
                 self.images.removeLast(removeCount)
-                print("🧹 内存清理：移除了 \(removeCount) 条旧数据")
+                print("🧹 Memory trimmed: removed \(removeCount) old items")
             }
             
-            print("✅ 从 [\(source.name)] 接收了 \(uniqueNewItems.count) 条新数据")
+            print("✅ Received \(uniqueNewItems.count) new items from [\(source.name)]")
         }
     }
     
     /// 处理数据源错误
     private func handleSourceError(_ error: Error, from source: FeedDataSource) {
-        print("⚠️ 数据源 [\(source.name)] 错误: \(error.localizedDescription)")
+        print("⚠️ Data source [\(source.name)] error: \(error.localizedDescription)")
         
         // 如果当前活跃源出错且不可用，尝试切换
         if source === activeSource, !source.isAvailable {
@@ -335,13 +335,13 @@ class UnifiedFeedManager {
                 
                 // 检查当前活跃源是否健康
                 if let current = activeSource, !current.isAvailable {
-                    print("⚠️ 当前数据源 [\(current.name)] 不健康，尝试切换...")
+                    print("⚠️ Current data source [\(current.name)] unhealthy, switching...")
                     await switchToNextAvailableSource()
                 }
                 
                 // 如果没有活跃源，尝试启动
                 if activeSource == nil {
-                    print("⚠️ 没有活跃数据源，尝试启动...")
+                    print("⚠️ No active data source, attempting to start...")
                     await startBestAvailableSource()
                 }
             }
@@ -365,7 +365,7 @@ class UnifiedFeedManager {
         
         Task {
             await PollinationDatabase.shared.clearAllCache()
-            print("🗑️ 已清空所有数据")
+            print("🗑️ All data cleared")
         }
     }
     

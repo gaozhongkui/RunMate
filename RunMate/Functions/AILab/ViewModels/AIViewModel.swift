@@ -54,21 +54,21 @@ class AIViewModel {
     var selectedAIStyleID: UUID?
     var selectRatioIndex: Int = 0
 
-    // 生成状态
+    // Generation state
     var isGenerating: Bool = false
     var generatedImage: UIImage? = nil
     var generationError: String? = nil
 
-    /// 当前选中风格的名称（用于存储历史记录）
+    /// The title of the currently selected style (used for storing history)
     var selectedStyleTitle: String {
         imageAIStyles.first { $0.id == selectedAIStyleID }?.title ?? "AI Art"
     }
 
     func doGenerateImage() {
-        // 1. 获取选中风格
+        // 1. Get the selected style
         let selectedStyle = imageAIStyles.first { $0.id == selectedAIStyleID }
 
-        // 2. 组合 prompt：用户输入 + 风格提示词
+        // 2. Combine prompt: user input + style prompt
         let stylePrompt = selectedStyle?.prompt ?? ""
         let fullPrompt: String
         if stylePrompt.isEmpty {
@@ -79,7 +79,7 @@ class AIViewModel {
             fullPrompt = "\(inputText), \(stylePrompt)"
         }
 
-        // 3. 根据风格图片名匹配对应模型
+        // 3. Match the model based on the style image name
         let model: PollinationsImageGenerator.Model
         switch selectedStyle?.image {
         case "davinci_preview":  model = .gptimage
@@ -88,7 +88,7 @@ class AIViewModel {
         default:                 model = .flux
         }
 
-        // 4. 根据比例换算分辨率
+        // 4. Convert ratio to resolution
         let ratio = ratioArray.indices.contains(selectRatioIndex) ? ratioArray[selectRatioIndex] : "1:1"
         let (width, height): (Int, Int)
         switch ratio {
@@ -99,13 +99,13 @@ class AIViewModel {
         default:     (width, height) = (1024, 1024) // 1:1
         }
 
-        // 5. 构建选项
+        // 5. Build options
         var options = PollinationsImageGenerator.GenerationOptions()
         options.model = model
         options.width = width
         options.height = height
 
-        // 6. 开始生成
+        // 6. Start generation
         isGenerating = true
         generatedImage = nil
         generationError = nil

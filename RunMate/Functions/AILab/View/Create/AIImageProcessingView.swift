@@ -12,7 +12,7 @@ struct AIImageProcessingView: View {
     var processingAction: () -> Void
 
     @State private var progress: CGFloat = 0.0
-    // 增加一个旋转动画状态，增强视觉效果
+    // Add a rotation animation state to enhance visual effect
     @State private var rotation: Double = 0
 
     var body: some View {
@@ -35,7 +35,7 @@ struct AIImageProcessingView: View {
                 
                 Spacer()
                 
-                // 底部提示
+                // Bottom hint
                 Text("Artistic creation takes time, please wait...")
                     .font(AppTheme.Fonts.subheadline())
                     .foregroundColor(AppTheme.Colors.textTertiary)
@@ -43,18 +43,18 @@ struct AIImageProcessingView: View {
             }
         }
         .onAppear {
-            // 模拟进度动画
+            // Simulate progress animation
             withAnimation(.linear(duration: 3.0).repeatForever(autoreverses: false)) {
                 progress = 1.0
             }
-            // 增加持续旋转效果
+            // Add continuous rotation effect
             withAnimation(.linear(duration: 4.0).repeatForever(autoreverses: false)) {
                 rotation = 360
             }
         }
     }
 
-    // MARK: - Header (保持风格一致)
+    // MARK: - Header (maintain consistent style)
     private func headerView() -> some View {
         HStack {
             Button(action: { backAction() }) {
@@ -72,23 +72,23 @@ struct AIImageProcessingView: View {
             
             Spacer()
             
-            // 为了视觉平衡放一个空的占位
+            // Placeholder for visual balance
             Color.clear.frame(width: 44, height: 44)
         }
         .padding(.horizontal, 16)
         .frame(height: 50)
     }
 
-    // MARK: - Content (强化视觉中心)
+    // MARK: - Content (strengthen visual focus)
     private func contentView() -> some View {
         VStack(spacing: 40) {
             ZStack {
-                // 1. 底层光晕
+                // 1. Base glow
                 Circle()
                     .stroke(Color.white.opacity(0.05), lineWidth: 15)
                     .frame(width: 180, height: 180)
-                
-                // 2. 进度圆环 (使用统一主题)
+
+                // 2. Progress ring (using unified theme)
                 Circle()
                     .trim(from: 0, to: progress)
                     .stroke(
@@ -96,10 +96,10 @@ struct AIImageProcessingView: View {
                         style: StrokeStyle(lineWidth: 12, lineCap: .round)
                     )
                     .frame(width: 180, height: 180)
-                    .rotationEffect(.degrees(-90)) // 从顶部开始进度
-                    .rotationEffect(.degrees(rotation)) // 持续旋转感
-                
-                // 3. 中心图标
+                    .rotationEffect(.degrees(-90)) // Start progress from the top
+                    .rotationEffect(.degrees(rotation)) // Continuous rotation feel
+
+                // 3. Center icon
                 Image(systemName: "sparkles")
                     .font(.system(size: 40))
                     .foregroundColor(.white)
