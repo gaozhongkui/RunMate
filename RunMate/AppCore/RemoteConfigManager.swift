@@ -35,7 +35,7 @@ final class RemoteConfigManager {
         Key.civitaiApiKey.rawValue       : "" as NSObject,
         Key.privacyURL.rawValue          : "https://www.yourapp.com/privacy" as NSObject,
         Key.termsURL.rawValue            : "https://www.yourapp.com/terms" as NSObject,
-        Key.feedbackEmail.rawValue       : "feedback@yourapp.com" as NSObject,
+        Key.feedbackEmail.rawValue       : "gzkhhy@gmail.com" as NSObject,
     ]
 
     private init() {
