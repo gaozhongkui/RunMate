@@ -168,7 +168,7 @@ class CivitAIDataSource: FeedDataSource {
     }
     
     private func fetchData(cursor: String?) async throws -> [PollinationFeedItem] {
-        var urlString = "https://civitai.com/api/v1/images?limit=\(pageSize)&sort=Newest"
+        var urlString = "\(RemoteConfigManager.shared.civitaiBaseURL)?limit=\(pageSize)&sort=Newest"
         
         if let cursor = cursor {
             urlString += "&cursor=\(cursor)"

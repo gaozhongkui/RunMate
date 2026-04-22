@@ -264,7 +264,7 @@ class PollinationsImageGenerator {
         }
 
         var components = URLComponents(
-            string: "https://gen.pollinations.ai/image/\(encodedPrompt)"
+            string: "\(RemoteConfigManager.shared.pollinationsBaseURL)/\(encodedPrompt)"
         )!
 
         var queryItems: [URLQueryItem] = [
@@ -281,7 +281,10 @@ class PollinationsImageGenerator {
         if options.enhance {
             queryItems.append(URLQueryItem(name: "enhance", value: "true"))
         }
-        queryItems.append(URLQueryItem(name: "key", value: "sk_UhsZmc01AcRpoVcqd9I83kLCJLGy8OS8"))
+        let apiKey = RemoteConfigManager.shared.pollinationsApiKey
+        if !apiKey.isEmpty {
+            queryItems.append(URLQueryItem(name: "key", value: apiKey))
+        }
 
         components.queryItems = queryItems
         guard let url = components.url else { throw GenerationError.invalidURL }
@@ -297,7 +300,7 @@ class PollinationsImageGenerator {
         model: HuggingFaceModel,
         options: GenerationOptions
     ) async throws -> UIImage {
-        let endpoint = "https://api-inference.huggingface.co/models/\(model.rawValue)"
+        let endpoint = "\(RemoteConfigManager.shared.huggingFaceBaseURL)/\(model.rawValue)"
         guard let url = URL(string: endpoint) else { throw GenerationError.invalidURL }
 
         var request = URLRequest(url: url)
@@ -305,7 +308,10 @@ class PollinationsImageGenerator {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 120
 
-        if let token = options.huggingFaceToken {
+        // 优先用调用方传入的 token，其次用 Remote Config 下发的
+        let effectiveToken = options.huggingFaceToken
+            ?? (RemoteConfigManager.shared.huggingFaceToken.isEmpty ? nil : RemoteConfigManager.shared.huggingFaceToken)
+        if let token = effectiveToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 

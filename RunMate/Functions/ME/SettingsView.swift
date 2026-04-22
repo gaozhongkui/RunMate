@@ -13,9 +13,8 @@ struct SettingsView: View {
     @State private var showFeedbackAlert = false
     @State private var safariURL: URL? = nil
 
-    // ← 替换为你的实际链接
-    private let privacyURL = URL(string: "https://www.yourapp.com/privacy")!
-    private let termsURL   = URL(string: "https://www.yourapp.com/terms")!
+    private var privacyURL: URL { RemoteConfigManager.shared.privacyURL ?? URL(string: "about:blank")! }
+    private var termsURL: URL   { RemoteConfigManager.shared.termsURL   ?? URL(string: "about:blank")! }
 
     var body: some View {
         ZStack {
@@ -314,7 +313,7 @@ struct SettingsView: View {
     // MARK: - Actions
 
     private func openMailFeedback() {
-        let email = "feedback@yourapp.com"  // ← 替换为你的反馈邮箱
+        let email = RemoteConfigManager.shared.feedbackEmail
         if let url = URL(string: "mailto:\(email)?subject=RunMate%20Feedback") {
             UIApplication.shared.open(url)
         }
