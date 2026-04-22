@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		051CA4D82F98A31B00034E04 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 051CA4D72F98A31B00034E04 /* FirebaseAnalytics */; };
+		051CA4DA2F98A31B00034E04 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 051CA4D92F98A31B00034E04 /* FirebaseCore */; };
+		051CA4DC2F98A31B00034E04 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 051CA4DB2F98A31B00034E04 /* FirebaseRemoteConfig */; };
 		056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */ = {isa = PBXBuildFile; productRef = 056A0DC32F29E47700408FD9 /* DotLottie */; };
 		056A0FAA2F2B293100408FD9 /* Zoomable in Frameworks */ = {isa = PBXBuildFile; productRef = 056A0FA92F2B293100408FD9 /* Zoomable */; };
 		056A1C612F30B9A600408FD9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1C602F30B9A600408FD9 /* SQLite */; };
@@ -33,9 +36,12 @@
 			files = (
 				056A1C612F30B9A600408FD9 /* SQLite in Frameworks */,
 				05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */,
+				051CA4D82F98A31B00034E04 /* FirebaseAnalytics in Frameworks */,
 				056A24D72F34996500408FD9 /* Atomics in Frameworks */,
+				051CA4DA2F98A31B00034E04 /* FirebaseCore in Frameworks */,
 				056A0DC42F29E47700408FD9 /* DotLottie in Frameworks */,
 				056A0FAA2F2B293100408FD9 /* Zoomable in Frameworks */,
+				051CA4DC2F98A31B00034E04 /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +89,9 @@
 				056A0FA92F2B293100408FD9 /* Zoomable */,
 				056A1C602F30B9A600408FD9 /* SQLite */,
 				056A24D62F34996500408FD9 /* Atomics */,
+				051CA4D72F98A31B00034E04 /* FirebaseAnalytics */,
+				051CA4D92F98A31B00034E04 /* FirebaseCore */,
+				051CA4DB2F98A31B00034E04 /* FirebaseRemoteConfig */,
 			);
 			productName = RunMate;
 			productReference = 05CA9E922F271B03001D3924 /* RunMate.app */;
@@ -118,6 +127,7 @@
 				056A0FA82F2B293100408FD9 /* XCRemoteSwiftPackageReference "Zoomable" */,
 				056A1C5F2F30B9A600408FD9 /* XCRemoteSwiftPackageReference "SQLite" */,
 				056A24D52F34996500408FD9 /* XCRemoteSwiftPackageReference "swift-atomics" */,
+				051CA4D62F98A31B00034E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 05CA9E932F271B03001D3924 /* Products */;
@@ -369,6 +379,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		051CA4D62F98A31B00034E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
 		056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/LottieFiles/dotlottie-ios";
@@ -412,6 +430,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		051CA4D72F98A31B00034E04 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 051CA4D62F98A31B00034E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		051CA4D92F98A31B00034E04 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 051CA4D62F98A31B00034E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		051CA4DB2F98A31B00034E04 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 051CA4D62F98A31B00034E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
 		056A0DC32F29E47700408FD9 /* DotLottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 056A0DC22F29E47700408FD9 /* XCRemoteSwiftPackageReference "dotlottie-ios" */;
