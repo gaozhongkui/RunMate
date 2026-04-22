@@ -12,8 +12,12 @@ import SwiftUI
 class StorageManager {
     var encryptedImages: [EncryptedImage] = []
     
-    private let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     private let storageFileName = "encryptedImages.json"
+    private var documentsPath: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
+        return appSupport
+    }
     
     init() {
         loadImages()
@@ -33,7 +37,7 @@ class StorageManager {
         let fileURL = documentsPath.appendingPathComponent(storageFileName)
         do {
             let data = try JSONEncoder().encode(encryptedImages)
-            try data.write(to: fileURL)
+            try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
         } catch {
             print("保存失败: \(error)")
         }

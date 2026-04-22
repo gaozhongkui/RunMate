@@ -1,20 +1,23 @@
 import CryptoKit
+import Photos
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
 struct ImageEncryptionView: View {
     var namespace: Namespace.ID
-    
+
     @Environment(\.dismiss) var dismiss
     @State private var storageManager = StorageManager()
     @State private var selectedItem: PhotosPickerItem?
     @State private var showPasswordInput = false
     @State private var password = ""
     @State private var selectedImageData: Data?
+    @State private var selectedAssetIdentifier: String?
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isEncrypting = false
+    @State private var showDeleteOriginalAlert = false
     
     var body: some View {
         ZStack {
@@ -75,7 +78,20 @@ struct ImageEncryptionView: View {
         } message: {
             Text(alertMessage)
         }
+        .alert("Delete Original Photo?", isPresented: $showDeleteOriginalAlert) {
+            Button("Delete", role: .destructive) {
+                deleteOriginalFromLibrary()
+            }
+            Button("Keep", role: .cancel) {
+                selectedImageData = nil
+                selectedItem = nil
+                selectedAssetIdentifier = nil
+            }
+        } message: {
+            Text("Remove the original photo from your photo library? It will only be viewable inside this app.")
+        }
         .onChange(of: selectedItem) { _, newItem in
+            selectedAssetIdentifier = newItem?.itemIdentifier
             Task {
                 if let data = try? await newItem?.loadTransferable(type: Data.self) {
                     selectedImageData = data
@@ -98,14 +114,9 @@ struct ImageEncryptionView: View {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let encryptedData = try EncryptionManager.shared.encryptImage(imageData, password: password)
-                
-                // 创建缩略图
-                let thumbnail = createThumbnail(from: imageData)
-                
                 let encryptedImage = EncryptedImage(
                     fileName: "IMG_\(Date().timeIntervalSince1970)",
-                    encryptedData: encryptedData,
-                    thumbnailData: thumbnail
+                    encryptedData: encryptedData
                 )
                 
                 DispatchQueue.main.async {
@@ -113,9 +124,7 @@ struct ImageEncryptionView: View {
                     isEncrypting = false
                     showPasswordInput = false
                     password = ""
-                    selectedImageData = nil
-                    alertMessage = "Image encrypted successfully!"
-                    showAlert = true
+                    showDeleteOriginalAlert = true
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -127,13 +136,34 @@ struct ImageEncryptionView: View {
         }
     }
     
-    private func createThumbnail(from imageData: Data) -> Data? {
-        guard let uiImage = UIImage(data: imageData) else { return nil }
-        let size = CGSize(width: 100, height: 100)
-        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-        uiImage.draw(in: CGRect(origin: .zero, size: size))
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return thumbnail?.jpegData(compressionQuality: 0.5)
+    private func deleteOriginalFromLibrary() {
+        guard let identifier = selectedAssetIdentifier else {
+            selectedImageData = nil
+            selectedItem = nil
+            selectedAssetIdentifier = nil
+            return
+        }
+        PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+            DispatchQueue.main.async {
+                if status == .authorized {
+                    let assets = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.deleteAssets(assets)
+                    }) { _, _ in
+                        DispatchQueue.main.async {
+                            selectedImageData = nil
+                            selectedItem = nil
+                            selectedAssetIdentifier = nil
+                        }
+                    }
+                } else {
+                    alertMessage = "Photo library access denied. Original photo was not deleted."
+                    showAlert = true
+                    selectedImageData = nil
+                    selectedItem = nil
+                    selectedAssetIdentifier = nil
+                }
+            }
+        }
     }
 }

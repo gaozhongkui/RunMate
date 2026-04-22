@@ -20,22 +20,14 @@ struct EncryptedImageCardView: View {
     
     var body: some View {
         HStack(spacing: 15) {
-            // 缩略图或图标
-            if let thumbnailData = image.thumbnailData,
-               let thumbnail = UIImage(data: thumbnailData)
-            {
-                Image(uiImage: thumbnail)
-                    .resizable()
-                    .scaledToFill()
+            // 加密状态图标，不显示原图缩略图
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.black.opacity(0.6))
                     .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            } else {
-                Image(systemName: "photo.fill")
-                    .font(.title)
-                    .foregroundColor(.gray)
-                    .frame(width: 60, height: 60)
-                    .background(Color.gray.opacity(0.2))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                Image(systemName: "lock.fill")
+                    .font(.title2)
+                    .foregroundColor(.yellow)
             }
             
             VStack(alignment: .leading, spacing: 5) {
