@@ -40,6 +40,7 @@ final class RemoteConfigManager {
 
     private init() {
         let settings = RemoteConfigSettings()
+        settings.fetchTimeout = 10
         #if DEBUG
         settings.minimumFetchInterval = 0  // Always fetch latest during development
         #else
@@ -50,11 +51,11 @@ final class RemoteConfigManager {
     }
 
     // MARK: - Fetch config on launch and activate on success
-    func fetchAndActivate() {
-        remoteConfig.fetchAndActivate { [weak self] status, error in
-            guard let self else { return }
+    func fetchAndActivate(completion: ((RemoteConfigFetchAndActivateStatus, Error?) -> Void)? = nil) {
+        remoteConfig.fetchAndActivate { status, error in
             if let error {
                 print("[RemoteConfig] ❌ fetch error: \(error.localizedDescription)")
+                completion?(status, error)
                 return
             }
             print("[RemoteConfig] ✅ status: \(status == .successFetchedFromRemote ? "fetched from remote" : "used cache")")
@@ -66,6 +67,7 @@ final class RemoteConfigManager {
             print("[RemoteConfig] privacy_url            = \(self.string(.privacyURL))")
             print("[RemoteConfig] terms_url              = \(self.string(.termsURL))")
             print("[RemoteConfig] feedback_email         = \(self.feedbackEmail)")
+            completion?(status, nil)
         }
     }
 
