@@ -215,7 +215,7 @@ struct SettingsView: View {
                 rowDivider
 
                 settingsRow(
-                    icon: "lock.shield.fill",
+                    icon: "lock.doc.fill",
                     iconColor: Color(hex: "34D399"),
                     title: "Privacy Policy",
                     subtitle: "How we handle your data",
