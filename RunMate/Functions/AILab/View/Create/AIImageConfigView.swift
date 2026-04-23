@@ -82,9 +82,7 @@ struct AIImageConfigView: View {
                 Text("AI Art Generator").font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Spacer()
-                Image(systemName: "person.circle").foregroundColor(
-                    AppTheme.Colors.textPrimary
-                ).font(.title3)
+               
             }
             .padding(.horizontal, 16)
 
