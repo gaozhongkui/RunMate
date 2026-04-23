@@ -13,6 +13,7 @@ struct VideoCompressView: View {
     @State private var compressedURL: URL?
     @State private var compressedSize: Int64 = 0
     @State private var showSaveOptions = false
+    @State private var isSaving = false
     @Environment(\.dismiss) private var dismiss
     
     enum CompressionQuality: String, CaseIterable {
@@ -204,16 +205,27 @@ struct VideoCompressView: View {
                                 Button {
                                     saveToPhotoLibrary()
                                 } label: {
-                                    Label("Save to Photos", systemImage: "square.and.arrow.down")
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 12)
-                                                .fill(Color.green)
-                                        )
+                                    HStack(spacing: 8) {
+                                        if isSaving {
+                                            ProgressView()
+                                                .progressViewStyle(.circular)
+                                                .tint(.white)
+                                                .scaleEffect(0.85)
+                                        } else {
+                                            Image(systemName: "square.and.arrow.down")
+                                        }
+                                        Text(isSaving ? "Saving…" : "Save to Photos")
+                                            .font(.headline)
+                                    }
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(isSaving ? Color.green.opacity(0.6) : Color.green)
+                                    )
                                 }
+                                .disabled(isSaving)
                                 
                                 Button {
                                     if let url = compressedURL {
@@ -277,10 +289,11 @@ struct VideoCompressView: View {
     }
     
     private func saveToPhotoLibrary() {
-        guard let url = compressedURL else { return }
-        
+        guard let url = compressedURL, !isSaving else { return }
+        isSaving = true
         compressor.saveToPhotoLibrary(url: url) { success, error in
             DispatchQueue.main.async {
+                isSaving = false
                 if success {
                     onComplete(true, "Video saved to Photos")
                 } else {

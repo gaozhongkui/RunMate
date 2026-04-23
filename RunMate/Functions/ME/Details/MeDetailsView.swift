@@ -16,6 +16,7 @@ struct MeDetailsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
+    @State private var isDownloading = false
 
     @State private var image: UIImage? = nil
 
@@ -64,6 +65,7 @@ struct MeDetailsView: View {
             closeButton()
         }
         .toast(item: $toast)
+        .loadingOverlay(isLoading: isDownloading, message: "Saving to Photos…")
         .onAppear {
             image = store.loadImage(for: record)
         }
@@ -141,21 +143,13 @@ struct MeDetailsView: View {
             }
 
             Button(action: {
-                guard let temp = self.image else {
-                    return
-                }
-
+                guard let temp = self.image, !isDownloading else { return }
+                isDownloading = true
                 ImageDownloader().saveToPhotoLibrary(image: temp) { success in
-                    toast =
-                        success
-                        ? ToastModel(
-                            message: "Saved to Photos",
-                            icon: "checkmark.circle.fill"
-                        )
-                        : ToastModel(
-                            message: "Save failed",
-                            icon: "xmark.circle.fill"
-                        )
+                    isDownloading = false
+                    toast = success
+                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
+                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
                 }
             }) {
                 Text("Download")
@@ -174,6 +168,7 @@ struct MeDetailsView: View {
                         .cornerRadius(22)
                     )
             }
+            .disabled(isDownloading)
         }
         .padding(.horizontal, 30)
     }

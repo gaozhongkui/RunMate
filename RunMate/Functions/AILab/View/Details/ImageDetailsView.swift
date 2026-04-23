@@ -15,6 +15,7 @@ struct ImageDetailsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var toast: ToastModel? = nil
+    @State private var isDownloading = false
     // Reset zoom of the previous page after switching, to avoid leftover magnified state
     @State private var zoomResetIDs: [PollinationFeedItem.ID: UUID] = [:]
 
@@ -71,6 +72,7 @@ struct ImageDetailsView: View {
             zoomResetIDs[old.id] = UUID()
         }
         .toast(item: $toast)
+        .loadingOverlay(isLoading: isDownloading, message: "Saving to Photos…")
     }
 
     @ViewBuilder
@@ -111,7 +113,10 @@ struct ImageDetailsView: View {
     private func actionButton() -> some View {
         HStack(spacing: 12) {
             Button(action: {
+                guard !isDownloading else { return }
+                isDownloading = true
                 ImageDownloader().downloadAndSaveImage(from: selectedItem.imageURL) { success in
+                    isDownloading = false
                     toast = success
                         ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
                         : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
@@ -127,6 +132,7 @@ struct ImageDetailsView: View {
                         .foregroundColor(.white)
                 }
             }
+            .disabled(isDownloading)
 
             Button(action: {
                 NavigationManager.shared.push(.createAI(selectedItem.prompt ?? ""))

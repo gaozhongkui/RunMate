@@ -5,6 +5,7 @@
 //  Created by gaozhongkui on 2026/2/6.
 //
 
+import Photos
 import SwiftUI
 
 struct ImageViewerSheet: View {
@@ -12,7 +13,8 @@ struct ImageViewerSheet: View {
     @Environment(\.dismiss) var dismiss
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
-    @State private var showSaveAlert = false
+    @State private var toast: ToastModel? = nil
+    @State private var isSaving = false
 
     var body: some View {
         NavigationView {
@@ -42,27 +44,33 @@ struct ImageViewerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                    .foregroundColor(.white)
+                    Button("Close") { dismiss() }
+                        .foregroundColor(.white)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                        showSaveAlert = true
+                        saveImage()
                     } label: {
                         Image(systemName: "square.and.arrow.down")
                             .foregroundColor(.white)
                     }
+                    .disabled(isSaving)
                 }
             }
-            .alert("Saved", isPresented: $showSaveAlert) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("Image saved to your photo library")
-            }
+            .loadingOverlay(isLoading: isSaving, message: "Saving to Photos…")
+            .toast(item: $toast)
+        }
+    }
+
+    private func saveImage() {
+        guard !isSaving else { return }
+        isSaving = true
+        ImageDownloader().saveToPhotoLibrary(image: image) { success in
+            isSaving = false
+            toast = success
+                ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
+                : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
         }
     }
 }
