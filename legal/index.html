@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunMate - AI Powered Creation</title>
+    <style>
+        :root {
+            --bg-color: #080B16;
+            --primary-gradient: linear-gradient(135deg, #9D50BB, #6E48AA);
+            --accent-color: #00FFFF;
+            --text-color: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+        }
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: rgba(157, 80, 187, 0.3);
+            top: -100px; left: -100px;
+        }
+        .orb-2 {
+            width: 300px; height: 300px;
+            background: rgba(0, 255, 255, 0.1);
+            bottom: -50px; right: -50px;
+        }
+
+        header {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(to right, #fff, #C084FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 0px;
+            letter-spacing: -1px;
+            background: linear-gradient(to bottom, #ffffff, #C084FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            margin-top: 10px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(192, 132, 252, 0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--accent-color);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #C084FC;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 80px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #C084FC;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(157, 80, 187, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            header { padding: 20px; }
+            .features { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <header>
+        <div class="logo-text">RunMate</div>
+        <nav>
+            <a href="mailto:support@example.com" class="btn">Contact Support</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>RunMate</h1>
+        <p>AI · POWERED · CREATION</p>
+        <div style="margin-top: 20px;">
+            <!-- Placeholder for App Icon -->
+            <div style="width: 120px; height: 120px; background: var(--primary-gradient); margin: 0 auto; border-radius: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+                <span style="font-size: 50px;">✨</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <h3>AI Lab</h3>
+            <p>Experience the future with our advanced AI laboratory. Generate, iterate, and perfect your ideas using state-of-the-art models.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Video Creation</h3>
+            <p>Professional-grade video processing tools at your fingertips. Transform raw footage into stunning visual stories effortlessly.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Private Space</h3>
+            <p>Your creativity deserves security. Store and manage your projects in an encrypted, private environment designed for creators.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 RunMate. All rights reserved.</p>
+        <div style="margin-top: 15px;">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+        </div>
+    </footer>
+</body>
+</html>
