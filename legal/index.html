@@ -3,209 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RunMate - AI Powered Creation</title>
+    <title>AuraAI – AI-Powered Media Studio</title>
+    <meta name="description" content="AuraAI is your all-in-one AI media studio. Generate stunning AI artwork, organize your videos smartly, encrypt private photos, and explore your memories in a breathtaking 3D Galaxy Album.">
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            --bg-color: #080B16;
-            --primary-gradient: linear-gradient(135deg, #9D50BB, #6E48AA);
-            --accent-color: #00FFFF;
-            --text-color: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.6);
+            --bg:        #080B16;
+            --surface:   rgba(255,255,255,0.04);
+            --border:    rgba(192,132,252,0.18);
+            --purple1:   #9D50BB;
+            --purple2:   #6E48AA;
+            --accent:    #C084FC;
+            --cyan:      #67E8F9;
+            --text:      #ffffff;
+            --muted:     rgba(255,255,255,0.55);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
         }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
             overflow-x: hidden;
         }
 
-        /* Ambient Orbs */
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
+        /* ── Ambient background ── */
+        .ambient {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
         }
-        .orb-1 {
-            width: 400px; height: 400px;
-            background: rgba(157, 80, 187, 0.3);
-            top: -100px; left: -100px;
+        .ambient::before {
+            content: "";
+            position: absolute;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(157,80,187,.28) 0%, transparent 70%);
+            top: -200px; left: -200px;
         }
-        .orb-2 {
-            width: 300px; height: 300px;
-            background: rgba(0, 255, 255, 0.1);
-            bottom: -50px; right: -50px;
-        }
-
-        header {
-            padding: 20px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .ambient::after {
+            content: "";
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(103,232,249,.12) 0%, transparent 70%);
+            bottom: 0; right: -100px;
         }
 
-        .logo-text {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(to right, #fff, #C084FC);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* ── Layout helpers ── */
+        .wrap { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+        section { position: relative; z-index: 1; }
 
+        /* ── NAV ── */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8,11,22,.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+        }
+        .nav-logo {
+            font-size: 22px; font-weight: 800; letter-spacing: -.5px;
+            background: linear-gradient(120deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+            transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            background: linear-gradient(135deg, var(--purple1), var(--purple2));
+            color: #fff; padding: 9px 22px; border-radius: 100px;
+            text-decoration: none; font-size: 14px; font-weight: 600;
+            box-shadow: 0 4px 14px rgba(157,80,187,.4);
+            transition: opacity .2s, transform .2s;
+        }
+        .nav-cta:hover { opacity: .9; transform: translateY(-1px); }
+
+        /* ── HERO ── */
         .hero {
-            height: 70vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 20px;
+            min-height: 92vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 80px 24px 60px;
         }
-
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(192,132,252,.12);
+            border: 1px solid rgba(192,132,252,.3);
+            border-radius: 100px; padding: 6px 16px;
+            font-size: 13px; font-weight: 600; color: var(--accent);
+            margin-bottom: 32px; letter-spacing: .3px;
+        }
+        .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
         .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 0px;
-            letter-spacing: -1px;
-            background: linear-gradient(to bottom, #ffffff, #C084FC);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800; line-height: 1.05; letter-spacing: -2px;
+            background: linear-gradient(160deg, #ffffff 40%, var(--accent) 75%, var(--cyan) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+        .hero-sub {
+            font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+            color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 44px;
+        }
+        .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple1), var(--purple2));
+            color: #fff; padding: 15px 36px; border-radius: 100px;
+            text-decoration: none; font-size: 16px; font-weight: 700;
+            box-shadow: 0 8px 28px rgba(157,80,187,.4);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(157,80,187,.55); }
+        .btn-secondary {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.15);
+            color: var(--text); padding: 14px 32px; border-radius: 100px;
+            text-decoration: none; font-size: 16px; font-weight: 600;
+            transition: background .2s;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,.1); }
+
+        /* App icon */
+        .hero-icon-wrap {
+            margin-top: 70px;
+            display: flex; justify-content: center;
+        }
+        .app-icon {
+            width: 130px; height: 130px; border-radius: 30px;
+            background: linear-gradient(145deg, #9D50BB, #6E48AA, #2D1B6E);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 58px;
+            box-shadow: 0 24px 60px rgba(157,80,187,.5), 0 0 0 1px rgba(255,255,255,.06);
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            letter-spacing: 4px;
-            margin-top: 10px;
-            margin-bottom: 40px;
-            text-transform: uppercase;
+        /* ── STATS STRIP ── */
+        .stats {
+            border-top: 1px solid rgba(255,255,255,.05);
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            padding: 36px 0;
         }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 0;
+            text-align: center;
+        }
+        .stat + .stat { border-left: 1px solid rgba(255,255,255,.07); }
+        .stat-num {
+            font-size: 2.4rem; font-weight: 800; letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--muted); font-size: 13px; margin-top: 4px; }
 
-        .features {
+        /* ── SECTION HEADER ── */
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-eyebrow {
+            font-size: 12px; font-weight: 700; letter-spacing: 2.5px;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+        }
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800; line-height: 1.1; letter-spacing: -1px;
+        }
+        .section-desc { color: var(--muted); font-size: 1.05rem; margin-top: 14px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+        /* ── FEATURES GRID ── */
+        .features { padding: 100px 0; }
+        .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
         }
-
         .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid rgba(192, 132, 252, 0.15);
-            transition: all 0.3s ease;
-            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px 30px;
+            transition: transform .3s, border-color .3s, background .3s;
         }
-
         .feature-card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--accent-color);
+            transform: translateY(-8px);
+            background: rgba(255,255,255,.07);
+            border-color: var(--cyan);
         }
-
+        .feature-icon {
+            width: 54px; height: 54px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--purple1), var(--purple2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(157,80,187,.3);
+        }
         .feature-card h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            color: #C084FC;
+            font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--text);
+        }
+        .feature-card p { color: var(--muted); font-size: .96rem; }
+
+        /* ── SPOTLIGHT (big alternating sections) ── */
+        .spotlight { padding: 80px 0; }
+        .spotlight-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 64px; align-items: center; margin-bottom: 100px;
+        }
+        .spotlight-row:last-child { margin-bottom: 0; }
+        .spotlight-row.reverse { direction: rtl; }
+        .spotlight-row.reverse > * { direction: ltr; }
+        .spotlight-text h2 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 18px;
+        }
+        .spotlight-text p { color: var(--muted); font-size: 1.02rem; line-height: 1.75; }
+        .spotlight-text ul {
+            list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .spotlight-text li {
+            display: flex; align-items: flex-start; gap: 10px;
+            color: var(--muted); font-size: .96rem;
+        }
+        .check {
+            flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple1), var(--cyan));
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 11px; color: #fff; font-weight: 700; margin-top: 1px;
+        }
+        .spotlight-visual {
+            border-radius: var(--radius-xl);
+            background: linear-gradient(135deg, rgba(157,80,187,.15), rgba(103,232,249,.08));
+            border: 1px solid var(--border);
+            min-height: 340px;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 18px;
+            overflow: hidden; position: relative;
+        }
+        .visual-icon { font-size: 80px; line-height: 1; }
+        .visual-label {
+            font-size: 15px; font-weight: 600; color: var(--muted);
+        }
+        /* subtle glow inside visual */
+        .spotlight-visual::before {
+            content: "";
+            position: absolute;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(192,132,252,.2), transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%,-50%);
         }
 
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 1rem;
+        /* ── HOW IT WORKS ── */
+        .how { padding: 100px 0; }
+        .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+        .step { text-align: center; padding: 12px; }
+        .step-num {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple1), var(--purple2));
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; margin-bottom: 18px;
+            box-shadow: 0 6px 18px rgba(157,80,187,.4);
         }
+        .step h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+        .step p { color: var(--muted); font-size: .93rem; }
 
-        footer {
+        /* ── PRIVACY SECTION ── */
+        .privacy-sec {
+            padding: 80px 0;
+        }
+        .privacy-card {
+            background: linear-gradient(135deg, rgba(157,80,187,.12), rgba(103,232,249,.06));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 60px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+        }
+        .privacy-card h2 {
+            font-size: 2.2rem; font-weight: 800; line-height: 1.1;
+            letter-spacing: -1px; margin-bottom: 18px;
+        }
+        .privacy-card p { color: var(--muted); line-height: 1.75; }
+        .privacy-points {
+            display: flex; flex-direction: column; gap: 18px;
+        }
+        .privacy-point {
+            display: flex; gap: 14px; align-items: flex-start;
+        }
+        .privacy-point .icon-wrap {
+            flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
+            background: rgba(192,132,252,.15);
+            border: 1px solid rgba(192,132,252,.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .privacy-point h5 {
+            font-size: .97rem; font-weight: 700; margin-bottom: 3px;
+        }
+        .privacy-point p { color: var(--muted); font-size: .9rem; }
+
+        /* ── CTA BANNER ── */
+        .cta-banner {
+            padding: 100px 0;
+        }
+        .cta-inner {
             text-align: center;
-            padding: 80px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(157,80,187,.18), rgba(103,232,249,.08));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 80px 40px;
+            position: relative; overflow: hidden;
+        }
+        .cta-inner::before {
+            content: "";
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(157,80,187,.2), transparent 70%);
+            top: -120px; left: 50%; transform: translateX(-50%);
+        }
+        .cta-inner h2 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800; letter-spacing: -1.5px; margin-bottom: 18px;
+            position: relative;
+        }
+        .cta-inner p { color: var(--muted); font-size: 1.1rem; max-width: 480px; margin: 0 auto 36px; position: relative; }
+        .cta-inner .hero-actions { position: relative; }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid rgba(255,255,255,.06);
+            padding: 48px 0;
+            position: relative; z-index: 1;
+        }
+        .footer-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 20px;
+        }
+        .footer-logo {
+            font-size: 20px; font-weight: 800;
+            background: linear-gradient(120deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a {
+            color: var(--muted); text-decoration: none; font-size: 14px;
+            transition: color .2s;
+        }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-copy { color: var(--muted); font-size: 13px; width: 100%; text-align: center; margin-top: 8px; }
+
+        /* ── Gradient text helper ── */
+        .grad {
+            background: linear-gradient(120deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        footer p {
-            color: var(--text-muted);
-            font-size: 14px;
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .feature-grid { grid-template-columns: repeat(2,1fr); }
+            .spotlight-row { grid-template-columns: 1fr; gap: 36px; }
+            .spotlight-row.reverse { direction: ltr; }
+            .steps { grid-template-columns: repeat(2,1fr); }
+            .privacy-card { grid-template-columns: 1fr; padding: 36px; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .stat + .stat:nth-child(3) { border-left: none; }
+            .nav-links { display: none; }
         }
-
-        footer a {
-            color: #C084FC;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-        }
-
-        footer a:hover {
-            color: var(--accent-color);
-            text-decoration: underline;
-        }
-
-        .btn {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 14px 36px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 8px 20px rgba(157, 80, 187, 0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            header { padding: 20px; }
-            .features { padding: 20px; }
+        @media (max-width: 600px) {
+            .feature-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: 1fr 1fr; }
+            .hero h1 { letter-spacing: -1px; }
+            .cta-inner { padding: 48px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
 
-    <header>
-        <div class="logo-text">RunMate</div>
-        <nav>
-            <a href="mailto:support@example.com" class="btn">Contact Support</a>
-        </nav>
-    </header>
+<div class="ambient"></div>
 
-    <section class="hero">
-        <h1>RunMate</h1>
-        <p>AI · POWERED · CREATION</p>
-        <div style="margin-top: 20px;">
-            <!-- Placeholder for App Icon -->
-            <div style="width: 120px; height: 120px; background: var(--primary-gradient); margin: 0 auto; border-radius: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
-                <span style="font-size: 50px;">✨</span>
+<!-- ── NAV ─────────────────────────────────────────────── -->
+<nav>
+    <div class="wrap nav-inner">
+        <a class="nav-logo" href="#">AuraAI</a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#ai-lab">AI Lab</a></li>
+            <li><a href="#privacy">Privacy</a></li>
+            <li><a href="#how">How It Works</a></li>
+        </ul>
+        <a class="nav-cta" href="mailto:hhyteam@zhongkuitech.cn">Contact Us</a>
+    </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="hero-badge"><span class="dot"></span> Available on iOS</div>
+    <h1>Your AI-Powered<br>Media Studio</h1>
+    <p class="hero-sub">Generate breathtaking AI artwork, intelligently organize your video library, protect your private photos, and explore memories in an immersive 3D Galaxy Album — all in one app.</p>
+    <div class="hero-actions">
+        <a class="btn-primary" href="#features">Explore Features</a>
+        <a class="btn-secondary" href="#how">How It Works</a>
+    </div>
+    <div class="hero-icon-wrap">
+        <div class="app-icon">✨</div>
+    </div>
+</section>
+
+<!-- ── STATS ─────────────────────────────────────────────── -->
+<section class="stats">
+    <div class="wrap">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-num">5+</div>
+                <div class="stat-label">Core AI Features</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">100%</div>
+                <div class="stat-label">On-Device Encryption</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">3D</div>
+                <div class="stat-label">Galaxy Album Experience</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">0</div>
+                <div class="stat-label">Accounts Required</div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="features">
-        <div class="feature-card">
-            <h3>AI Lab</h3>
-            <p>Experience the future with our advanced AI laboratory. Generate, iterate, and perfect your ideas using state-of-the-art models.</p>
+<!-- ── FEATURES GRID ─────────────────────────────────────── -->
+<section class="features" id="features">
+    <div class="wrap">
+        <div class="section-header">
+            <p class="section-eyebrow">Everything You Need</p>
+            <h2 class="section-title">Powerful Tools,<br>Beautiful Experience</h2>
+            <p class="section-desc">AuraAI combines AI creativity with smart media management to give you a studio that fits in your pocket.</p>
         </div>
-        <div class="feature-card">
-            <h3>Video Creation</h3>
-            <p>Professional-grade video processing tools at your fingertips. Transform raw footage into stunning visual stories effortlessly.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Private Space</h3>
-            <p>Your creativity deserves security. Store and manage your projects in an encrypted, private environment designed for creators.</p>
-        </div>
-    </section>
 
-    <footer>
-        <p>&copy; 2026 RunMate. All rights reserved.</p>
-        <div style="margin-top: 15px;">
-            <a href="privacy.html">Privacy Policy</a>
-            <a href="terms.html">Terms of Service</a>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Image Generation</h3>
+                <p>Describe any scene in words and watch AuraAI's AI engine bring it to life with stunning detail. Choose from multiple art styles and aspect ratios.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌌</div>
+                <h3>Galaxy Album</h3>
+                <p>Experience your photo library like never before. Five breathtaking 3D cosmic shapes transform ordinary photos into an immersive, interactive universe.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Private Space</h3>
+                <p>Protect sensitive photos with military-grade AES encryption. Secured with your personal password, only you can view your private collection.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📹</div>
+                <h3>Smart Video Scan</h3>
+                <p>AuraAI scans your entire video library and intelligently categorizes all videos, screenshots, screen recordings, and short clips into neat groups.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Video Compression</h3>
+                <p>Reduce video file sizes without sacrificing quality. Choose from Low, Medium, or High presets to balance file size and visual fidelity for any use case.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Community Feed</h3>
+                <p>Get inspired by a curated waterfall feed of AI-generated artwork from the community. Discover new styles and prompts to fuel your own creativity.</p>
+            </div>
         </div>
-    </footer>
+    </div>
+</section>
+
+<!-- ── SPOTLIGHT – AI LAB ─────────────────────────────────── -->
+<section class="spotlight" id="ai-lab">
+    <div class="wrap">
+
+        <div class="spotlight-row">
+            <div class="spotlight-text">
+                <h2>Create Art With <span class="grad">Words Alone</span></h2>
+                <p>AuraAI's AI Lab puts a state-of-the-art image generation engine at your fingertips. Simply type a description, pick your style, and let the AI craft something extraordinary in seconds.</p>
+                <ul>
+                    <li><span class="check">✓</span> Multiple art styles: Photorealistic, Anime, Oil Painting, Sketch, and more</li>
+                    <li><span class="check">✓</span> Flexible aspect ratios — square, portrait, landscape, and widescreen</li>
+                    <li><span class="check">✓</span> Real-time generation progress with elegant animated UI</li>
+                    <li><span class="check">✓</span> Auto-save to your personal AI History gallery</li>
+                    <li><span class="check">✓</span> One-tap export to Camera Roll or Private Space</li>
+                </ul>
+            </div>
+            <div class="spotlight-visual">
+                <div class="visual-icon">🖼️</div>
+                <div class="visual-label">AI Image Generation</div>
+            </div>
+        </div>
+
+        <div class="spotlight-row reverse">
+            <div class="spotlight-text">
+                <h2>Your Photos in a <span class="grad">3D Galaxy</span></h2>
+                <p>Galaxy Album reimagines your photo library as a living, breathing cosmos. Five unique 3D shapes — sphere, spiral, cube, ring, and scatter — let you orbit, pinch, and swipe through your memories in an entirely new dimension.</p>
+                <ul>
+                    <li><span class="check">✓</span> Five immersive cosmic display shapes</li>
+                    <li><span class="check">✓</span> Fluid 3D gestures — rotate, zoom, and explore</li>
+                    <li><span class="check">✓</span> Full-resolution photo viewing from any angle</li>
+                    <li><span class="check">✓</span> Instant access from the home screen</li>
+                </ul>
+            </div>
+            <div class="spotlight-visual">
+                <div class="visual-icon">🌌</div>
+                <div class="visual-label">3D Galaxy Album</div>
+            </div>
+        </div>
+
+        <div class="spotlight-row">
+            <div class="spotlight-text">
+                <h2>Reclaim Storage with <span class="grad">Smart Scanning</span></h2>
+                <p>AuraAI automatically scans your entire Photos library and groups videos into smart categories so you can quickly identify and remove what you no longer need — saving gigabytes in minutes.</p>
+                <ul>
+                    <li><span class="check">✓</span> Auto-detects All Videos, Screenshots, Screen Recordings, and Short Clips</li>
+                    <li><span class="check">✓</span> Live animated scanning progress card</li>
+                    <li><span class="check">✓</span> Batch preview and delete unnecessary files</li>
+                    <li><span class="check">✓</span> Video compression with three quality presets</li>
+                </ul>
+            </div>
+            <div class="spotlight-visual">
+                <div class="visual-icon">📊</div>
+                <div class="visual-label">Smart Video Scan</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── PRIVACY ─────────────────────────────────────────────── -->
+<section class="privacy-sec" id="privacy">
+    <div class="wrap">
+        <div class="privacy-card">
+            <div>
+                <p class="section-eyebrow" style="margin-bottom:14px">Built for Trust</p>
+                <h2>Your Privacy is<br><span class="grad">Our Priority</span></h2>
+                <p style="margin-top:16px; color:var(--muted); line-height:1.75;">AuraAI is built on a privacy-first foundation. Your personal photos, AI creations, and encrypted files never leave your device without your explicit action.</p>
+            </div>
+            <div class="privacy-points">
+                <div class="privacy-point">
+                    <div class="icon-wrap">🔐</div>
+                    <div>
+                        <h5>AES Encryption</h5>
+                        <p>Images in Private Space are encrypted with AES-256 using your password. Decryption happens entirely on-device.</p>
+                    </div>
+                </div>
+                <div class="privacy-point">
+                    <div class="icon-wrap">📵</div>
+                    <div>
+                        <h5>No Account Required</h5>
+                        <p>AuraAI works without sign-up. No email, no cloud account, no tracking — just open and create.</p>
+                    </div>
+                </div>
+                <div class="privacy-point">
+                    <div class="icon-wrap">🛡️</div>
+                    <div>
+                        <h5>Photos Permission Control</h5>
+                        <p>AuraAI requests only the Photos access you grant. You stay in complete control of your library at all times.</p>
+                    </div>
+                </div>
+                <div class="privacy-point">
+                    <div class="icon-wrap">💾</div>
+                    <div>
+                        <h5>Local-First Storage</h5>
+                        <p>AI history, encrypted images, and media data are stored locally on your device using secure sandboxed storage.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW IT WORKS ─────────────────────────────────────────── -->
+<section class="how" id="how">
+    <div class="wrap">
+        <div class="section-header">
+            <p class="section-eyebrow">Simple By Design</p>
+            <h2 class="section-title">Up and Running<br>in Seconds</h2>
+            <p class="section-desc">AuraAI is designed to be intuitive from the moment you launch it — no tutorials required.</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Download & Open</h4>
+                <p>Install AuraAI on your iPhone or iPad. No account setup or sign-in needed.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Grant Photos Access</h4>
+                <p>Allow AuraAI to read your photo library. AuraAI scans it locally and never uploads your content.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Explore Your Library</h4>
+                <p>Instantly see your videos grouped by category, browse your photos in Galaxy 3D, and compress files.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <h4>Create & Protect</h4>
+                <p>Jump into AI Lab to generate artwork, or set up a Private Space password to encrypt your sensitive photos.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────────── -->
+<section class="cta-banner">
+    <div class="wrap">
+        <div class="cta-inner">
+            <h2>Create. Organize. Protect.</h2>
+            <p>Everything your media life needs — powered by AI and built with privacy at its core.</p>
+            <div class="hero-actions">
+                <a class="btn-primary" href="mailto:hhyteam@zhongkuitech.cn">Get In Touch</a>
+                <a class="btn-secondary" href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+    <div class="wrap">
+        <div class="footer-inner">
+            <div class="footer-logo">AuraAI</div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="mailto:hhyteam@zhongkuitech.cn">Support</a>
+            </div>
+        </div>
+        <p class="footer-copy">&copy; 2026 AuraAI. All rights reserved. Made for iOS.</p>
+    </div>
+</footer>
+
 </body>
 </html>
