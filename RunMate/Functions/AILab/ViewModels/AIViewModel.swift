@@ -69,14 +69,15 @@ class AIViewModel {
         let selectedStyle = imageAIStyles.first { $0.id == selectedAIStyleID }
 
         // 2. Combine prompt: user input + style prompt
+        let sanitizedInput = sanitizePrompt(inputText)
         let stylePrompt = selectedStyle?.prompt ?? ""
         let fullPrompt: String
         if stylePrompt.isEmpty {
-            fullPrompt = inputText
-        } else if inputText.isEmpty {
+            fullPrompt = sanitizedInput
+        } else if sanitizedInput.isEmpty {
             fullPrompt = stylePrompt
         } else {
-            fullPrompt = "\(inputText), \(stylePrompt)"
+            fullPrompt = "\(sanitizedInput), \(stylePrompt)"
         }
 
         // 3. Match the model based on the style image name
@@ -126,6 +127,32 @@ class AIViewModel {
                 }
             }
         )
+    }
+
+    private func sanitizePrompt(_ prompt: String) -> String {
+        var sanitized = prompt
+            .replacingOccurrences(of: #"[\{\}\[\]\<\>\|\\]"#, with: " ", options: .regularExpression)
+            .replacingOccurrences(of: #"(?i)\bBREAK\b"#, with: ", ", options: .regularExpression)
+            .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let allowedCharacters = CharacterSet.alphanumerics
+            .union(.whitespaces)
+            .union(CharacterSet(charactersIn: ".,:;!?()'\"-_/"))
+
+        sanitized = String(sanitized.unicodeScalars.map { scalar in
+            allowedCharacters.contains(scalar) ? Character(scalar) : " "
+        })
+        .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let maxLength = 800
+        if sanitized.count > maxLength {
+            sanitized = String(sanitized.prefix(maxLength))
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        return sanitized
     }
 
     func cancelGeneration() {
