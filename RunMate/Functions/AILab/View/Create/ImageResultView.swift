@@ -235,10 +235,21 @@ struct ImageResultView: View {
         guard let image = generatedImage else { return }
         let vc = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }),
            let rootVC = window.rootViewController
         {
-            rootVC.present(vc, animated: true)
+            if let popover = vc.popoverPresentationController {
+                popover.sourceView = window
+                popover.sourceRect = CGRect(
+                    x: window.bounds.midX,
+                    y: window.bounds.midY,
+                    width: 0,
+                    height: 0
+                )
+                popover.permittedArrowDirections = []
+            }
+
+            rootVC.topMostViewController.present(vc, animated: true)
         }
     }
 
@@ -289,5 +300,27 @@ extension ImageResultView.SaveState: Equatable {
         case (.failed(let a), .failed(let b)): return a == b
         default: return false
         }
+    }
+}
+
+private extension UIViewController {
+    var topMostViewController: UIViewController {
+        if let presentedViewController {
+            return presentedViewController.topMostViewController
+        }
+
+        if let navigationController = self as? UINavigationController,
+           let visibleViewController = navigationController.visibleViewController
+        {
+            return visibleViewController.topMostViewController
+        }
+
+        if let tabBarController = self as? UITabBarController,
+           let selectedViewController = tabBarController.selectedViewController
+        {
+            return selectedViewController.topMostViewController
+        }
+
+        return self
     }
 }
