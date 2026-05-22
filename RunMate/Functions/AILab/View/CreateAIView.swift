@@ -12,6 +12,7 @@ struct CreateAIView: View {
     let defaultAIPrompt: String
     @State private var viewModel: AIViewModel = .init()
     @State private var aiStep: CreateAIStep = .Config
+    @Environment(\.dismiss) var dismiss
 
     private let rows = [
         GridItem(.flexible(), spacing: 0.0),
@@ -43,9 +44,7 @@ struct CreateAIView: View {
 
             case .Result:
                 ImageResultView(generatedImage: viewModel.generatedImage) {
-                    withAnimation {
-                        aiStep = .Config
-                    }
+                    dismiss()
                 } confirmAction: {
                     // Save the generated image to history
                     if let image = viewModel.generatedImage {

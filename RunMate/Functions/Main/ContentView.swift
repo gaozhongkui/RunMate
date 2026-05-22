@@ -33,6 +33,7 @@ struct ContentView: View {
                             self.tabItemView(style: .ME, selected: navManager.selectedTab == .ME)
                         }
                 }
+                .toolbarBackground(.visible, for: .tabBar)
             }.modifier(NavigationDestinationImage(namespace: self.nameSpace))
         }
     }
