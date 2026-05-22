@@ -36,7 +36,7 @@ final class RemoteConfigManager {
         Key.huggingFaceToken.rawValue    : "" as NSObject,
         Key.openRouterBaseURL.rawValue    : "https://openrouter.ai/api/v1/chat/completions" as NSObject,
         Key.openRouterApiKey.rawValue     : "" as NSObject,
-        Key.openRouterImageModel.rawValue : "black-forest-labs/flux-1-schnell" as NSObject,
+        Key.openRouterImageModel.rawValue : "google/gemini-2.5-flash-image" as NSObject,
         Key.civitaiBaseURL.rawValue      : "https://civitai.com/api/v1/images" as NSObject,
         Key.civitaiApiKey.rawValue       : "" as NSObject,
         Key.privacyURL.rawValue          : "https://velvety-manatee-9d0a84.netlify.app/privacy.html" as NSObject,
