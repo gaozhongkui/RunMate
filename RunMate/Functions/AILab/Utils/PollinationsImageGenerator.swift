@@ -3,6 +3,7 @@
 //  RunMate
 //
 //  Created by gaozhongkui on 2026/1/28.
+//  Optimized for OpenRouter Image Generation API on 2026/05/22.
 //
 
 import SwiftUI
@@ -124,7 +125,7 @@ class PollinationsImageGenerator {
 
     struct GenerationResult {
         let image: UIImage
-        let imageURL: URL?       // Pollinations provides a URL; HuggingFace returns nil
+        let imageURL: URL?       // Pollinations / OpenRouter may provide a URL; HuggingFace returns nil
         let prompt: String
         let usedProvider: ImageProvider
     }
@@ -231,7 +232,7 @@ class PollinationsImageGenerator {
     /// Determine whether the error should trigger a provider switch (quota exceeded / service unavailable)
     private func shouldMarkCooldown(for error: Error) -> Bool {
         if let e = error as? GenerationError, case .httpError(let code) = e {
-            return code == 429 || code == 503 || (code >= 500 && code < 600)
+            return code == 400 || code == 429 || code == 503 || (code >= 500 && code < 600)
         }
         return false
     }
@@ -258,11 +259,10 @@ class PollinationsImageGenerator {
             return (image, nil)
 
         case .openRouter:
-            let image = try await generateWithOpenRouter(
+            return try await generateWithOpenRouter(
                 prompt: prompt,
                 options: options
             )
-            return (image, nil)
         }
     }
 
@@ -309,8 +309,6 @@ class PollinationsImageGenerator {
 
     // MARK: - HuggingFace Inference API
 
-    /// Generate an image using the HuggingFace Inference API
-    /// - Without a token it can be used for free but with lower rate limits; providing a free account token increases the rate limit
     private func generateWithHuggingFace(
         prompt: String,
         model: HuggingFaceModel,
@@ -324,14 +322,12 @@ class PollinationsImageGenerator {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 120
 
-        // Prefer the token passed by the caller; fall back to the one from Remote Config
         let effectiveToken = options.huggingFaceToken
             ?? (RemoteConfigManager.shared.huggingFaceToken.isEmpty ? nil : RemoteConfigManager.shared.huggingFaceToken)
         if let token = effectiveToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        // Build request body, width/height adapted to HF parameter format
         let body: [String: Any] = [
             "inputs": prompt,
             "parameters": [
@@ -349,7 +345,6 @@ class PollinationsImageGenerator {
         let (data, response) = try await URLSession(configuration: config).data(for: request)
 
         if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-            // 503 means the model is cold-starting (loading); treat it as quota exhaustion to trigger a switch
             throw GenerationError.httpError(http.statusCode)
         }
 
@@ -359,13 +354,21 @@ class PollinationsImageGenerator {
         return image
     }
 
-    // MARK: - OpenRouter Image Generation
+    // MARK: - OpenRouter Image Generation (Fixed 404 & Response Schema)
 
     private func generateWithOpenRouter(
         prompt: String,
         options: GenerationOptions
-    ) async throws -> UIImage {
-        guard let url = URL(string: RemoteConfigManager.shared.openRouterBaseURL) else {
+    ) async throws -> (UIImage, URL?) {
+        
+        // 修正 1：动态规避 /chat/completions 路由干扰，强行指向生图专属 Endpoint
+        var baseStr = RemoteConfigManager.shared.openRouterBaseURL
+        if baseStr.hasSuffix("/chat/completions") {
+            baseStr = baseStr.replacingOccurrences(of: "/chat/completions", with: "")
+        }
+        let endpoint = baseStr.hasSuffix("/") ? "\(baseStr)images/generations" : "\(baseStr)/images/generations"
+        
+        guard let url = URL(string: endpoint) else {
             throw GenerationError.invalidURL
         }
 
@@ -374,15 +377,11 @@ class PollinationsImageGenerator {
             throw GenerationError.missingAPIKey
         }
 
+        // 修正 2：改用顶级参数 "prompt"、将 modalities 净化为仅有 ["image"]
         let body: [String: Any] = [
             "model": RemoteConfigManager.shared.openRouterImageModel,
-            "messages": [
-                [
-                    "role": "user",
-                    "content": prompt,
-                ],
-            ],
-            "modalities": ["image", "text"],
+            "prompt": prompt,
+            "modalities": ["image"],
             "image_config": [
                 "aspect_ratio": openRouterAspectRatio(width: options.width, height: options.height),
             ],
@@ -393,7 +392,7 @@ class PollinationsImageGenerator {
         request.timeoutInterval = 120
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("AuraAI", forHTTPHeaderField: "X-Title")
+        request.setValue("RunMate", forHTTPHeaderField: "X-Title")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let config = URLSessionConfiguration.default
@@ -402,45 +401,52 @@ class PollinationsImageGenerator {
 
         let (data, response) = try await URLSession(configuration: config).data(for: request)
         if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            print("[OpenRouter Error] HTTP Status Code: \(http.statusCode)")
             throw GenerationError.httpError(http.statusCode)
         }
 
-        guard let dataURL = extractOpenRouterImageDataURL(from: data),
-              let imageData = decodeDataURL(dataURL),
-              let image = UIImage(data: imageData)
-        else {
+        // 修正 3：重新编排兼容生图接口返回模式的解析链
+        guard let dataString = extractOpenRouterImageDataURL(from: data) else {
             throw GenerationError.invalidImageData
         }
+        
+        // 判断返回的是 CDN 图像网址还是纯 Base64
+        if dataString.hasPrefix("http://") || dataString.hasPrefix("https://") {
+            if let remoteURL = URL(string: dataString) {
+                let image = try await downloadImageWithoutDelegate(from: remoteURL)
+                return (image, remoteURL)
+            }
+        }
+        
+        if let imageData = decodeDataURL(dataString), let image = UIImage(data: imageData) {
+            return (image, nil)
+        }
 
-        return image
+        throw GenerationError.invalidImageData
     }
 
     private func extractOpenRouterImageDataURL(from data: Data) -> String? {
-        guard
-            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let choices = json["choices"] as? [[String: Any]]
-        else {
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return nil
         }
 
-        for choice in choices {
-            guard
-                let message = choice["message"] as? [String: Any],
-                let images = message["images"] as? [[String: Any]]
-            else {
-                continue
+        // 优先分支 A：标准的 /images/generations 返回规范，数据存放在顶级 "data" 节点数组中
+        if let dataArray = json["data"] as? [[String: Any]] {
+            for item in dataArray {
+                if let url = item["url"] as? String { return url }
+                if let b64 = item["b64_json"] as? String { return b64 }
             }
+        }
 
-            for image in images {
-                if let imageURL = image["image_url"] as? [String: Any],
-                   let url = imageURL["url"] as? String
-                {
-                    return url
-                }
-                if let imageURL = image["imageUrl"] as? [String: Any],
-                   let url = imageURL["url"] as? String
-                {
-                    return url
+        // 兜底分支 B：原有的混合多模态聊天结构
+        if let choices = json["choices"] as? [[String: Any]] {
+            for choice in choices {
+                if let message = choice["message"] as? [String: Any],
+                   let images = message["images"] as? [[String: Any]] {
+                    for image in images {
+                        if let imageURL = image["image_url"] as? [String: Any], let url = imageURL["url"] as? String { return url }
+                        if let imageURL = image["imageUrl"] as? [String: Any], let url = imageURL["url"] as? String { return url }
+                    }
                 }
             }
         }
@@ -476,8 +482,9 @@ class PollinationsImageGenerator {
             .0 ?? "1:1"
     }
 
-    // MARK: - Download with Progress (Pollinations)
+    // MARK: - Download Helpers
 
+    /// Pollinations uses this to update progress bars
     private func downloadImage(from url: URL) async throws -> UIImage {
         return try await withCheckedThrowingContinuation { continuation in
             let config = URLSessionConfiguration.default
@@ -516,6 +523,18 @@ class PollinationsImageGenerator {
             }
             downloadTask?.resume()
         }
+    }
+
+    /// Internal helper to pull images from OpenRouter's external image CDN URLs asynchronously
+    private func downloadImageWithoutDelegate(from url: URL) async throws -> UIImage {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            throw GenerationError.httpError(http.statusCode)
+        }
+        guard let image = UIImage(data: data) else {
+            throw GenerationError.invalidImageData
+        }
+        return image
     }
 
     // MARK: - State / Progress Helpers
