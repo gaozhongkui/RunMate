@@ -245,17 +245,12 @@ struct MeView: View {
                         .foregroundColor(AppTheme.Colors.textTertiary)
                         .padding(.horizontal, 20)
 
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
-                        spacing: 10
-                    ) {
-                        ForEach(store.records) { record in
-                            AIHistoryCard(record: record, store: store).onTapGesture {
-                                currentItem = record
-                            }
-                        }
+                    SelfSizingAIImageGrid(
+                        records: store.records,
+                        store: store
+                    ) { record in
+                        currentItem = record
                     }
-                    .padding(.horizontal, 16)
                 }
             }
         }
