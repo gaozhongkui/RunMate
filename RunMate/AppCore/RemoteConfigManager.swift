@@ -35,7 +35,7 @@ final class RemoteConfigManager {
         Key.huggingFaceBaseURL.rawValue  : "https://api-inference.huggingface.co/models" as NSObject,
         Key.huggingFaceToken.rawValue    : "" as NSObject,
         Key.openRouterBaseURL.rawValue    : "https://openrouter.ai/api/v1/chat/completions" as NSObject,
-        Key.openRouterApiKey.rawValue     : "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" as NSObject,
+        Key.openRouterApiKey.rawValue     : "" as NSObject,
         Key.openRouterImageModel.rawValue : "black-forest-labs/flux-1-schnell" as NSObject,
         Key.civitaiBaseURL.rawValue      : "https://civitai.com/api/v1/images" as NSObject,
         Key.civitaiApiKey.rawValue       : "" as NSObject,
