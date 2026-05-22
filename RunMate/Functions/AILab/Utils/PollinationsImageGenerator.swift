@@ -354,116 +354,136 @@ class PollinationsImageGenerator {
         return image
     }
 
-    // MARK: - OpenRouter Image Generation (Fixed 404 & Response Schema)
+    // MARK: - OpenRouter Image Generation (智能兼容 Chat 多模态与标准 Generations 路由)
 
     private func generateWithOpenRouter(
-        prompt: String,
-        options: GenerationOptions
-    ) async throws -> (UIImage, URL?) {
-        
-        // 修正 1：动态规避 /chat/completions 路由干扰，强行指向生图专属 Endpoint
-        var baseStr = RemoteConfigManager.shared.openRouterBaseURL
-        if baseStr.hasSuffix("/chat/completions") {
-            baseStr = baseStr.replacingOccurrences(of: "/chat/completions", with: "")
-        }
-        let endpoint = baseStr.hasSuffix("/") ? "\(baseStr)images/generations" : "\(baseStr)/images/generations"
-        
-        guard let url = URL(string: endpoint) else {
-            throw GenerationError.invalidURL
-        }
+            prompt: String,
+            options: GenerationOptions
+        ) async throws -> (UIImage, URL?) {
+            
+            let apiKey = options.openRouterApiKey ?? RemoteConfigManager.shared.openRouterApiKey
+            guard !apiKey.isEmpty else {
+                throw GenerationError.missingAPIKey
+            }
+            
+            let modelID = RemoteConfigManager.shared.openRouterImageModel
+            
+            var baseStr = RemoteConfigManager.shared.openRouterBaseURL
+            // 清理末尾可能存在的反斜杠
+            if baseStr.hasSuffix("/") { baseStr = String(baseStr.dropLast()) }
+            
+            // 🛠️ 统一强制转换为兼容性最好的 chat/completions 路由
+            let endpoint: String
+            if !baseStr.hasSuffix("/chat/completions") {
+                endpoint = "\(baseStr)/chat/completions"
+            } else {
+                endpoint = baseStr
+            }
+            
+            // 统一构建多模态消息体，完美适配 Gemini、Flux 等 OpenRouter 平台上的所有生图大模型
+            let body: [String: Any] = [
+                "model": modelID,
+                "modalities": ["image", "text"],
+                "messages": [["role": "user", "content": prompt]]
+            ]
+            
+            guard let url = URL(string: endpoint) else {
+                throw GenerationError.invalidURL
+            }
 
-        let apiKey = options.openRouterApiKey ?? RemoteConfigManager.shared.openRouterApiKey
-        guard !apiKey.isEmpty else {
-            throw GenerationError.missingAPIKey
-        }
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.timeoutInterval = 60
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("RunMate", forHTTPHeaderField: "X-Title")
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        // 修正 2：改用顶级参数 "prompt"、将 modalities 净化为仅有 ["image"]
-        let body: [String: Any] = [
-            "model": RemoteConfigManager.shared.openRouterImageModel,
-            "prompt": prompt,
-            "modalities": ["image"],
-            "image_config": [
-                "aspect_ratio": openRouterAspectRatio(width: options.width, height: options.height),
-            ],
-        ]
+            let config = URLSessionConfiguration.ephemeral
+            config.timeoutIntervalForRequest = 60
+            
+            print("📡 [OpenRouter] 正在向统一网关请求大模型 [\(modelID)]，实际路由: \(endpoint)")
+            let (data, response) = try await URLSession(configuration: config).data(for: request)
+            
+            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                print("[OpenRouter Error] HTTP Status Code: \(http.statusCode)")
+                if let errStr = String(data: data, encoding: .utf8) {
+                    print("❌ [Error Details JSON]: \(errStr)")
+                }
+                throw GenerationError.httpError(http.statusCode)
+            }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.timeoutInterval = 120
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("RunMate", forHTTPHeaderField: "X-Title")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+            // 提取返回的图片 URL 或 Base64 编码数据
+            guard let dataString = extractOpenRouterImageDataURL(from: data) else {
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let choices = json["choices"] as? [[String: Any]], !choices.isEmpty,
+                   let message = choices[0]["message"] as? [String: Any],
+                   let content = message["content"] as? String {
+                    print("ℹ️ 模型未进行像素渲染，返回了引导/拒绝文字: \(content)")
+                }
+                throw GenerationError.invalidImageData
+            }
+            
+            // 1. 如果返回的是常规网络 CDN URL（如 Flux 某些提供商返回的外链）
+            if dataString.hasPrefix("http://") || dataString.hasPrefix("https://") {
+                if let remoteURL = URL(string: dataString) {
+                    print("🌍 [OpenRouter] 识别为外部图片 URL，开始下载图片...")
+                    let image = try await downloadImageWithoutDelegate(from: remoteURL)
+                    return (image, remoteURL)
+                }
+            }
+            
+            // 2. 如果返回的是内联 Base64 数据串（如 Gemini 或特定提供商的 Flux 裸数据）
+            var cleanBase64 = dataString
+            if dataString.hasPrefix("data:image") {
+                let components = dataString.components(separatedBy: ",")
+                if components.count > 1, let last = components.last {
+                    cleanBase64 = last
+                }
+            }
+            
+            if let imageData = Data(base64Encoded: cleanBase64, options: .ignoreUnknownCharacters),
+               let image = UIImage(data: imageData) {
+                print("🎉 [OpenRouter] 内联 Base64 图像数据解码成功，生成 UIImage！")
+                return (image, nil)
+            }
 
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 120
-        config.timeoutIntervalForResource = 180
-
-        let (data, response) = try await URLSession(configuration: config).data(for: request)
-        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-            print("[OpenRouter Error] HTTP Status Code: \(http.statusCode)")
-            throw GenerationError.httpError(http.statusCode)
-        }
-
-        // 修正 3：重新编排兼容生图接口返回模式的解析链
-        guard let dataString = extractOpenRouterImageDataURL(from: data) else {
             throw GenerationError.invalidImageData
         }
-        
-        // 判断返回的是 CDN 图像网址还是纯 Base64
-        if dataString.hasPrefix("http://") || dataString.hasPrefix("https://") {
-            if let remoteURL = URL(string: dataString) {
-                let image = try await downloadImageWithoutDelegate(from: remoteURL)
-                return (image, remoteURL)
-            }
-        }
-        
-        if let imageData = decodeDataURL(dataString), let image = UIImage(data: imageData) {
-            return (image, nil)
-        }
-
-        throw GenerationError.invalidImageData
-    }
 
     private func extractOpenRouterImageDataURL(from data: Data) -> String? {
-        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return nil
-        }
-
-        // 优先分支 A：标准的 /images/generations 返回规范，数据存放在顶级 "data" 节点数组中
-        if let dataArray = json["data"] as? [[String: Any]] {
-            for item in dataArray {
-                if let url = item["url"] as? String { return url }
-                if let b64 = item["b64_json"] as? String { return b64 }
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return nil
             }
-        }
 
-        // 兜底分支 B：原有的混合多模态聊天结构
-        if let choices = json["choices"] as? [[String: Any]] {
-            for choice in choices {
-                if let message = choice["message"] as? [String: Any],
-                   let images = message["images"] as? [[String: Any]] {
+            // 核心分支：全面解析 Chat Completions 返回的拓扑结构
+            if let choices = json["choices"] as? [[String: Any]], !choices.isEmpty,
+               let message = choices[0]["message"] as? [String: Any] {
+                
+                // 检查多模态图像数组结构
+                if let images = message["images"] as? [[String: Any]] {
                     for image in images {
                         if let imageURL = image["image_url"] as? [String: Any], let url = imageURL["url"] as? String { return url }
                         if let imageURL = image["imageUrl"] as? [String: Any], let url = imageURL["url"] as? String { return url }
                     }
                 }
+                
+                // 兜底方案：如果服务商直接包装在标准 content 节点里
+                if let content = message["content"] as? String, content.hasPrefix("data:image") {
+                    return content
+                }
             }
+
+            // 降级支持：防备某些小众上游渠道依然坚持返回标准旧版 data 字段
+            if let dataArray = json["data"] as? [[String: Any]] {
+                for item in dataArray {
+                    if let url = item["url"] as? String { return url }
+                    if let b64 = item["b64_json"] as? String { return b64 }
+                }
+            }
+
+            return nil
         }
-
-        return nil
-    }
-
-    private func decodeDataURL(_ dataURL: String) -> Data? {
-        if dataURL.hasPrefix("data:"),
-           let commaIndex = dataURL.firstIndex(of: ",")
-        {
-            let base64 = String(dataURL[dataURL.index(after: commaIndex)...])
-            return Data(base64Encoded: base64)
-        }
-
-        return Data(base64Encoded: dataURL)
-    }
 
     private func openRouterAspectRatio(width: Int, height: Int) -> String {
         let ratio = Double(width) / Double(height)
