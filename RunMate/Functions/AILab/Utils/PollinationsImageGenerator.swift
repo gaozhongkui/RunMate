@@ -74,11 +74,13 @@ class PollinationsImageGenerator {
     enum ImageProvider: Hashable, CustomStringConvertible {
         case pollinations(Model)
         case huggingFace(HuggingFaceModel)
+        case openRouter
 
         var description: String {
             switch self {
             case .pollinations(let m): return "Pollinations(\(m.displayName))"
             case .huggingFace(let m):  return "HuggingFace(\(m.displayName))"
+            case .openRouter:          return "OpenRouter(\(RemoteConfigManager.shared.openRouterImageModel))"
             }
         }
     }
@@ -94,15 +96,22 @@ class PollinationsImageGenerator {
         var enhance: Bool = false
         /// Optional HuggingFace token; providing it grants higher rate limits (free accounts can apply)
         var huggingFaceToken: String? = nil
+        /// Optional OpenRouter token; falls back to Remote Config when unset
+        var openRouterApiKey: String? = nil
 
         static let `default` = GenerationOptions()
 
         /// Automatically generates the provider priority chain based on the selected model:
-        /// Tries the specified Pollinations model first, then the remaining models in order, with HuggingFace as the final fallback
+        /// Tries the specified Pollinations model first, then the remaining models in order,
+        /// OpenRouter when configured, and HuggingFace as the final fallback.
         var providerChain: [ImageProvider] {
             var chain: [ImageProvider] = [.pollinations(model)]
             for m in Model.allCases where m != model {
                 chain.append(.pollinations(m))
+            }
+            let openRouterKey = openRouterApiKey ?? RemoteConfigManager.shared.openRouterApiKey
+            if !openRouterKey.isEmpty, !RemoteConfigManager.shared.openRouterImageModel.isEmpty {
+                chain.append(.openRouter)
             }
             for m in HuggingFaceModel.allCases {
                 chain.append(.huggingFace(m))
@@ -247,6 +256,13 @@ class PollinationsImageGenerator {
                 options: options
             )
             return (image, nil)
+
+        case .openRouter:
+            let image = try await generateWithOpenRouter(
+                prompt: prompt,
+                options: options
+            )
+            return (image, nil)
         }
     }
 
@@ -343,6 +359,123 @@ class PollinationsImageGenerator {
         return image
     }
 
+    // MARK: - OpenRouter Image Generation
+
+    private func generateWithOpenRouter(
+        prompt: String,
+        options: GenerationOptions
+    ) async throws -> UIImage {
+        guard let url = URL(string: RemoteConfigManager.shared.openRouterBaseURL) else {
+            throw GenerationError.invalidURL
+        }
+
+        let apiKey = options.openRouterApiKey ?? RemoteConfigManager.shared.openRouterApiKey
+        guard !apiKey.isEmpty else {
+            throw GenerationError.missingAPIKey
+        }
+
+        let body: [String: Any] = [
+            "model": RemoteConfigManager.shared.openRouterImageModel,
+            "messages": [
+                [
+                    "role": "user",
+                    "content": prompt,
+                ],
+            ],
+            "modalities": ["image", "text"],
+            "image_config": [
+                "aspect_ratio": openRouterAspectRatio(width: options.width, height: options.height),
+            ],
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 120
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("AuraAI", forHTTPHeaderField: "X-Title")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 120
+        config.timeoutIntervalForResource = 180
+
+        let (data, response) = try await URLSession(configuration: config).data(for: request)
+        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            throw GenerationError.httpError(http.statusCode)
+        }
+
+        guard let dataURL = extractOpenRouterImageDataURL(from: data),
+              let imageData = decodeDataURL(dataURL),
+              let image = UIImage(data: imageData)
+        else {
+            throw GenerationError.invalidImageData
+        }
+
+        return image
+    }
+
+    private func extractOpenRouterImageDataURL(from data: Data) -> String? {
+        guard
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let choices = json["choices"] as? [[String: Any]]
+        else {
+            return nil
+        }
+
+        for choice in choices {
+            guard
+                let message = choice["message"] as? [String: Any],
+                let images = message["images"] as? [[String: Any]]
+            else {
+                continue
+            }
+
+            for image in images {
+                if let imageURL = image["image_url"] as? [String: Any],
+                   let url = imageURL["url"] as? String
+                {
+                    return url
+                }
+                if let imageURL = image["imageUrl"] as? [String: Any],
+                   let url = imageURL["url"] as? String
+                {
+                    return url
+                }
+            }
+        }
+
+        return nil
+    }
+
+    private func decodeDataURL(_ dataURL: String) -> Data? {
+        if dataURL.hasPrefix("data:"),
+           let commaIndex = dataURL.firstIndex(of: ",")
+        {
+            let base64 = String(dataURL[dataURL.index(after: commaIndex)...])
+            return Data(base64Encoded: base64)
+        }
+
+        return Data(base64Encoded: dataURL)
+    }
+
+    private func openRouterAspectRatio(width: Int, height: Int) -> String {
+        let ratio = Double(width) / Double(height)
+        let supported: [(String, Double)] = [
+            ("16:9", 16.0 / 9.0),
+            ("3:2", 3.0 / 2.0),
+            ("4:3", 4.0 / 3.0),
+            ("1:1", 1.0),
+            ("3:4", 3.0 / 4.0),
+            ("2:3", 2.0 / 3.0),
+            ("9:16", 9.0 / 16.0),
+        ]
+
+        return supported
+            .min { abs($0.1 - ratio) < abs($1.1 - ratio) }?
+            .0 ?? "1:1"
+    }
+
     // MARK: - Download with Progress (Pollinations)
 
     private func downloadImage(from url: URL) async throws -> UIImage {
@@ -403,6 +536,7 @@ class PollinationsImageGenerator {
         case networkError(Error)
         case invalidImageData
         case httpError(Int)
+        case missingAPIKey
         case allProvidersFailed
 
         var errorDescription: String? {
@@ -412,6 +546,7 @@ class PollinationsImageGenerator {
             case .networkError(let e): return "Network error: \(e.localizedDescription)"
             case .invalidImageData:    return "Failed to parse image data"
             case .httpError(let code): return "Server error: HTTP \(code)"
+            case .missingAPIKey:        return "Missing API key"
             case .allProvidersFailed:  return "All image providers failed, please try again later"
             }
         }

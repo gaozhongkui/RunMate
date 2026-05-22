@@ -18,6 +18,9 @@ final class RemoteConfigManager {
         case pollinationsApiKey    = "pollinations_api_key"
         case huggingFaceBaseURL    = "huggingface_base_url"
         case huggingFaceToken      = "huggingface_token"
+        case openRouterBaseURL     = "openrouter_base_url"
+        case openRouterApiKey      = "openrouter_api_key"
+        case openRouterImageModel  = "openrouter_image_model"
         case civitaiBaseURL        = "civitai_base_url"
         case civitaiApiKey         = "civitai_api_key"
         case privacyURL            = "privacy_url"
@@ -31,6 +34,9 @@ final class RemoteConfigManager {
         Key.pollinationsApiKey.rawValue  : "sk_UhsZmc01AcRpoVcqd9I83kLCJLGy8OS8" as NSObject,
         Key.huggingFaceBaseURL.rawValue  : "https://api-inference.huggingface.co/models" as NSObject,
         Key.huggingFaceToken.rawValue    : "" as NSObject,
+        Key.openRouterBaseURL.rawValue    : "https://openrouter.ai/api/v1/chat/completions" as NSObject,
+        Key.openRouterApiKey.rawValue     : "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" as NSObject,
+        Key.openRouterImageModel.rawValue : "google/gemini-2.5-flash-image-preview" as NSObject,
         Key.civitaiBaseURL.rawValue      : "https://civitai.com/api/v1/images" as NSObject,
         Key.civitaiApiKey.rawValue       : "" as NSObject,
         Key.privacyURL.rawValue          : "https://velvety-manatee-9d0a84.netlify.app/privacy.html" as NSObject,
@@ -63,6 +69,9 @@ final class RemoteConfigManager {
             print("[RemoteConfig] pollinations_api_key   = \(self.pollinationsApiKey)")
             print("[RemoteConfig] huggingface_base_url   = \(self.huggingFaceBaseURL)")
             print("[RemoteConfig] huggingface_token      = \(self.huggingFaceToken.isEmpty ? "(empty)" : self.huggingFaceToken)")
+            print("[RemoteConfig] openrouter_base_url    = \(self.openRouterBaseURL)")
+            print("[RemoteConfig] openrouter_api_key     = \(self.openRouterApiKey.isEmpty ? "(empty)" : "(configured)")")
+            print("[RemoteConfig] openrouter_image_model = \(self.openRouterImageModel)")
             print("[RemoteConfig] civitai_base_url       = \(self.civitaiBaseURL)")
             print("[RemoteConfig] privacy_url            = \(self.string(.privacyURL))")
             print("[RemoteConfig] terms_url              = \(self.string(.termsURL))")
@@ -85,6 +94,9 @@ final class RemoteConfigManager {
     var pollinationsApiKey: String   { string(.pollinationsApiKey) }
     var huggingFaceBaseURL: String   { string(.huggingFaceBaseURL) }
     var huggingFaceToken: String     { string(.huggingFaceToken) }
+    var openRouterBaseURL: String    { string(.openRouterBaseURL) }
+    var openRouterApiKey: String     { string(.openRouterApiKey) }
+    var openRouterImageModel: String { string(.openRouterImageModel) }
     var civitaiBaseURL: String       { string(.civitaiBaseURL) }
     var civitaiApiKey: String        { string(.civitaiApiKey) }
     var privacyURL: URL?             { url(.privacyURL) }
