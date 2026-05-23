@@ -8,14 +8,14 @@
 import Foundation
 import Photos
 import SwiftUI
+import Combine
 
-@Observable
-class HomeViewModel: MediaManagerDelegate {
-    var cardLeftItems: [HomeItem] = []
-    var cardRightItems: [HomeItem] = []
-    var isScanning = true
-    var scanProgress: CGFloat = 0.0
-    var scannedSize = "0 GB"
+class HomeViewModel: MediaManagerDelegate, ObservableObject {
+    @Published var cardLeftItems: [HomeItem] = []
+    @Published var cardRightItems: [HomeItem] = []
+    @Published var isScanning = true
+    @Published var scanProgress: CGFloat = 0.0
+    @Published var scannedSize = "0 GB"
 
     private var mediaManager: MediaManager?
     private var progressTimer: Timer?

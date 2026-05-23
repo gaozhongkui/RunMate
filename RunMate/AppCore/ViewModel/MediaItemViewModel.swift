@@ -8,21 +8,21 @@ import Foundation
 import Photos
 import SwiftUI
 import UIKit
+import Combine
 
-@Observable
-class MediaItemViewModel: Identifiable, Hashable {
+class MediaItemViewModel: Identifiable, Hashable, ObservableObject {
     let id: String
     let phAsset: PHAsset
-    var selected: Bool
+    @Published var selected: Bool
     
     let duration: Double
     let width: Int
     let height: Int
-    var size: Int64
+    @Published var size: Int64
     let created: Date
     
     // Additional convenience properties
-    var isLoading: Bool = false
+    @Published var isLoading: Bool = false
     
     // MARK: - Initialization
     

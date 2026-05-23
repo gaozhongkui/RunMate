@@ -21,7 +21,7 @@ struct ToastModifier: ViewModifier {
                 }
                 .animation(.spring(), value: toast)
             )
-            .onChange(of: toast) { _, newValue in
+            .onChange(of: toast) { newValue in
                 if newValue != nil {
                     showToast()
                 }

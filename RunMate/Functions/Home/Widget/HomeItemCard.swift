@@ -75,7 +75,7 @@ struct HomeItemCard: View {
             .frame(width: geometry.size.width)
             .background(AppTheme.Colors.cardBackground)
             .cornerRadius(AppTheme.Radius.md)
-            .onChange(of: frame) { _, newFrame in
+            .onChange(of: frame) { newFrame in
                 checkVisibility(frame: newFrame)
             }
         }

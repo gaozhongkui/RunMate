@@ -5,12 +5,12 @@
 
 import SwiftUI
 import UIKit
+import Combine
 
-@Observable
-class AIImageStore {
+class AIImageStore: ObservableObject {
     static let shared = AIImageStore()
 
-    private(set) var records: [AIGeneratedImage] = []
+    @Published private(set) var records: [AIGeneratedImage] = []
 
     private let metadataKey = "AIGeneratedImageMetadata"
 

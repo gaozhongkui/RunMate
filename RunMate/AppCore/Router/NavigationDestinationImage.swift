@@ -10,7 +10,7 @@ import SwiftUI
 struct NavigationDestinationImage: ViewModifier {
     var namespace: Namespace.ID
 
-    @State var router: NavigationManager = .shared
+    @StateObject var router: NavigationManager = .shared
 
     func body(content: Content) -> some View {
         content.navigationDestination(for: NavigationRoute.self) { node in

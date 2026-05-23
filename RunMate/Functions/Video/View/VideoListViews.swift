@@ -5,7 +5,7 @@ struct VideoListView: View {
     var namespace: Namespace.ID
     let videos: [MediaItemViewModel]
     
-    @State private var compressor = VideoCompressor()
+    @StateObject private var compressor = VideoCompressor()
     @State private var selectedVideo: MediaItemViewModel?
     @State private var showCompressSheet = false
     @State private var showPlayer = false
@@ -90,7 +90,7 @@ struct VideoListView: View {
             if let video = selectedVideo {
                 VideoCompressView(
                     video: video,
-                    compressor: $compressor,
+                    compressor: compressor,
                     onComplete: { _, message in
                         showCompressSheet = false
                         alertMessage = message
@@ -266,7 +266,7 @@ struct SortPickerView: View {
 // MARK: - Video Row View
 
 struct VideoRowView: View {
-    let video: MediaItemViewModel
+    @ObservedObject var video: MediaItemViewModel
     
     @State private var thumbnail: UIImage?
     @State private var isPressed = false
@@ -494,13 +494,14 @@ struct VideoRowView: View {
 
 // MARK: - Preview
 
-#Preview {
-    @Previewable @Namespace var namespace
-    
-    NavigationStack {
-        VideoListView(
-            namespace: namespace,
-            videos: []
-        )
+struct VideoListView_Previews: PreviewProvider {
+    @Namespace static var namespace
+    static var previews: some View {
+        NavigationStack {
+            VideoListView(
+                namespace: namespace,
+                videos: []
+            )
+        }
     }
 }

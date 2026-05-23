@@ -10,7 +10,7 @@ import SwiftUI
 struct AdvancedScanningCard: View {
     @State private var isAnimating = false
     @State private var dragOffset = CGSize.zero
-    @Binding var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
 
     var body: some View {
         VStack {

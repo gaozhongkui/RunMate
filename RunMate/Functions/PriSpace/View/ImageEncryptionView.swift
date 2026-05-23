@@ -8,7 +8,7 @@ struct ImageEncryptionView: View {
     var namespace: Namespace.ID
 
     @Environment(\.dismiss) var dismiss
-    @State private var storageManager = StorageManager()
+    @StateObject private var storageManager = StorageManager()
     @State private var selectedItem: PhotosPickerItem?
     @State private var showPasswordInput = false
     @State private var password = ""
@@ -55,7 +55,7 @@ struct ImageEncryptionView: View {
                         ScrollView {
                             LazyVStack(spacing: 15) {
                                 ForEach(storageManager.encryptedImages) { image in
-                                    EncryptedImageCardView(image: image, storageManager: $storageManager)
+                                    EncryptedImageCardView(image: image, storageManager: storageManager)
                                 }
                             }
                             .padding(.horizontal)
@@ -90,7 +90,7 @@ struct ImageEncryptionView: View {
         } message: {
             Text("Remove the original photo from your photo library? It will only be viewable inside this app.")
         }
-        .onChange(of: selectedItem) { _, newItem in
+        .onChange(of: selectedItem) { newItem in
             guard let newItem else { return }
             selectedAssetIdentifier = newItem.itemIdentifier
             Task {

@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
-@Observable
 @MainActor
-class StorageManager {
-    var encryptedImages: [EncryptedImage] = []
+class StorageManager: ObservableObject {
+    @Published var encryptedImages: [EncryptedImage] = []
     
     private let storageFileName = "encryptedImages.json"
     private let documentsPath: URL = {

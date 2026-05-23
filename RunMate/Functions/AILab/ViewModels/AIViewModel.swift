@@ -7,10 +7,10 @@
 
 import SwiftUI
 import UIKit
+import Combine
 
 @MainActor
-@Observable
-class AIViewModel {
+class AIViewModel: ObservableObject {
     let imageAIStyles: [AIViewInfo] = [
         AIViewInfo(
             title: "DaVinci2",
@@ -50,14 +50,14 @@ class AIViewModel {
 
     var ratioArray = ["1:1", "4:3", "3:2", "16:9", "8:6"]
 
-    var inputText = ""
-    var selectedAIStyleID: UUID?
-    var selectRatioIndex: Int = 0
+    @Published var inputText = ""
+    @Published var selectedAIStyleID: UUID?
+    @Published var selectRatioIndex: Int = 0
 
     // Generation state
-    var isGenerating: Bool = false
-    var generatedImage: UIImage? = nil
-    var generationError: String? = nil
+    @Published var isGenerating: Bool = false
+    @Published var generatedImage: UIImage? = nil
+    @Published var generationError: String? = nil
 
     /// The title of the currently selected style (used for storing history)
     var selectedStyleTitle: String {

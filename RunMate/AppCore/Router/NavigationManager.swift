@@ -6,15 +6,15 @@
 //
 
 import SwiftUI
+import Combine
 
 @MainActor
-@Observable
-class NavigationManager {
+class NavigationManager: ObservableObject {
     static let shared = NavigationManager()
     
-    var selectedTab: TabStyle = .Create
+    @Published var selectedTab: TabStyle = .Create
 
-    var path = NavigationPath()
+    @Published var path = NavigationPath()
 
     func push(_ route: NavigationRoute) {
         path.append(route)

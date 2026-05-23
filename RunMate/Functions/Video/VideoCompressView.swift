@@ -6,7 +6,7 @@ import AVFoundation
 
 struct VideoCompressView: View {
     let video: MediaItemViewModel
-    @Binding var compressor: VideoCompressor
+    @ObservedObject var compressor: VideoCompressor
     let onComplete: (Bool, String) -> Void
     
     @State private var selectedQuality: CompressionQuality = .medium

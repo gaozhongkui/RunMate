@@ -12,7 +12,7 @@ import DotLottie
 struct HomeView: View {
     let namespace: Namespace.ID
     
-    @State private var viewModel = HomeViewModel()
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         ZStack {
@@ -24,7 +24,7 @@ struct HomeView: View {
                    
                 ScrollView {
                     VStack(spacing: 16) {
-                        AdvancedScanningCard(viewModel: $viewModel)
+                        AdvancedScanningCard(viewModel: viewModel)
                         
                         PriSpaceBanner().contentShape(Rectangle()).padding(.horizontal, 16).onTapGesture {
                             NavigationManager.shared.push(.priSpace)

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AIImageConfigView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var viewModel: AIViewModel
+    @ObservedObject var viewModel: AIViewModel
     var generateAction: () -> Void
 
     var body: some View {

@@ -1,15 +1,15 @@
 import AVFoundation
 import Photos
 import SwiftUI
+import Combine
 
 // MARK: - 视频压缩管理器
 
 @MainActor
-@Observable
-class VideoCompressor {
-    var compressionProgress: Double = 0.0
-    var isCompressing: Bool = false
-    var compressionError: String?
+class VideoCompressor: ObservableObject {
+    @Published var compressionProgress: Double = 0.0
+    @Published var isCompressing: Bool = false
+    @Published var compressionError: String?
     
     func compressVideo(inputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
         DispatchQueue.main.async {

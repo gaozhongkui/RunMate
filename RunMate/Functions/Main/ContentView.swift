@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var navManager = NavigationManager.shared
+    @StateObject private var navManager = NavigationManager.shared
     @Namespace private var nameSpace
 
     var body: some View {

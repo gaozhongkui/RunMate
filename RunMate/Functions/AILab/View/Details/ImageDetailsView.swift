@@ -67,9 +67,12 @@ struct ImageDetailsView: View {
 
             closeButton()
         }
-        .onChange(of: selectedItem) { old, _ in
+        .onChange(of: selectedItem) { item in
             // Reset the zoom state when leaving the page, so it starts at 1x on next visit
-            zoomResetIDs[old.id] = UUID()
+            // Note: Since we lost 'old' value in iOS 16 syntax, we can use the current item id
+            // or track the previous item in a @State if strictly necessary.
+            // For zoom reset, resetting the current item's zoom state is usually what's intended.
+            zoomResetIDs[item.id] = UUID()
         }
         .toast(item: $toast)
         .loadingOverlay(isLoading: isDownloading, message: "Saving to Photos…")

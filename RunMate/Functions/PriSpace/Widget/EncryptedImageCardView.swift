@@ -15,7 +15,7 @@ private struct IdentifiableImage: Identifiable {
 
 struct EncryptedImageCardView: View {
     let image: EncryptedImage
-    @Binding var storageManager: StorageManager
+    @ObservedObject var storageManager: StorageManager
     @State private var showDecryptSheet = false
     @State private var decryptPassword = ""
     @State private var pendingImage: UIImage?       // 临时存储解密结果

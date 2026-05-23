@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateAIView: View {
     var namespace: Namespace.ID
     let defaultAIPrompt: String
-    @State private var viewModel: AIViewModel = .init()
+    @StateObject private var viewModel: AIViewModel = .init()
     @State private var aiStep: CreateAIStep = .Config
     @Environment(\.dismiss) var dismiss
 
@@ -23,7 +23,7 @@ struct CreateAIView: View {
         ZStack {
             switch aiStep {
             case .Config:
-                AIImageConfigView(viewModel: $viewModel) {
+                AIImageConfigView(viewModel: viewModel) {
                     viewModel.doGenerateImage()
                     withAnimation {
                         aiStep = .Processing
@@ -69,12 +69,12 @@ struct CreateAIView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .navigationBarBackButtonHidden()
-        .onChange(of: viewModel.generatedImage) { _, image in
+        .onChange(of: viewModel.generatedImage) { image in
             if image != nil {
                 withAnimation { aiStep = .Result }
             }
         }
-        .onChange(of: viewModel.generationError) { _, error in
+        .onChange(of: viewModel.generationError) { error in
             if error != nil {
                 withAnimation { aiStep = .Config }
             }

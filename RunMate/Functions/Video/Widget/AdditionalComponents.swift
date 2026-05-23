@@ -399,35 +399,63 @@ struct ViewModePicker: View {
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
-#Preview("Grid View") {
-    @Previewable @State var selectedVideo: MediaItemViewModel? = nil
+struct VideoComponents_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Grid View
+            StatefulPreviewWrapper(nil as MediaItemViewModel?) { selectedVideo in
+                VideoGridView(
+                    videos: [],
+                    columns: 2,
+                    selectedVideo: selectedVideo
+                )
+            }
+            .previewDisplayName("Grid View")
+
+            // Empty State
+            VideoEmptyStateView(
+                message: "No Videos",
+                systemImage: "video.slash",
+                actionTitle: "Import Video",
+                action: {}
+            )
+            .previewDisplayName("Empty State")
+
+            // Filter Bar
+            FilterBarPreviewWrapper()
+                .previewDisplayName("Filter Bar")
+        }
+    }
     
-    VideoGridView(
-        videos: [],
-        columns: 2,
-        selectedVideo: $selectedVideo
-    )
-}
+    // Helper for simple state
+    struct StatefulPreviewWrapper<Value, Content: View>: View {
+        @State var value: Value
+        var content: (Binding<Value>) -> Content
 
-#Preview("Empty State") {
-    VideoEmptyStateView(
-        message: "No Videos",
-        systemImage: "video.slash",
-        actionTitle: "Import Video",
-        action: {}
-    )
-}
+        init(_ value: Value, @ViewBuilder content: @escaping (Binding<Value>) -> Content) {
+            self._value = State(wrappedValue: value)
+            self.content = content
+        }
 
-#Preview("Filter Bar") {
-    @Previewable @State var resolution: VideoResolution? = nil
-    @Previewable @State var minDuration: Double = 0
-    @Previewable @State var maxDuration: Double = 300
+        var body: some View {
+            content($value)
+        }
+    }
     
-    FilterBarView(
-        selectedResolution: $resolution,
-        minDuration: $minDuration,
-        maxDuration: $maxDuration
-    )
+    // Specific helper for FilterBar which has multiple states
+    struct FilterBarPreviewWrapper: View {
+        @State var resolution: VideoResolution? = nil
+        @State var minDuration: Double = 0
+        @State var maxDuration: Double = 300
+
+        var body: some View {
+            FilterBarView(
+                selectedResolution: $resolution,
+                minDuration: $minDuration,
+                maxDuration: $maxDuration
+            )
+        }
+    }
 }
