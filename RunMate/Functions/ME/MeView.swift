@@ -57,11 +57,11 @@ struct MeView: View {
                     HStack {
                         Image(systemName: "crown.fill")
                             .foregroundColor(storeManager.isVIP ? .yellow : .white)
-                        Text(storeManager.isVIP ? "RunMate Pro 已激活" : "升级至 RunMate Pro")
+                        Text(storeManager.isVIP ? "RunMate Pro Activated" : "Upgrade to RunMate Pro")
                             .font(AppTheme.Fonts.headline())
                     }
 
-                    Text(storeManager.isVIP ? "无限 AI 生成 & 隐私存储" : "解锁所有高级功能，畅享创作")
+                    Text(storeManager.isVIP ? "Unlimited AI Generation & Private Vault" : "Unlock all premium features & create without limits")
                         .font(AppTheme.Fonts.caption())
                         .opacity(0.8)
                 }

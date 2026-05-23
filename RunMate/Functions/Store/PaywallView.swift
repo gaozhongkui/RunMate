@@ -13,6 +13,10 @@ struct PaywallView: View {
     @State private var glowPulse = false
     @State private var isPurchasing = false
 
+    private var privacyURL: URL { RemoteConfigManager.shared.privacyURL ?? URL(string: "about:blank")! }
+    private var termsURL: URL   { RemoteConfigManager.shared.termsURL   ?? URL(string: "about:blank")! }
+
+    
     let features: [(icon: String, title: String, subtitle: String)] = [
         ("sparkles",            "AI Lab All Models",   "Unlock all advanced AI features"),
         ("lock.shield.fill",    "Unlimited Vault",   "Military-grade encryption for privacy"),
@@ -178,9 +182,9 @@ struct PaywallView: View {
                 Task { await storeManager.updateCustomerProductStatus() }
             }
             Text("·")
-            Link("Terms", destination: URL(string: "https://yourlink.com/terms")!)
+            Link("Terms", destination: termsURL)
             Text("·")
-            Link("Privacy", destination: URL(string: "https://yourlink.com/privacy")!)
+            Link("Privacy", destination: privacyURL)
         }
         .font(AppTheme.Fonts.caption2())
         .foregroundColor(AppTheme.Colors.textTertiary)

@@ -18,14 +18,14 @@
   ],
   "products" : [
     {
-      "displayPrice" : "298.00",
+      "displayPrice" : "29.99",
       "familyShareable" : true,
       "internalID" : "LIFETIME_VIP",
       "localizations" : [
         {
-          "description" : "一次购买，永久享有所有 Pro 权益",
-          "displayName" : "专业版 永久买断",
-          "locale" : "zh_Hans"
+          "description" : "One-time purchase for lifetime Pro access",
+          "displayName" : "Pro Lifetime",
+          "locale" : "en_US"
         }
       ],
       "productID" : "com.runmate.vip.lifetime",
@@ -39,9 +39,9 @@
     "_billingIssuesEnabled" : false,
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_locale" : "zh_Hans",
+    "_locale" : "en_US",
     "_renewalBillingIssuesEnabled" : false,
-    "_storefront" : "CHN",
+    "_storefront" : "USA",
     "_storeKitErrors" : [
 
     ],
@@ -62,7 +62,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "128.00",
+          "displayPrice" : "19.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "YEARLY_VIP",
@@ -71,9 +71,9 @@
           ],
           "localizations" : [
             {
-              "description" : "畅享全年度 AI 创作与隐私空间",
-              "displayName" : "专业版 年度订阅",
-              "locale" : "zh_Hans"
+              "description" : "Full year of AI tools and Private Vault",
+              "displayName" : "Pro Yearly",
+              "locale" : "en_US"
             }
           ],
           "productID" : "com.runmate.vip.yearly",
