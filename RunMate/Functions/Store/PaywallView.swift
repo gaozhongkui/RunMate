@@ -14,9 +14,9 @@ struct PaywallView: View {
     @State private var isPurchasing = false
 
     let features: [(icon: String, title: String, subtitle: String)] = [
-        ("sparkles",            "AI 实验室全模型",   "解锁所有前沿 AI 功能"),
-        ("lock.shield.fill",    "隐私空间无限存储",   "军事级加密，保护您的隐私"),
-        ("hand.raised.slash.fill", "彻底去除广告",  "纯净体验，零打扰")
+        ("sparkles",            "AI Lab All Models",   "Unlock all advanced AI features"),
+        ("lock.shield.fill",    "Unlimited Vault",   "Military-grade encryption for privacy"),
+        ("hand.raised.slash.fill", "Remove All Ads",  "Pure experience, zero distractions")
     ]
 
     var body: some View {
@@ -54,21 +54,20 @@ struct PaywallView: View {
     }
 
     private var heroSection: some View {
-        VStack(spacing: 16) {
-            // Crown icon with glow
+        VStack(spacing: 10) {
             ZStack {
                 Circle()
                     .fill(AppTheme.Colors.accentStart.opacity(0.12))
-                    .frame(width: 130, height: 130)
+                    .frame(width: 88, height: 88)
                     .scaleEffect(glowPulse ? 1.18 : 1.0)
                     .animation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true), value: glowPulse)
 
                 Circle()
                     .fill(AppTheme.Colors.accentStart.opacity(0.22))
-                    .frame(width: 96, height: 96)
+                    .frame(width: 64, height: 64)
 
                 Image(systemName: "crown.fill")
-                    .font(.system(size: 42))
+                    .font(.system(size: 28))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [Color(hex: "FFD760"), Color(hex: "FF9A00")],
@@ -76,32 +75,32 @@ struct PaywallView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .shadow(color: Color(hex: "FFD760").opacity(0.55), radius: 14)
+                    .shadow(color: Color(hex: "FFD760").opacity(0.5), radius: 10)
             }
-            .padding(.top, 12)
+            .padding(.top, 6)
             .onAppear { glowPulse = true }
 
-            VStack(spacing: 6) {
-                Text("RunMate Pro")
-                    .font(.system(size: 34, weight: .black))
+            VStack(spacing: 4) {
+                Text("PriSpace AI Pro")
+                    .font(.system(size: 26, weight: .black))
                     .foregroundStyle(AppTheme.Colors.borderGradient)
 
-                Text("解锁完整体验，无任何限制")
-                    .font(AppTheme.Fonts.subheadline())
+                Text("Unlock full experience without limits")
+                    .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
         }
-        .padding(.bottom, 32)
+        .padding(.bottom, 18)
     }
 
     private var featuresSection: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             ForEach(features, id: \.title) { feature in
                 FeatureRow(icon: feature.icon, title: feature.title, subtitle: feature.subtitle)
             }
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 24)
+        .padding(.bottom, 16)
     }
 
     private var plansSection: some View {
@@ -109,7 +108,7 @@ struct PaywallView: View {
             if storeManager.products.isEmpty {
                 HStack(spacing: 12) {
                     ProgressView().tint(.white)
-                    Text("正在加载方案…")
+                    Text("Loading plans...")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                 }
@@ -127,11 +126,11 @@ struct PaywallView: View {
             }
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 28)
+        .padding(.bottom, 20)
     }
 
     private var purchaseButton: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             Button(action: buySelected) {
                 Group {
                     if isPurchasing {
@@ -141,13 +140,13 @@ struct PaywallView: View {
                             if storeManager.isVIP {
                                 Image(systemName: "checkmark.seal.fill")
                             }
-                            Text(storeManager.isVIP ? "您已是 Pro 会员" : "立即解锁 Pro")
-                                .font(.system(size: 18, weight: .bold))
+                            Text(storeManager.isVIP ? "You are a Pro Member" : "Unlock Pro Now")
+                                .font(.system(size: 17, weight: .bold))
                         }
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
+                .frame(height: 50)
                 .foregroundColor(canPurchase ? .white : .white.opacity(0.35))
                 .background {
                     if canPurchase {
@@ -165,27 +164,27 @@ struct PaywallView: View {
             .padding(.horizontal, 20)
 
             if !storeManager.isVIP {
-                Text("自动续订 · 可随时取消")
+                Text("Auto-renewable · Cancel anytime")
                     .font(AppTheme.Fonts.caption2())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, 12)
     }
 
     private var footerLinks: some View {
         HStack(spacing: 12) {
-            Button("恢复购买") {
+            Button("Restore Purchase") {
                 Task { await storeManager.updateCustomerProductStatus() }
             }
             Text("·")
-            Link("服务协议", destination: URL(string: "https://yourlink.com/terms")!)
+            Link("Terms", destination: URL(string: "https://yourlink.com/terms")!)
             Text("·")
-            Link("隐私政策", destination: URL(string: "https://yourlink.com/privacy")!)
+            Link("Privacy", destination: URL(string: "https://yourlink.com/privacy")!)
         }
         .font(AppTheme.Fonts.caption2())
         .foregroundColor(AppTheme.Colors.textTertiary)
-        .padding(.bottom, 36)
+        .padding(.bottom, 24)
     }
 
     // MARK: - Helpers
@@ -216,19 +215,19 @@ struct FeatureRow: View {
     let subtitle: String
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: 8)
                     .fill(AppTheme.Colors.accentGradient)
-                    .frame(width: 42, height: 42)
+                    .frame(width: 34, height: 34)
                 Image(systemName: icon)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(AppTheme.Fonts.subheadline(.semibold))
+                    .font(AppTheme.Fonts.caption(.semibold))
                     .foregroundColor(.white)
                 Text(subtitle)
                     .font(AppTheme.Fonts.caption2())
@@ -238,11 +237,11 @@ struct FeatureRow: View {
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 16))
+                .font(.system(size: 14))
                 .foregroundStyle(AppTheme.Colors.accentGradient)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 11)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
         .appCardStyle()
     }
 }
@@ -266,13 +265,13 @@ struct ProductCard: View {
                         Circle()
                             .stroke(
                                 isSelected ? AppTheme.Colors.accentStart : Color.white.opacity(0.25),
-                                lineWidth: 2
+                                lineWidth: 1.5
                             )
-                            .frame(width: 22, height: 22)
+                            .frame(width: 18, height: 18)
                         if isSelected {
                             Circle()
                                 .fill(AppTheme.Colors.accentStart)
-                                .frame(width: 12, height: 12)
+                                .frame(width: 10, height: 10)
                         }
                     }
 
@@ -282,12 +281,12 @@ struct ProductCard: View {
                             .foregroundColor(.white)
 
                         if isLifetime {
-                            Text("永久有效 · 一次付清")
+                            Text("Lifetime · One-time payment")
                                 .font(AppTheme.Fonts.caption())
                                 .foregroundColor(AppTheme.Colors.textTertiary)
                         } else {
                             let monthly = product.price / 12
-                            Text("约 \(monthly.formatted(product.priceFormatStyle))/月")
+                            Text("Approx. \(monthly.formatted(product.priceFormatStyle))/mo")
                                 .font(AppTheme.Fonts.caption())
                                 .foregroundColor(AppTheme.Colors.textTertiary)
                         }
@@ -297,15 +296,15 @@ struct ProductCard: View {
 
                     VStack(alignment: .trailing, spacing: 3) {
                         Text(product.displayPrice)
-                            .font(.system(size: 20, weight: .black, design: .monospaced))
+                            .font(.system(size: 17, weight: .black, design: .monospaced))
                             .foregroundColor(.white)
-                        Text(isLifetime ? "永久" : "每年")
+                        Text(isLifetime ? "LIFETIME" : "YEARLY")
                             .font(AppTheme.Fonts.caption2())
                             .foregroundColor(AppTheme.Colors.textTertiary)
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md)
                         .fill(isSelected
@@ -332,7 +331,7 @@ struct ProductCard: View {
 
                 // Badge
                 if isRecommended {
-                    Text("推荐")
+                    Text("BEST VALUE")
                         .font(.system(size: 10, weight: .black))
                         .foregroundColor(.white)
                         .padding(.horizontal, 9)
