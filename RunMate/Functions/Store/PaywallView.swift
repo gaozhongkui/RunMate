@@ -122,11 +122,21 @@ struct PaywallView: View {
                     ProductCard(
                         product: product,
                         isSelected: selectedProductID == product.id,
-                        isRecommended: product.id.contains("yearly")
+                        isRecommended: product.id.contains("lifetime")
                     ) {
                         selectedProductID = product.id
                     }
                 }
+            }
+        }
+        .onChange(of: storeManager.products) { products in
+            if selectedProductID == nil, let lifetime = products.first(where: { $0.id.contains("lifetime") }) {
+                selectedProductID = lifetime.id
+            }
+        }
+        .onAppear {
+            if selectedProductID == nil, let lifetime = storeManager.products.first(where: { $0.id.contains("lifetime") }) {
+                selectedProductID = lifetime.id
             }
         }
         .padding(.horizontal, 20)
