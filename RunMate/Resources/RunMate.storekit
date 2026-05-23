@@ -1,0 +1,95 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "RunMateStoreKit",
+  "non_renewing_subscriptions" : [
+
+  ],
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "298.00",
+      "familyShareable" : true,
+      "internalID" : "LIFETIME_VIP",
+      "localizations" : [
+        {
+          "description" : "一次购买，永久享有所有 Pro 权益",
+          "displayName" : "专业版 永久买断",
+          "locale" : "zh_Hans"
+        }
+      ],
+      "productID" : "com.runmate.vip.lifetime",
+      "referenceName" : "Lifetime VIP",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "zh_Hans",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "CHN",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "VIP_GROUP",
+      "localizations" : [
+
+      ],
+      "name" : "VIP Subscriptions",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "128.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "YEARLY_VIP",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "畅享全年度 AI 创作与隐私空间",
+              "displayName" : "专业版 年度订阅",
+              "locale" : "zh_Hans"
+            }
+          ],
+          "productID" : "com.runmate.vip.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Yearly VIP",
+          "subscriptionGroupID" : "VIP_GROUP",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 5,
+    "minor" : 0
+  }
+}

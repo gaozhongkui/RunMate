@@ -12,6 +12,7 @@ struct CreateAIView: View {
     let defaultAIPrompt: String
     @StateObject private var viewModel: AIViewModel = .init()
     @State private var aiStep: CreateAIStep = .Config
+    @State private var showPaywall = false
     @Environment(\.dismiss) var dismiss
 
     private let rows = [
@@ -24,9 +25,13 @@ struct CreateAIView: View {
             switch aiStep {
             case .Config:
                 AIImageConfigView(viewModel: viewModel) {
-                    viewModel.doGenerateImage()
-                    withAnimation {
-                        aiStep = .Processing
+                    if StoreManager.shared.isVIP {
+                        viewModel.doGenerateImage()
+                        withAnimation {
+                            aiStep = .Processing
+                        }
+                    } else {
+                        showPaywall = true
                     }
                 }
 
@@ -78,7 +83,11 @@ struct CreateAIView: View {
             if error != nil {
                 withAnimation { aiStep = .Config }
             }
-        }.onAppear {
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+        .onAppear {
             viewModel.inputText = defaultAIPrompt
         }
     }

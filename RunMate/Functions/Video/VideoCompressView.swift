@@ -14,6 +14,7 @@ struct VideoCompressView: View {
     @State private var compressedSize: Int64 = 0
     @State private var showSaveOptions = false
     @State private var isSaving = false
+    @State private var showPaywall = false
     @Environment(\.dismiss) private var dismiss
     
     enum CompressionQuality: String, CaseIterable {
@@ -188,7 +189,11 @@ struct VideoCompressView: View {
                     if !compressor.isCompressing {
                         if compressedURL == nil {
                             Button {
-                                startCompression()
+                                if StoreManager.shared.isVIP {
+                                    startCompression()
+                                } else {
+                                    showPaywall = true
+                                }
                             } label: {
                                 Label("Start Compression", systemImage: "arrow.down.circle.fill")
                                     .font(.headline)
@@ -256,6 +261,9 @@ struct VideoCompressView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
         }
     }

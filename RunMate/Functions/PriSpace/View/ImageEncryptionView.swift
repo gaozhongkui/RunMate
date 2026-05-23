@@ -18,7 +18,8 @@ struct ImageEncryptionView: View {
     @State private var alertMessage = ""
     @State private var isEncrypting = false
     @State private var showDeleteOriginalAlert = false
-    
+    @State private var showPaywall = false
+
     var body: some View {
         ZStack {
             AppTheme.Colors.pageGradient
@@ -90,8 +91,19 @@ struct ImageEncryptionView: View {
         } message: {
             Text("Remove the original photo from your photo library? It will only be viewable inside this app.")
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
         .onChange(of: selectedItem) { newItem in
             guard let newItem else { return }
+
+            // VIP 权限拦截
+            if !StoreManager.shared.isVIP {
+                selectedItem = nil
+                showPaywall = true
+                return
+            }
+
             selectedAssetIdentifier = newItem.itemIdentifier
             Task {
                 // 加载原始数据后统一转换为 JPEG，避免 HEIC 等格式解密后无法渲染

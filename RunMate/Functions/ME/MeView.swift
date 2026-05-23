@@ -8,10 +8,12 @@ import SwiftUI
 struct MeView: View {
     let namespace: Namespace.ID
 
+    @StateObject private var storeManager = StoreManager.shared
     @State private var store = AIImageStore.shared
     @State private var glowPulse = false
     @State private var currentItem: AIGeneratedImage? = nil
-    @State private var showSettings = false  // ← Added: controls settings page presentation
+    @State private var showSettings = false
+    @State private var showPaywall = false
 
     var body: some View {
         ZStack {
@@ -21,6 +23,7 @@ struct MeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     profileHeroCard
+                    vipStatusCard
                     sectionDivider
                     creationsSection
                 }
@@ -38,6 +41,58 @@ struct MeView: View {
         .sheet(isPresented: $showSettings) {  // ← Added: settings page sheet
             SettingsView()
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+    }
+
+    // MARK: - VIP Status Card
+
+    private var vipStatusCard: some View {
+        Button {
+            showPaywall = true
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: "crown.fill")
+                            .foregroundColor(storeManager.isVIP ? .yellow : .white)
+                        Text(storeManager.isVIP ? "RunMate Pro 已激活" : "升级至 RunMate Pro")
+                            .font(AppTheme.Fonts.headline())
+                    }
+
+                    Text(storeManager.isVIP ? "无限 AI 生成 & 隐私存储" : "解锁所有高级功能，畅享创作")
+                        .font(AppTheme.Fonts.caption())
+                        .opacity(0.8)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+            }
+            .padding()
+            .foregroundColor(.white)
+            .background(
+                ZStack {
+                    if storeManager.isVIP {
+                        Color(hex: "1A1A24")
+                    } else {
+                        AppTheme.Colors.accentGradient
+                    }
+                }
+            )
+            .cornerRadius(AppTheme.Radius.md)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.md)
+                    .stroke(
+                        storeManager.isVIP ? AnyShapeStyle(AppTheme.Colors.borderGradient) : AnyShapeStyle(Color.clear),
+                        lineWidth: 1
+                    )
+            )
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
     }
 
     // MARK: - Profile Floating Card
