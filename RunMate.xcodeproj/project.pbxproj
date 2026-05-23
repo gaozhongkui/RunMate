@@ -290,7 +290,7 @@
 				DEVELOPMENT_TEAM = 34L93QM6TP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = AuraAI;
+				INFOPLIST_KEY_CFBundleDisplayName = "PriSpace AI";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AuraAI needs access to save generated images to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AuraAI needs access to your photo library to browse and manage your photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -328,7 +328,7 @@
 				DEVELOPMENT_TEAM = 34L93QM6TP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = AuraAI;
+				INFOPLIST_KEY_CFBundleDisplayName = "PriSpace AI";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "AuraAI needs access to save generated images to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "AuraAI needs access to your photo library to browse and manage your photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
