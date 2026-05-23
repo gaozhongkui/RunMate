@@ -159,7 +159,7 @@ struct SplashView: View {
 
             // App name + tagline
             VStack(spacing: 10) {
-                Text("AuraAI")
+                Text("PriSpace AI")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(

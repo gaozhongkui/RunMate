@@ -92,7 +92,7 @@ struct MeView: View {
                 .padding(.bottom, 16)
 
                 // Name
-                Text("AuraAI")
+                Text("PriSpace AI")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .padding(.bottom, 20)

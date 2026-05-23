@@ -152,7 +152,7 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("AuraAI")
+                Text("PriSpace AI")
                     .font(AppTheme.Fonts.subheadline(.semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
