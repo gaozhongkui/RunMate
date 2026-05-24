@@ -57,7 +57,7 @@ struct MeView: View {
                     HStack {
                         Image(systemName: "crown.fill")
                             .foregroundColor(storeManager.isVIP ? .yellow : .white)
-                        Text(storeManager.isVIP ? "RunMate Pro Activated" : "Upgrade to RunMate Pro")
+                        Text(storeManager.isVIP ? "PriSpace AI Pro Activated" : "Upgrade to PriSpace AI Pro")
                             .font(AppTheme.Fonts.headline())
                     }
 
