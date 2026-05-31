@@ -141,6 +141,18 @@ class WaterfallViewController: UIViewController,
         loadingView.dotLottieViewModel.play()
 
         UnifiedFeedManager.shared.startListening()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+
+    @objc private func appDidBecomeActive() {
+        guard dataList.isEmpty else { return }
+        refresh()
     }
 
     override func viewDidLayoutSubviews() {
