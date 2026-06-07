@@ -245,6 +245,7 @@ struct MeView: View {
 
     private var sectionDivider: some View {
         HStack(spacing: 12) {
+            // 左侧渐变线
             Rectangle()
                 .fill(
                     LinearGradient(
@@ -255,6 +256,7 @@ struct MeView: View {
                 )
                 .frame(height: 1)
 
+            // 中间 AI 胶囊
             HStack(spacing: 5) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 10, weight: .semibold))
@@ -272,7 +274,10 @@ struct MeView: View {
                             .stroke(AppTheme.Colors.borderGradient, lineWidth: 1)
                     )
             )
+            // ✨ 关键点：强制水平方向使用理想大小，绝对不折行、不压缩
+            .fixedSize(horizontal: true, vertical: false)
 
+            // 右侧渐变线
             Rectangle()
                 .fill(
                     LinearGradient(
