@@ -39,8 +39,8 @@ final class RemoteConfigManager {
         Key.openRouterImageModel.rawValue : "google/gemini-2.5-flash-image" as NSObject,
         Key.civitaiBaseURL.rawValue      : "https://civitai.com/api/v1/images" as NSObject,
         Key.civitaiApiKey.rawValue       : "" as NSObject,
-        Key.privacyURL.rawValue          : "https://velvety-manatee-9d0a84.netlify.app/privacy.html" as NSObject,
-        Key.termsURL.rawValue            : "https://velvety-manatee-9d0a84.netlify.app/terms.html" as NSObject,
+        Key.privacyURL.rawValue          : "https://docs.google.com/document/d/e/2PACX-1vSCa32m7lwzW9Nvgr-R0qI57p26enPUWFQBvkwiElcL4JUr65UxIpfi-cEw0ZnkPeyCTaV0i1tKyYqU/pub" as NSObject,
+        Key.termsURL.rawValue            : "https://docs.google.com/document/d/e/2PACX-1vTEAiil7Th5Go08RSfy5GZXFwFK5CcyFdwX6qwM6rwEPetRUNhKXfnogQWaMT5ahYoMJhE-8WGL2u2X/pub" as NSObject,
         Key.feedbackEmail.rawValue       : "gzkhhy@gmail.com" as NSObject,
     ]
 
