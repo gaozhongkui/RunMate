@@ -15,10 +15,12 @@
 		056A1C612F30B9A600408FD9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1C602F30B9A600408FD9 /* SQLite */; };
 		056A24D72F34996500408FD9 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = 056A24D62F34996500408FD9 /* Atomics */; };
 		05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 05CAA6AA2F285543001D3924 /* Kingfisher */; };
+		05E702182FD7101A0044AC94 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E702172FD7101A0044AC94 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		05CA9E922F271B03001D3924 /* RunMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RunMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05E702172FD7101A0044AC94 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05E702182FD7101A0044AC94 /* StoreKit.framework in Frameworks */,
 				056A1C612F30B9A600408FD9 /* SQLite in Frameworks */,
 				05CAA6AB2F285543001D3924 /* Kingfisher in Frameworks */,
 				051CA4D82F98A31B00034E04 /* FirebaseAnalytics in Frameworks */,
@@ -58,6 +61,7 @@
 			children = (
 				053F88052FD41EA200C0296E /* Data */,
 				05CA9E942F271B03001D3924 /* RunMate */,
+				05E702162FD7101A0044AC94 /* Frameworks */,
 				05CA9E932F271B03001D3924 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,6 +72,14 @@
 				05CA9E922F271B03001D3924 /* RunMate.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		05E702162FD7101A0044AC94 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				05E702172FD7101A0044AC94 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
