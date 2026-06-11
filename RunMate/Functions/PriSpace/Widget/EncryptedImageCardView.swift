@@ -44,7 +44,7 @@ struct EncryptedImageCardView: View {
                 Text(image.createdDate, style: .date)
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
-                Text("\(image.encryptedData.count / 1024) KB")
+                Text("common_kb_format \(image.encryptedData.count / 1024)")
                     .font(AppTheme.Fonts.caption2())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
@@ -99,16 +99,16 @@ struct EncryptedImageCardView: View {
         .sheet(item: $viewableImage) { item in
             ImageViewerSheet(image: item.uiImage)
         }
-        .alert("Notice", isPresented: $showAlert) {
-            Button("OK", role: .cancel) {}
+        .alert("common_notice", isPresented: $showAlert) {
+            Button("common_ok", role: .cancel) {}
         } message: {
-            Text(alertMessage)
+            Text(LocalizedStringKey(alertMessage))
         }
     }
 
     private func decryptImage() {
         guard !decryptPassword.isEmpty else {
-            alertMessage = "Please enter a password"
+            alertMessage = "prispace_alert_enter_password"
             showAlert = true
             return
         }
@@ -137,7 +137,7 @@ struct EncryptedImageCardView: View {
             } catch {
                 DispatchQueue.main.async {
                     isDecrypting = false
-                    alertMessage = "Decryption failed. Please check your password."
+                    alertMessage = "prispace_alert_decrypt_failed"
                     showAlert = true
                 }
             }

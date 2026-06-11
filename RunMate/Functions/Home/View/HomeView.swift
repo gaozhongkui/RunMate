@@ -48,7 +48,7 @@ struct HomeView: View {
        
     private var headerView: some View {
         HStack {
-            Text("PriSpace AI")
+            Text("app_name")
                 .font(AppTheme.Fonts.largeTitle())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
@@ -62,7 +62,7 @@ struct HomeView: View {
     private var aiButton: some View {
         HStack(spacing: 0) {
             Image(systemName: "sparkles").font(AppTheme.Fonts.caption2(.semibold))
-            Text("AI").font(AppTheme.Fonts.subheadline(.bold))
+            Text("home_tab_ai_badge").font(AppTheme.Fonts.subheadline(.bold))
         }
         .foregroundColor(.white)
         .padding(.horizontal, AppTheme.Spacing.lg)
@@ -115,11 +115,11 @@ struct HomeView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Galaxy Album")
+                    Text("home_galaxy_title")
                         .font(.system(size: 17, weight: .bold))
                         .foregroundColor(.white)
 
-                    Text("3D Immersive · 5 Cosmic Shapes")
+                    Text("home_galaxy_subtitle")
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(Color.white.opacity(0.55))
                 }

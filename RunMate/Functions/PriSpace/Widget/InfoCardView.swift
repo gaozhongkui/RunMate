@@ -13,10 +13,10 @@ struct InfoCardView: View {
                 .foregroundStyle(AppTheme.Colors.accentGradient)
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                Text("Secure Encrypted Storage")
+                Text("prispace_info_title")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                Text("Protect your images with AES-256 encryption")
+                Text("prispace_info_desc")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }

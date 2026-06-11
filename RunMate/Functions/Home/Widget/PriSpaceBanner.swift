@@ -16,12 +16,12 @@ struct PriSpaceBanner: View {
                 // 2. Left text area
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Absolutely")
-                        Text("Private Space")
+                        Text("home_banner_title_top")
+                        Text("home_banner_title_bottom")
                     }
                     .font(AppTheme.Fonts.title())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                    Text("Bank-grade AES-256 encryption,\nmilitary-level privacy protection.")
+                    Text("home_banner_desc")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                         .lineLimit(2)

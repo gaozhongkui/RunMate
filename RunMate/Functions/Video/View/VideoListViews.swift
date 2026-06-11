@@ -14,12 +14,12 @@ struct VideoListView: View {
     @State private var sortOption: SortOption = .dateNewest
     
     enum SortOption: String, CaseIterable {
-        case dateNewest = "Newest"
-        case dateOldest = "Oldest"
-        case sizeDesc = "Size ↓"
-        case sizeAsc = "Size ↑"
-        case durationDesc = "Duration ↓"
-        case durationAsc = "Duration ↑"
+        case dateNewest = "video_sort_newest"
+        case dateOldest = "video_sort_oldest"
+        case sizeDesc = "video_sort_size_desc"
+        case sizeAsc = "video_sort_size_asc"
+        case durationDesc = "video_sort_duration_desc"
+        case durationAsc = "video_sort_duration_asc"
     }
     
     private var sortedVideos: [MediaItemViewModel] {
@@ -74,7 +74,7 @@ struct VideoListView: View {
             // ✅ Fix 2: 确保 ScrollView 内容延伸到安全区域外但 padding 留出空间
             .scrollIndicators(.hidden)
         }
-        .navigationTitle("My Videos")
+        .navigationTitle("video_list_title")
         .navigationBarTitleDisplayMode(.large)
         // ✅ Fix 1: 强制导航栏使用深色外观，使标题和返回按钮呈白色
         .toolbarColorScheme(.dark, for: .navigationBar)
@@ -104,10 +104,10 @@ struct VideoListView: View {
                 VideoPlayerView(video: video, isPresented: $showPlayer)
             }
         }
-        .alert("Notice", isPresented: $showAlert) {
-            Button("OK", role: .cancel) {}
+        .alert("common_notice", isPresented: $showAlert) {
+            Button("common_ok", role: .cancel) {}
         } message: {
-            Text(alertMessage)
+            Text(LocalizedStringKey(alertMessage))
         }
     }
 }
@@ -129,7 +129,7 @@ struct StatsCardView: View {
         HStack(spacing: 0) {
             StatItemView(
                 icon: "video.circle.fill",
-                title: "Videos",
+                title: "video_stat_videos",
                 value: "\(videos.count)",
                 color: Color(hex: "4E9EFF")
             )
@@ -140,7 +140,7 @@ struct StatsCardView: View {
 
             StatItemView(
                 icon: "clock.fill",
-                title: "Duration",
+                title: "video_stat_duration",
                 value: formatDuration(totalDuration),
                 color: Color(hex: "34D399")
             )
@@ -151,7 +151,7 @@ struct StatsCardView: View {
 
             StatItemView(
                 icon: "square.stack.3d.up.fill",
-                title: "Total Size",
+                title: "video_stat_total_size",
                 value: formatFileSize(totalSize),
                 color: Color(hex: "FB923C")
             )
@@ -175,9 +175,9 @@ struct StatsCardView: View {
         let minutes = (Int(seconds) % 3600) / 60
         
         if hours > 0 {
-            return "\(hours)h \(minutes)m"
+            return NSLocalizedString("video_duration_hour_min \(hours) \(minutes)", comment: "")
         } else {
-            return "\(minutes)m"
+            return NSLocalizedString("video_duration_min \(minutes)", comment: "")
         }
     }
     
@@ -369,7 +369,7 @@ struct VideoRowView: View {
                             ProgressView()
                                 .tint(Color.white.opacity(0.4))
                                 .scaleEffect(0.8)
-                            Text("Loading")
+                            Text("common_loading")
                                 .font(.caption2)
                                 .foregroundColor(Color.white.opacity(0.3))
                         }
@@ -389,7 +389,7 @@ struct VideoRowView: View {
             HStack(spacing: 4) {
                 Image(systemName: "aspectratio.fill")
                     .font(.system(size: 9))
-                Text("\(video.width) × \(video.height)")
+                Text("video_dimension_format \(video.width) \(video.height)")
                     .font(.system(size: 11, weight: .medium))
             }
             .foregroundColor(Color.white.opacity(0.45))

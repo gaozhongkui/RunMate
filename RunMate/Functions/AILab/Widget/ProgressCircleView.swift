@@ -31,7 +31,7 @@ struct ProgressCircleView: View {
                 .shadow(color: Color.purple.opacity(0.3), radius: 5)
 
             VStack {
-                Text("\(Int(progress * 100))%")
+                Text("common_percent_format \(Int(progress * 100))")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundColor(.white).animation(.linear, value: progress)
             }

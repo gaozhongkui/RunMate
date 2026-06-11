@@ -106,7 +106,7 @@ struct VideoEmptyStateView: View {
     let action: (() -> Void)?
     
     init(
-        message: String = "No Videos",
+        message: String = "video_empty_title",
         systemImage: String = "video.slash",
         actionTitle: String? = nil,
         action: (() -> Void)? = nil
@@ -152,7 +152,7 @@ struct VideoEmptyStateView: View {
 struct LoadingView: View {
     let message: String
     
-    init(message: String = "Loading...") {
+    init(message: String = "common_loading") {
         self.message = message
     }
     
@@ -182,7 +182,7 @@ struct FilterBarView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     FilterChip(
-                        title: "All",
+                        title: "video_filter_all",
                         isSelected: selectedResolution == nil,
                         action: { selectedResolution = nil }
                     )
@@ -202,13 +202,13 @@ struct FilterBarView: View {
             
             // 时长筛选
             HStack {
-                Text("Duration Range:")
+                Text("video_duration_range")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
-                Text("\(Int(minDuration))s - \(Int(maxDuration))s")
+                Text("video_duration_format \(Int(minDuration)) \(Int(maxDuration))")
                     .font(.caption)
                     .fontWeight(.medium)
             }
@@ -269,7 +269,7 @@ struct SelectionToolbarView: View {
     var body: some View {
         HStack(spacing: 16) {
             // 选择状态
-            Text("\(selectedCount)/\(totalCount) selected")
+            Text("video_selection_format \(selectedCount) \(totalCount)")
                 .font(.subheadline)
                 .fontWeight(.medium)
             
@@ -348,7 +348,7 @@ struct VideoSearchBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
             
-            TextField("Search videos...", text: $searchText)
+            TextField("video_search_placeholder", text: $searchText)
                 .focused($isFocused)
                 .textFieldStyle(.plain)
             
@@ -388,9 +388,9 @@ struct ViewModePicker: View {
     }
     
     var body: some View {
-        Picker("View Mode", selection: $mode) {
+        Picker("video_view_mode", selection: $mode) {
             ForEach(ViewMode.allCases, id: \.self) { mode in
-                Label(mode.rawValue, systemImage: mode.icon)
+                Label(mode == .list ? "video_view_mode_list" : "video_view_mode_grid", systemImage: mode.icon)
                     .tag(mode)
             }
         }
