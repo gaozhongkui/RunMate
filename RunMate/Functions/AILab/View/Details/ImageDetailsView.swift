@@ -75,7 +75,7 @@ struct ImageDetailsView: View {
             zoomResetIDs[item.id] = UUID()
         }
         .toast(item: $toast)
-        .loadingOverlay(isLoading: isDownloading, message: "Saving to Photos…")
+        .loadingOverlay(isLoading: isDownloading, message: "result_saving_status")
     }
 
     @ViewBuilder
@@ -121,8 +121,8 @@ struct ImageDetailsView: View {
                 ImageDownloader().downloadAndSaveImage(from: selectedItem.imageURL) { success in
                     isDownloading = false
                     toast = success
-                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
-                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                        ? ToastModel(message: "result_save_success_toast", icon: "checkmark.circle.fill")
+                        : ToastModel(message: "result_failed_status", icon: "xmark.circle.fill")
                 }
             }) {
                 ZStack {
@@ -141,7 +141,7 @@ struct ImageDetailsView: View {
                 NavigationManager.shared.push(.createAI(selectedItem.prompt ?? ""))
                 dismiss()
             }) {
-                Text("Create New")
+                Text("image_details_create_new")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(height: 60)

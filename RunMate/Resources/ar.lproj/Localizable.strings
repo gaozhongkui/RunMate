@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "إلغاء";
+"common_error" = "خطأ";
+"common_loading" = "جاري التحميل...";
+
+"Create" = "إنشاء";
+"Vault" = "الخزنة";
+"Me" = "أنا";
+
+"me_vip_activated" = "تم تفعيل PriSpace AI Pro";
+"me_upgrade_pro" = "الترقية إلى PriSpace AI Pro";
+"me_vip_desc" = "توليد ذكاء اصطناعي غير محدود وخزنة خاصة";
+"me_upgrade_desc" = "فتح جميع الميزات المتميزة والإنشاء بدون حدود";
+"me_stat_works" = "أعمال";
+"me_stat_artist" = "فنان";
+"me_stat_creative" = "إبداع";
+"me_creations_title" = "إبداعات الذكاء الاصطناعي";
+"me_total_works %lld" = "الإجمالي %lld";
+"me_empty_title" = "لا توجد أعمال فنية بعد";
+"me_empty_desc" = "أنشئ عملك الفني الأول بالذكاء الاصطناعي\nفي علامة تبويب الإنشاء";
+
+"settings_title" = "الإعدادات";
+"settings_close" = "إغلاق";
+"settings_user_role" = "مبدع ذكاء اصطناعي";
+"settings_section_legal" = "الدعم والقانوني";
+"settings_feedback" = "تعليقات";
+"settings_feedback_desc" = "شاركنا أفكارك";
+"settings_privacy" = "سياسة الخصوصية";
+"settings_privacy_desc" = "كيف نتعامل مع بياناتك";
+"settings_terms" = "شروط الخدمة";
+"settings_terms_desc" = "قواعد الاستخدام والاتفاقيات";
+"settings_feedback_alert_title" = "إرسال تعليقات";
+"settings_feedback_alert_msg" = "كيف تود مشاركة تعليقاتك؟";
+"settings_feedback_email" = "راسلنا عبر البريد الإلكتروني";
+"settings_feedback_rate" = "التقييم في App Store";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "فتح التجربة الكاملة بدون حدود";
+"paywall_feature1_title" = "جميع نماذج مختبر الذكاء الاصطناعي";
+"paywall_feature1_desc" = "فتح جميع ميزات الذكاء الاصطناعي المتقدمة";
+"paywall_feature2_title" = "خزنة غير محدودة";
+"paywall_feature2_desc" = "تشفير عسكري للخصوصية";
+"paywall_feature3_title" = "إزالة جميع الإعلانات";
+"paywall_feature3_desc" = "تجربة نقية، بدون تشتيت";
+"paywall_loading_plans" = "جاري تحميل الخطط...";
+"paywall_button_unlock" = "فتح Pro الآن";
+"paywall_button_vip" = "أنت عضو Pro";
+"paywall_footer_auto_renewable" = "تجديد تلقائي · إلغاء في أي وقت";
+"paywall_restore" = "استعادة المشتريات";
+"paywall_lifetime_desc" = "مدى الحياة · دفع لمرة واحدة";
+"paywall_monthly_approx %@" = "حوالي %@";
+"paywall_period_lifetime" = "مدى الحياة";
+"paywall_period_yearly" = "سنوي";
+"paywall_best_value" = "أفضل قيمة";
+
+"config_header_title" = "مولد فن الذكاء الاصطناعي";
+"config_choose_style" = "اختر أسلوبك";
+"config_aspect_ratio" = "نسبة العرض إلى الارتفاع";
+"config_prompt_placeholder" = "صف الإجراء بالتفصيل... (مثلاً: الركض على جسر قوس قزح)";
+"config_generate_button" = "توليد";
+
+"result_header_title" = "الفن جاهز";
+"result_save_button" = "حفظ في المعرض";
+"result_saving_status" = "جاري الحفظ...";
+"result_saved_status" = "تم الحفظ!";
+"result_failed_status" = "حاول مرة أخرى";
+"result_save_success_toast" = "تم الحفظ في الصور";
+"result_photo_access_denied" = "يرجى السماح بالوصول إلى الصور في الإعدادات";
+
+"splash_tagline" = "ذكاء اصطناعي · مدعوم · إبداع";
+"splash_loading" = "جاري تحضير تجربتك...";
+
+"waterfall_explore_placeholder" = "استكشف فن الذكاء الاصطناعي...";
+"image_details_create_new" = "إنشاء جديد";

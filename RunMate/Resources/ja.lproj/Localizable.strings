@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "キャンセル";
+"common_error" = "エラー";
+"common_loading" = "読み込み中...";
+
+"Create" = "作成";
+"Vault" = "保管庫";
+"Me" = "マイページ";
+
+"me_vip_activated" = "PriSpace AI Pro 有効";
+"me_upgrade_pro" = "PriSpace AI Pro にアップグレード";
+"me_vip_desc" = "無制限のAI生成とプライベート保管庫";
+"me_upgrade_desc" = "すべてのプレミアム機能を解放し、制限なく作成";
+"me_stat_works" = "作品";
+"me_stat_artist" = "アーティスト";
+"me_stat_creative" = "クリエイティブ";
+"me_creations_title" = "AI作品";
+"me_total_works %lld" = "合計 %lld 件";
+"me_empty_title" = "作品がまだありません";
+"me_empty_desc" = "作成タブで最初のAI作品を\n生成しましょう";
+
+"settings_title" = "設定";
+"settings_close" = "閉じる";
+"settings_user_role" = "AIクリエイター";
+"settings_section_legal" = "サポートと法的事項";
+"settings_feedback" = "フィードバック";
+"settings_feedback_desc" = "ご意見をお聞かせください";
+"settings_privacy" = "プライバシーポリシー";
+"settings_privacy_desc" = "データの取り扱いについて";
+"settings_terms" = "利用規約";
+"settings_terms_desc" = "利用ルールと合意事項";
+"settings_feedback_alert_title" = "フィードバックを送る";
+"settings_feedback_alert_msg" = "フィードバックの共有方法を選択してください";
+"settings_feedback_email" = "メールを送る";
+"settings_feedback_rate" = "App Storeで評価";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "制限なしでフル体験を解放";
+"paywall_feature1_title" = "AIラボ全モデル";
+"paywall_feature1_desc" = "すべての高度なAI機能を解放";
+"paywall_feature2_title" = "無制限の保管庫";
+"paywall_feature2_desc" = "プライバシーのための軍事級暗号化";
+"paywall_feature3_title" = "すべての広告を削除";
+"paywall_feature3_desc" = "純粋な体験、邪魔なものはなし";
+"paywall_loading_plans" = "プランを読み込み中...";
+"paywall_button_unlock" = "今すぐProを解放";
+"paywall_button_vip" = "あなたはProメンバーです";
+"paywall_footer_auto_renewable" = "自動更新 ・ いつでもキャンセル可能";
+"paywall_restore" = "購入を復元";
+"paywall_lifetime_desc" = "買い切り ・ 一回払い";
+"paywall_monthly_approx %@" = "月額約 %@";
+"paywall_period_lifetime" = "買い切り";
+"paywall_period_yearly" = "年額";
+"paywall_best_value" = "お得なプラン";
+
+"config_header_title" = "AIアートジェネレーター";
+"config_choose_style" = "スタイルを選択";
+"config_aspect_ratio" = "アスペクト比";
+"config_prompt_placeholder" = "詳細を説明してください... (例：虹の橋を走る)";
+"config_generate_button" = "生成する";
+
+"result_header_title" = "アート完成";
+"result_save_button" = "ギャラリーに保存";
+"result_saving_status" = "保存中...";
+"result_saved_status" = "保存完了！";
+"result_failed_status" = "再試行";
+"result_save_success_toast" = "写真に保存されました";
+"result_photo_access_denied" = "設定から写真へのアクセスを許可してください";
+
+"splash_tagline" = "AIによる創造";
+"splash_loading" = "準備中...";
+
+"waterfall_explore_placeholder" = "AIアートを探索...";
+"image_details_create_new" = "新規作成";

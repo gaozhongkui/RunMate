@@ -12,7 +12,7 @@ import SwiftUI
 // MARK: - Overlay View
 
 struct LoadingOverlayView: View {
-    let message: String
+    let message: LocalizedStringKey
 
     var body: some View {
         ZStack {
@@ -50,7 +50,7 @@ struct LoadingOverlayView: View {
 
 private struct LoadingOverlayModifier: ViewModifier {
     let isLoading: Bool
-    let message: String
+    let message: LocalizedStringKey
 
     func body(content: Content) -> some View {
         ZStack {
@@ -67,7 +67,7 @@ private struct LoadingOverlayModifier: ViewModifier {
 
 extension View {
     /// Displays a translucent loading overlay on top of any view.
-    func loadingOverlay(isLoading: Bool, message: String = "Loading…") -> some View {
+    func loadingOverlay(isLoading: Bool, message: LocalizedStringKey = "common_loading") -> some View {
         modifier(LoadingOverlayModifier(isLoading: isLoading, message: message))
     }
 }

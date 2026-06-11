@@ -17,10 +17,10 @@ struct PaywallView: View {
     private var termsURL: URL   { RemoteConfigManager.shared.termsURL   ?? URL(string: "about:blank")! }
 
     
-    let features: [(icon: String, title: String, subtitle: String)] = [
-        ("sparkles",            "AI Lab All Models",   "Unlock all advanced AI features"),
-        ("lock.shield.fill",    "Unlimited Vault",   "Military-grade encryption for privacy"),
-        ("hand.raised.slash.fill", "Remove All Ads",  "Pure experience, zero distractions")
+    let features: [(icon: String, title: LocalizedStringKey, subtitle: LocalizedStringKey)] = [
+        ("sparkles",            "paywall_feature1_title",   "paywall_feature1_desc"),
+        ("lock.shield.fill",    "paywall_feature2_title",   "paywall_feature2_desc"),
+        ("hand.raised.slash.fill", "paywall_feature3_title",  "paywall_feature3_desc")
     ]
 
     var body: some View {
@@ -85,11 +85,11 @@ struct PaywallView: View {
             .onAppear { glowPulse = true }
 
             VStack(spacing: 4) {
-                Text("PriSpace AI Pro")
+                Text("paywall_title")
                     .font(.system(size: 26, weight: .black))
                     .foregroundStyle(AppTheme.Colors.borderGradient)
 
-                Text("Unlock full experience without limits")
+                Text("paywall_subtitle")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
@@ -99,8 +99,8 @@ struct PaywallView: View {
 
     private var featuresSection: some View {
         VStack(spacing: 8) {
-            ForEach(features, id: \.title) { feature in
-                FeatureRow(icon: feature.icon, title: feature.title, subtitle: feature.subtitle)
+            ForEach(features.indices, id: \.self) { index in
+                FeatureRow(icon: features[index].icon, title: features[index].title, subtitle: features[index].subtitle)
             }
         }
         .padding(.horizontal, 20)
@@ -112,7 +112,7 @@ struct PaywallView: View {
             if storeManager.products.isEmpty {
                 HStack(spacing: 12) {
                     ProgressView().tint(.white)
-                    Text("Loading plans...")
+                    Text("paywall_loading_plans")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                 }
@@ -154,7 +154,7 @@ struct PaywallView: View {
                             if storeManager.isVIP {
                                 Image(systemName: "checkmark.seal.fill")
                             }
-                            Text(storeManager.isVIP ? "You are a Pro Member" : "Unlock Pro Now")
+                            Text(storeManager.isVIP ? "paywall_button_vip" : "paywall_button_unlock")
                                 .font(.system(size: 17, weight: .bold))
                         }
                     }
@@ -178,7 +178,7 @@ struct PaywallView: View {
             .padding(.horizontal, 20)
 
             if !storeManager.isVIP {
-                Text("Auto-renewable · Cancel anytime")
+                Text("paywall_footer_auto_renewable")
                     .font(AppTheme.Fonts.caption2())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
@@ -188,13 +188,13 @@ struct PaywallView: View {
 
     private var footerLinks: some View {
         HStack(spacing: 12) {
-            Button("Restore Purchase") {
+            Button("paywall_restore") {
                 Task { await storeManager.updateCustomerProductStatus() }
             }
             Text("·")
-            Link("Terms", destination: termsURL)
+            Link("settings_terms", destination: termsURL)
             Text("·")
-            Link("Privacy", destination: privacyURL)
+            Link("settings_privacy", destination: termsURL)
         }
         .font(AppTheme.Fonts.caption2())
         .foregroundColor(AppTheme.Colors.textTertiary)
@@ -225,8 +225,8 @@ struct PaywallView: View {
 
 struct FeatureRow: View {
     let icon: String
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
 
     var body: some View {
         HStack(spacing: 12) {
@@ -295,12 +295,12 @@ struct ProductCard: View {
                             .foregroundColor(.white)
 
                         if isLifetime {
-                            Text("Lifetime · One-time payment")
+                            Text("paywall_lifetime_desc")
                                 .font(AppTheme.Fonts.caption())
                                 .foregroundColor(AppTheme.Colors.textTertiary)
                         } else {
                             let monthly = product.price / 12
-                            Text("Approx. \(monthly.formatted(product.priceFormatStyle))/mo")
+                            Text("paywall_monthly_approx \(monthly.formatted(product.priceFormatStyle))")
                                 .font(AppTheme.Fonts.caption())
                                 .foregroundColor(AppTheme.Colors.textTertiary)
                         }
@@ -312,7 +312,7 @@ struct ProductCard: View {
                         Text(product.displayPrice)
                             .font(.system(size: 17, weight: .black, design: .monospaced))
                             .foregroundColor(.white)
-                        Text(isLifetime ? "LIFETIME" : "YEARLY")
+                        Text(isLifetime ? "paywall_period_lifetime" : "paywall_period_yearly")
                             .font(AppTheme.Fonts.caption2())
                             .foregroundColor(AppTheme.Colors.textTertiary)
                     }
@@ -345,7 +345,7 @@ struct ProductCard: View {
 
                 // Badge
                 if isRecommended {
-                    Text("BEST VALUE")
+                    Text("paywall_best_value")
                         .font(.system(size: 10, weight: .black))
                         .foregroundColor(.white)
                         .padding(.horizontal, 9)

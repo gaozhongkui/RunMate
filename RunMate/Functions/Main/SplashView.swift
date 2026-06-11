@@ -159,7 +159,7 @@ struct SplashView: View {
 
             // App name + tagline
             VStack(spacing: 10) {
-                Text("PriSpace AI")
+                Text("app_name")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
@@ -169,7 +169,7 @@ struct SplashView: View {
                         )
                     )
 
-                Text("AI · POWERED · CREATION")
+                Text("splash_tagline")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.white.opacity(0.35))
                     .tracking(3.5)
@@ -199,7 +199,7 @@ struct SplashView: View {
                 }
             }
 
-            Text("Preparing your experience…")
+            Text("splash_loading")
                 .font(.system(size: 12, weight: .regular))
                 .foregroundColor(.white.opacity(0.28))
                 .tracking(0.5)

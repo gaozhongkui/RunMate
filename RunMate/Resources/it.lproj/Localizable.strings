@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "Annulla";
+"common_error" = "Errore";
+"common_loading" = "Caricamento...";
+
+"Create" = "Crea";
+"Vault" = "Cassaforte";
+"Me" = "Io";
+
+"me_vip_activated" = "PriSpace AI Pro Attivato";
+"me_upgrade_pro" = "Passa a PriSpace AI Pro";
+"me_vip_desc" = "Generazione AI illimitata e cassaforte privata";
+"me_upgrade_desc" = "Sblocca tutte le funzioni premium e crea senza limiti";
+"me_stat_works" = "Opere";
+"me_stat_artist" = "Artista";
+"me_stat_creative" = "Creativo";
+"me_creations_title" = "Creazioni AI";
+"me_total_works %lld" = "%lld in totale";
+"me_empty_title" = "Ancora nessuna opera";
+"me_empty_desc" = "Genera la tua prima opera AI\nnella scheda Crea";
+
+"settings_title" = "Impostazioni";
+"settings_close" = "Chiudi";
+"settings_user_role" = "Creatore AI";
+"settings_section_legal" = "Supporto e Legale";
+"settings_feedback" = "Feedback";
+"settings_feedback_desc" = "Condividi i tuoi pensieri con noi";
+"settings_privacy" = "Informativa sulla privacy";
+"settings_privacy_desc" = "Come gestiamo i tuoi dati";
+"settings_terms" = "Termini di servizio";
+"settings_terms_desc" = "Regole di utilizzo e accordi";
+"settings_feedback_alert_title" = "Invia Feedback";
+"settings_feedback_alert_msg" = "Come vorresti condividere il tuo feedback?";
+"settings_feedback_email" = "Inviaci un'e-mail";
+"settings_feedback_rate" = "Valuta sull'App Store";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "Sblocca l'esperienza completa senza limiti";
+"paywall_feature1_title" = "Tutti i modelli AI Lab";
+"paywall_feature1_desc" = "Sblocca tutte le funzioni AI avanzate";
+"paywall_feature2_title" = "Cassaforte illimitata";
+"paywall_feature2_desc" = "Crittografia di livello militare per la privacy";
+"paywall_feature3_title" = "Rimuovi tutti gli annunci";
+"paywall_feature3_desc" = "Esperienza pura, zero distrazioni";
+"paywall_loading_plans" = "Caricamento piani...";
+"paywall_button_unlock" = "Sblocca Pro ora";
+"paywall_button_vip" = "Sei un membro Pro";
+"paywall_footer_auto_renewable" = "Rinnovabile automaticamente · Annulla in qualsiasi momento";
+"paywall_restore" = "Ripristina acquisto";
+"paywall_lifetime_desc" = "A vita · Pagamento una tantum";
+"paywall_monthly_approx %@" = "Circa %@";
+"paywall_period_lifetime" = "A VITA";
+"paywall_period_yearly" = "ANNUALE";
+"paywall_best_value" = "MIGLIOR VALORE";
+
+"config_header_title" = "Generatore d'arte AI";
+"config_choose_style" = "Scegli il tuo stile";
+"config_aspect_ratio" = "Rapporto d'aspetto";
+"config_prompt_placeholder" = "Descrivi l'azione in dettaglio... (es. Correre su un ponte arcobaleno)";
+"config_generate_button" = "Genera";
+
+"result_header_title" = "Opera pronta";
+"result_save_button" = "Salva nella galleria";
+"result_saving_status" = "Salvataggio...";
+"result_saved_status" = "Salvato!";
+"result_failed_status" = "Riprova";
+"result_save_success_toast" = "Salvato in Foto";
+"result_photo_access_denied" = "Per favore, consenti l'accesso alle foto nelle Impostazioni";
+
+"splash_tagline" = "CREAZIONE · POTENZIATA DA · AI";
+"splash_loading" = "Preparazione della tua esperienza...";
+
+"waterfall_explore_placeholder" = "Esplora l'arte AI...";
+"image_details_create_new" = "Crea nuovo";

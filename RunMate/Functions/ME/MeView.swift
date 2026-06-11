@@ -57,11 +57,11 @@ struct MeView: View {
                     HStack {
                         Image(systemName: "crown.fill")
                             .foregroundColor(storeManager.isVIP ? .yellow : .white)
-                        Text(storeManager.isVIP ? "PriSpace AI Pro Activated" : "Upgrade to PriSpace AI Pro")
+                        Text(storeManager.isVIP ? "me_vip_activated" : "me_upgrade_pro")
                             .font(AppTheme.Fonts.headline())
                     }
 
-                    Text(storeManager.isVIP ? "Unlimited AI Generation & Private Vault" : "Unlock all premium features & create without limits")
+                    Text(storeManager.isVIP ? "me_vip_desc" : "me_upgrade_desc")
                         .font(AppTheme.Fonts.caption())
                         .opacity(0.8)
                 }
@@ -147,7 +147,7 @@ struct MeView: View {
                 .padding(.bottom, 16)
 
                 // Name
-                Text("PriSpace AI")
+                Text("app_name")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                     .padding(.bottom, 20)
@@ -156,7 +156,7 @@ struct MeView: View {
                 HStack(spacing: 0) {
                     statCell(
                         value: "\(store.records.count)",
-                        label: "Works",
+                        label: "me_stat_works",
                         icon: "photo.stack.fill"
                     )
 
@@ -166,7 +166,7 @@ struct MeView: View {
 
                     statCell(
                         value: "AI",
-                        label: "Artist",
+                        label: "me_stat_artist",
                         icon: "sparkles"
                     )
 
@@ -176,7 +176,7 @@ struct MeView: View {
 
                     statCell(
                         value: "∞",
-                        label: "Creative",
+                        label: "me_stat_creative",
                         icon: "bolt.fill"
                     )
                 }
@@ -260,7 +260,7 @@ struct MeView: View {
             HStack(spacing: 5) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 10, weight: .semibold))
-                Text("AI Creations")
+                Text("me_creations_title")
                     .font(AppTheme.Fonts.caption(.semibold))
             }
             .foregroundStyle(AppTheme.Colors.borderGradient)
@@ -300,7 +300,7 @@ struct MeView: View {
                 emptyState
             } else {
                 VStack(alignment: .trailing, spacing: 10) {
-                    Text("\(store.records.count) total")
+                    Text("me_total_works \(store.records.count)")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                         .padding(.horizontal, 20)
@@ -329,10 +329,10 @@ struct MeView: View {
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
             VStack(spacing: 6) {
-                Text("No artworks yet")
+                Text("me_empty_title")
                     .font(AppTheme.Fonts.subheadline(.semibold))
                     .foregroundColor(AppTheme.Colors.textSecondary)
-                Text("Generate your first AI artwork\nin the Create tab")
+                Text("me_empty_desc")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textMuted)
                     .multilineTextAlignment(.center)
@@ -344,7 +344,7 @@ struct MeView: View {
 
     // MARK: - Stat Cell
 
-    private func statCell(value: String, label: String, icon: String) -> some View {
+    private func statCell(value: String, label: LocalizedStringKey, icon: String) -> some View {
         VStack(spacing: 4) {
             Text(value)
                 .font(AppTheme.Fonts.monospaced(size: 20))

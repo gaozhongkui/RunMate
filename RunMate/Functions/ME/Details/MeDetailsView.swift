@@ -1,8 +1,6 @@
 //
-//  ImageDetailsView.swift
+//  MeDetailsView.swift
 //  RunMate
-//
-//  Created by gaozhongkui on 2026/2/3.
 //
 
 import Kingfisher
@@ -65,7 +63,7 @@ struct MeDetailsView: View {
             closeButton()
         }
         .toast(item: $toast)
-        .loadingOverlay(isLoading: isDownloading, message: "Saving to Photos…")
+        .loadingOverlay(isLoading: isDownloading, message: "result_saving_status")
         .onAppear {
             image = store.loadImage(for: record)
         }
@@ -148,11 +146,11 @@ struct MeDetailsView: View {
                 ImageDownloader().saveToPhotoLibrary(image: temp) { success in
                     isDownloading = false
                     toast = success
-                        ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
-                        : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                        ? ToastModel(message: "result_save_success_toast", icon: "checkmark.circle.fill")
+                        : ToastModel(message: "result_failed_status", icon: "xmark.circle.fill")
                 }
             }) {
-                Text("Download")
+                Text("result_save_button")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(height: 60)

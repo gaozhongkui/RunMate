@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "Cancelar";
+"common_error" = "Erro";
+"common_loading" = "Carregando...";
+
+"Create" = "Criar";
+"Vault" = "Cofre";
+"Me" = "Eu";
+
+"me_vip_activated" = "PriSpace AI Pro Ativado";
+"me_upgrade_pro" = "Atualizar para PriSpace AI Pro";
+"me_vip_desc" = "Geração de IA Ilimitada e Cofre Privado";
+"me_upgrade_desc" = "Desbloqueie todos os recursos premium e crie sem limites";
+"me_stat_works" = "Obras";
+"me_stat_artist" = "Artista";
+"me_stat_creative" = "Criativo";
+"me_creations_title" = "Criações de IA";
+"me_total_works %lld" = "%lld no total";
+"me_empty_title" = "Ainda não há obras";
+"me_empty_desc" = "Gere sua primeira obra de IA\nna aba Criar";
+
+"settings_title" = "Configurações";
+"settings_close" = "Fechar";
+"settings_user_role" = "Criador de IA";
+"settings_section_legal" = "Suporte e Jurídico";
+"settings_feedback" = "Feedback";
+"settings_feedback_desc" = "Compartilhe suas ideias conosco";
+"settings_privacy" = "Política de Privacidade";
+"settings_privacy_desc" = "Como lidamos com seus dados";
+"settings_terms" = "Termos de Serviço";
+"settings_terms_desc" = "Reglas de uso e acordos";
+"settings_feedback_alert_title" = "Enviar Feedback";
+"settings_feedback_alert_msg" = "Como você gostaria de compartilhar seu feedback?";
+"settings_feedback_email" = "Envie-nos um e-mail";
+"settings_feedback_rate" = "Avaliar na App Store";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "Desbloqueie a experiência completa sem limites";
+"paywall_feature1_title" = "Todos os Modelos AI Lab";
+"paywall_feature1_desc" = "Desbloqueie todos os recursos avançados de IA";
+"paywall_feature2_title" = "Cofre Ilimitado";
+"paywall_feature2_desc" = "Criptografia de nível militar para privacidade";
+"paywall_feature3_title" = "Remover Todos os Anúncios";
+"paywall_feature3_desc" = "Experiência pura, zero distrações";
+"paywall_loading_plans" = "Carregando planos...";
+"paywall_button_unlock" = "Desbloquear Pro Agora";
+"paywall_button_vip" = "Você é um Membro Pro";
+"paywall_footer_auto_renewable" = "Renovável automaticamente · Cancele a qualquer momento";
+"paywall_restore" = "Restaurar Compra";
+"paywall_lifetime_desc" = "Vitalício · Pagamento único";
+"paywall_monthly_approx %@" = "Aprox. %@";
+"paywall_period_lifetime" = "VITALÍCIO";
+"paywall_period_yearly" = "ANUAL";
+"paywall_best_value" = "MELHOR VALOR";
+
+"config_header_title" = "Gerador de Arte IA";
+"config_choose_style" = "Escolha seu Estilo";
+"config_aspect_ratio" = "Proporção";
+"config_prompt_placeholder" = "Descreva a ação em detalhes... (ex: Correndo em uma ponte de arco-íris)";
+"config_generate_button" = "Gerar";
+
+"result_header_title" = "Arte Pronta";
+"result_save_button" = "Salvar na Galeria";
+"result_saving_status" = "Salvando...";
+"result_saved_status" = "Salvo!";
+"result_failed_status" = "Tentar Novamente";
+"result_save_success_toast" = "Salvo em Fotos";
+"result_photo_access_denied" = "Por favor, permita o acesso às fotos nas Configurações";
+
+"splash_tagline" = "CRIAÇÃO · POTENCIALIZADA POR · IA";
+"splash_loading" = "Preparando sua experiência...";
+
+"waterfall_explore_placeholder" = "Explorar arte IA...";
+"image_details_create_new" = "Criar novo";

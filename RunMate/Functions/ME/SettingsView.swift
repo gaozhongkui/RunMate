@@ -65,16 +65,16 @@ struct SettingsView: View {
                 .ignoresSafeArea()
         }
         // User feedback alert
-        .alert("Send Feedback", isPresented: $showFeedbackAlert) {
-            Button("Email Us") {
+        .alert("settings_feedback_alert_title", isPresented: $showFeedbackAlert) {
+            Button("settings_feedback_email") {
                 openMailFeedback()
             }
-            Button("Rate on App Store") {
+            Button("settings_feedback_rate") {
                 requestAppStoreReview()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("common_cancel", role: .cancel) {}
         } message: {
-            Text("How would you like to share your feedback?")
+            Text("settings_feedback_alert_msg")
         }
     }
 
@@ -88,7 +88,7 @@ struct SettingsView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 14, weight: .semibold))
-                    Text("Close")
+                    Text("settings_close")
                         .font(AppTheme.Fonts.caption(.semibold))
                 }
                 .foregroundColor(AppTheme.Colors.textSecondary)
@@ -106,7 +106,7 @@ struct SettingsView: View {
 
             Spacer()
 
-            Text("Settings")
+            Text("settings_title")
                 .font(AppTheme.Fonts.headline())
                 .foregroundColor(AppTheme.Colors.textPrimary)
 
@@ -152,14 +152,14 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("PriSpace AI")
+                Text("app_name")
                     .font(AppTheme.Fonts.subheadline(.semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
 
                 HStack(spacing: 4) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 10))
-                    Text("AI Creator")
+                    Text("settings_user_role")
                         .font(AppTheme.Fonts.caption2())
                 }
                 .foregroundStyle(AppTheme.Colors.borderGradient)
@@ -191,7 +191,7 @@ struct SettingsView: View {
         VStack(spacing: 2) {
             // 分组标题
             HStack {
-                Text("Support & Legal")
+                Text("settings_section_legal")
                     .font(AppTheme.Fonts.caption(.semibold))
                     .foregroundColor(AppTheme.Colors.textTertiary)
                     .padding(.horizontal, 4)
@@ -204,8 +204,8 @@ struct SettingsView: View {
                 settingsRow(
                     icon: "bubble.left.and.bubble.right.fill",
                     iconColor: Color(hex: "A78BFA"),
-                    title: "Feedback",
-                    subtitle: "Share your thoughts with us",
+                    title: "settings_feedback",
+                    subtitle: "settings_feedback_desc",
                     isFirst: true,
                     isLast: false
                 ) {
@@ -217,8 +217,8 @@ struct SettingsView: View {
                 settingsRow(
                     icon: "lock.doc.fill",
                     iconColor: Color(hex: "34D399"),
-                    title: "Privacy Policy",
-                    subtitle: "How we handle your data",
+                    title: "settings_privacy",
+                    subtitle: "settings_privacy_desc",
                     isFirst: false,
                     isLast: false
                 ) {
@@ -230,8 +230,8 @@ struct SettingsView: View {
                 settingsRow(
                     icon: "doc.text.fill",
                     iconColor: Color(hex: "60A5FA"),
-                    title: "Terms of Service",
-                    subtitle: "Usage rules & agreements",
+                    title: "settings_terms",
+                    subtitle: "settings_terms_desc",
                     isFirst: false,
                     isLast: true
                 ) {
@@ -261,8 +261,8 @@ struct SettingsView: View {
     private func settingsRow(
         icon: String,
         iconColor: Color,
-        title: String,
-        subtitle: String,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey,
         isFirst: Bool,
         isLast: Bool,
         action: @escaping () -> Void

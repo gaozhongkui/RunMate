@@ -44,7 +44,7 @@ struct ImageViewerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") { dismiss() }
+                    Button("settings_close") { dismiss() }
                         .foregroundColor(.white)
                 }
 
@@ -58,7 +58,7 @@ struct ImageViewerSheet: View {
                     .disabled(isSaving)
                 }
             }
-            .loadingOverlay(isLoading: isSaving, message: "Saving to Photos…")
+            .loadingOverlay(isLoading: isSaving, message: "result_saving_status")
             .toast(item: $toast)
         }
     }
@@ -69,8 +69,8 @@ struct ImageViewerSheet: View {
         ImageDownloader().saveToPhotoLibrary(image: image) { success in
             isSaving = false
             toast = success
-                ? ToastModel(message: "Saved to Photos", icon: "checkmark.circle.fill")
-                : ToastModel(message: "Save failed", icon: "xmark.circle.fill")
+                ? ToastModel(message: "result_save_success_toast", icon: "checkmark.circle.fill")
+                : ToastModel(message: "result_failed_status", icon: "xmark.circle.fill")
         }
     }
 }

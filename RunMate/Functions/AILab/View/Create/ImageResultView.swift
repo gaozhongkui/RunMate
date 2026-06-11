@@ -58,7 +58,7 @@ struct ImageResultView: View {
                     .clipShape(Circle())
             }
             Spacer()
-            Text("Art Ready")
+            Text("result_header_title")
                 .font(AppTheme.Fonts.headline())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
@@ -182,12 +182,12 @@ struct ImageResultView: View {
                     if newStatus == .authorized || newStatus == .limited {
                         self.performSave(image: image)
                     } else {
-                        self.showFailure("Please allow photo access in Settings")
+                        self.showFailure(NSLocalizedString("result_photo_access_denied", comment: ""))
                     }
                 }
             }
         case .denied, .restricted:
-            showFailure("Please allow photo access in Settings")
+            showFailure(NSLocalizedString("result_photo_access_denied", comment: ""))
         @unknown default:
             break
         }
@@ -205,7 +205,7 @@ struct ImageResultView: View {
                     confirmAction()   // Sync save to AIImageStore history
                     showToastMessage()
                 } else {
-                    showFailure(error?.localizedDescription ?? "Save failed")
+                    showFailure(error?.localizedDescription ?? NSLocalizedString("common_error", comment: ""))
                 }
             }
         }
@@ -255,12 +255,12 @@ struct ImageResultView: View {
 
     // MARK: - Computed
 
-    private var buttonLabel: String {
+    private var buttonLabel: LocalizedStringKey {
         switch saveState {
-        case .idle:    return "Save to Gallery"
-        case .saving:  return "Saving..."
-        case .success: return "Saved!"
-        case .failed:  return "Try Again"
+        case .idle:    return "result_save_button"
+        case .saving:  return "result_saving_status"
+        case .success: return "result_saved_status"
+        case .failed:  return "result_failed_status"
         }
     }
 
@@ -285,7 +285,7 @@ struct ImageResultView: View {
 
     private var toastMessage: String {
         switch saveState {
-        case .success:        return "Saved to Photos"
+        case .success:        return NSLocalizedString("result_save_success_toast", comment: "")
         case .failed(let msg): return msg
         default:              return ""
         }

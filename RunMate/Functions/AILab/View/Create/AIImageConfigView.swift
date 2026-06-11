@@ -23,7 +23,7 @@ struct AIImageConfigView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
-                            Text("Choose Your Style")
+                            Text("config_choose_style")
                                 .font(AppTheme.Fonts.headline())
                                 .foregroundColor(AppTheme.Colors.textPrimary)
                             Spacer()
@@ -51,7 +51,7 @@ struct AIImageConfigView: View {
                         .padding(.horizontal, 16)
 
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Aspect Ratio").font(AppTheme.Fonts.headline())
+                            Text("config_aspect_ratio").font(AppTheme.Fonts.headline())
                                 .foregroundColor(AppTheme.Colors.textPrimary)
 
                             AspectRatioSelector(
@@ -79,7 +79,7 @@ struct AIImageConfigView: View {
                         .foregroundColor(AppTheme.Colors.textPrimary)
                 }
                 Spacer()
-                Text("AI Art Generator").font(AppTheme.Fonts.headline())
+                Text("config_header_title").font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Spacer()
                
@@ -101,9 +101,7 @@ struct AIImageConfigView: View {
                             .foregroundColor(.white)
                             .padding(.leading, 10)
 
-                        Text(
-                            "Describe the action in detail... (e.g. Running on a rainbow bridge)"
-                        )
+                        Text("config_prompt_placeholder")
                         .foregroundColor(.white.opacity(0.2))
                         .font(.system(size: 15))
 
@@ -130,7 +128,7 @@ struct AIImageConfigView: View {
             Spacer()
             ZStack {
                 Button(action: { generateAction() }) {
-                    Text("Generate")
+                    Text("config_generate_button")
                         .font(AppTheme.Fonts.headline())
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)

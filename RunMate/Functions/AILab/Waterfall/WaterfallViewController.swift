@@ -59,7 +59,7 @@ class WaterfallViewController: UIViewController,
 
         // 3. 更新文字内容和颜色
         let label = UILabel()
-        label.text = "Explore AI Art..."
+        label.text = NSLocalizedString("waterfall_explore_placeholder", comment: "")
         label.font = .systemFont(ofSize: 16, weight: .regular)
         label.textColor = .white
 

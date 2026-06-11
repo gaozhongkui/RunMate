@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "रद्द करें";
+"common_error" = "त्रुटि";
+"common_loading" = "लोड हो रहा है...";
+
+"Create" = "बनाएं";
+"Vault" = "वॉल्ट";
+"Me" = "मैं";
+
+"me_vip_activated" = "PriSpace AI प्रो सक्रिय";
+"me_upgrade_pro" = "PriSpace AI प्रो में अपग्रेड करें";
+"me_vip_desc" = "असीमित AI जेनरेशन और प्राइवेट वॉल्ट";
+"me_upgrade_desc" = "सभी प्रीमियम सुविधाओं को अनलॉक करें और बिना सीमाओं के बनाएं";
+"me_stat_works" = "कार्य";
+"me_stat_artist" = "कलाकार";
+"me_stat_creative" = "रचनात्मक";
+"me_creations_title" = "AI रचनाएँ";
+"me_total_works %lld" = "कुल %lld";
+"me_empty_title" = "अभी तक कोई कलाकृति नहीं";
+"me_empty_desc" = "क्रिएट टैब में अपनी पहली AI कलाकृति बनाएं";
+
+"settings_title" = "सेटिंग्स";
+"settings_close" = "बंद करें";
+"settings_user_role" = "AI क्रिएटर";
+"settings_section_legal" = "सहायता और कानूनी";
+"settings_feedback" = "प्रतिक्रिया";
+"settings_feedback_desc" = "अपने विचार हमारे साथ साझा करें";
+"settings_privacy" = "गोपनीयता नीति";
+"settings_privacy_desc" = "हम आपके डेटा को कैसे संभालते हैं";
+"settings_terms" = "सेवा की शर्तें";
+"settings_terms_desc" = "उपयोग के नियम और समझौते";
+"settings_feedback_alert_title" = "प्रतिक्रिया भेजें";
+"settings_feedback_alert_msg" = "आप अपनी प्रतिक्रिया कैसे साझा करना चाहेंगे?";
+"settings_feedback_email" = "हमें ईमेल करें";
+"settings_feedback_rate" = "ऐप स्टोर पर रेट करें";
+
+"paywall_title" = "PriSpace AI प्रो";
+"paywall_subtitle" = "बिना सीमाओं के पूर्ण अनुभव अनलॉक करें";
+"paywall_feature1_title" = "AI लैब सभी मॉडल";
+"paywall_feature1_desc" = "सभी उन्नत AI सुविधाओं को अनलॉक करें";
+"paywall_feature2_title" = "असीमित वॉल्ट";
+"paywall_feature2_desc" = "गोपनीयता के लिए सैन्य-ग्रेड एन्क्रिप्शन";
+"paywall_feature3_title" = "सभी विज्ञापन हटाएं";
+"paywall_feature3_desc" = "शुद्ध अनुभव, शून्य विकर्षण";
+"paywall_loading_plans" = "योजनाएं लोड हो रही हैं...";
+"paywall_button_unlock" = "अभी प्रो अनलॉक करें";
+"paywall_button_vip" = "आप एक प्रो सदस्य हैं";
+"paywall_footer_auto_renewable" = "ऑटो-रिन्यूएबल · कभी भी रद्द करें";
+"paywall_restore" = "खरीद बहाल करें";
+"paywall_lifetime_desc" = "लाइफटाइम · एक बार भुगतान";
+"paywall_monthly_approx %@" = "लगभग %@";
+"paywall_period_lifetime" = "लाइफटाइम";
+"paywall_period_yearly" = "वार्षिक";
+"paywall_best_value" = "सर्वोत्तम मूल्य";
+
+"config_header_title" = "AI कला जनरेटर";
+"config_choose_style" = "अपनी शैली चुनें";
+"config_aspect_ratio" = "आस्पेक्ट रेशियो";
+"config_prompt_placeholder" = "क्रिया का विस्तार से वर्णन करें... (जैसे: इंद्रधनुष पुल पर दौड़ना)";
+"config_generate_button" = "जेनरेट करें";
+
+"result_header_title" = "कला तैयार है";
+"result_save_button" = "गैलरी में सहेजें";
+"result_saving_status" = "सहेजा जा रहा है...";
+"result_saved_status" = "सहेज लिया गया!";
+"result_failed_status" = "पुनः प्रयास करें";
+"result_save_success_toast" = "फोटो में सहेज लिया गया";
+"result_photo_access_denied" = "कृपया सेटिंग्स में फोटो एक्सेस की अनुमति दें";
+
+"splash_tagline" = "AI · संचालित · रचना";
+"splash_loading" = "आपके अनुभव की तैयारी हो रही है...";
+
+"waterfall_explore_placeholder" = "AI कला खोजें...";
+"image_details_create_new" = "नया बनाएं";

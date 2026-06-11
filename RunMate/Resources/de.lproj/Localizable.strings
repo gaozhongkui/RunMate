@@ -1,0 +1,74 @@
+"app_name" = "PriSpace AI";
+"common_cancel" = "Abbrechen";
+"common_error" = "Fehler";
+"common_loading" = "Laden...";
+
+"Create" = "Erstellen";
+"Vault" = "Tresor";
+"Me" = "Ich";
+
+"me_vip_activated" = "PriSpace AI Pro aktiviert";
+"me_upgrade_pro" = "Upgrade auf PriSpace AI Pro";
+"me_vip_desc" = "Unbegrenzte AI-Generierung & privater Tresor";
+"me_upgrade_desc" = "Alle Premium-Funktionen freischalten & grenzenlos erstellen";
+"me_stat_works" = "Werke";
+"me_stat_artist" = "Künstler";
+"me_stat_creative" = "Kreativ";
+"me_creations_title" = "AI-Kreationen";
+"me_total_works %lld" = "%lld insgesamt";
+"me_empty_title" = "Noch keine Kunstwerke";
+"me_empty_desc" = "Erstelle dein erstes AI-Kunstwerk\nim Tab 'Erstellen'";
+
+"settings_title" = "Einstellungen";
+"settings_close" = "Schließen";
+"settings_user_role" = "AI-Schöpfer";
+"settings_section_legal" = "Support & Rechtliches";
+"settings_feedback" = "Feedback";
+"settings_feedback_desc" = "Teile uns deine Gedanken mit";
+"settings_privacy" = "Datenschutzrichtlinie";
+"settings_privacy_desc" = "Wie wir mit deinen Daten umgehen";
+"settings_terms" = "Nutzungsbedingungen";
+"settings_terms_desc" = "Nutzungsregeln & Vereinbarungen";
+"settings_feedback_alert_title" = "Feedback senden";
+"settings_feedback_alert_msg" = "Wie möchtest du uns dein Feedback mitteilen?";
+"settings_feedback_email" = "E-Mail an uns";
+"settings_feedback_rate" = "Im App Store bewerten";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "Volles Erlebnis ohne Grenzen freischalten";
+"paywall_feature1_title" = "AI Lab Alle Modelle";
+"paywall_feature1_desc" = "Alle erweiterten AI-Funktionen freischalten";
+"paywall_feature2_title" = "Unbegrenzter Tresor";
+"paywall_feature2_desc" = "Militärstandard-Verschlüsselung für Privatsphäre";
+"paywall_feature3_title" = "Alle Werbung entfernen";
+"paywall_feature3_desc" = "Reines Erlebnis, keine Ablenkungen";
+"paywall_loading_plans" = "Pläne werden geladen...";
+"paywall_button_unlock" = "Jetzt Pro freischalten";
+"paywall_button_vip" = "Du bist ein Pro-Mitglied";
+"paywall_footer_auto_renewable" = "Automatisch verlängerbar · Jederzeit kündbar";
+"paywall_restore" = "Kauf wiederherstellen";
+"paywall_lifetime_desc" = "Lebenslang · Einmalzahlung";
+"paywall_monthly_approx %@" = "Ca. %@";
+"paywall_period_lifetime" = "LEBENSLANG";
+"paywall_period_yearly" = "JÄHRLICH";
+"paywall_best_value" = "BESTER WERT";
+
+"config_header_title" = "AI Art Generator";
+"config_choose_style" = "Stil wählen";
+"config_aspect_ratio" = "Seitenverhältnis";
+"config_prompt_placeholder" = "Beschreibe die Aktion im Detail... (z.B. Laufen auf einer Regenbogenbrücke)";
+"config_generate_button" = "Generieren";
+
+"result_header_title" = "Kunst fertig";
+"result_save_button" = "In Galerie speichern";
+"result_saving_status" = "Speichern...";
+"result_saved_status" = "Gespeichert!";
+"result_failed_status" = "Erneut versuchen";
+"result_save_success_toast" = "In Fotos gespeichert";
+"result_photo_access_denied" = "Bitte erlaube den Fotozugriff in den Einstellungen";
+
+"splash_tagline" = "AI · POWERED · CREATION";
+"splash_loading" = "Dein Erlebnis wird vorbereitet...";
+
+"waterfall_explore_placeholder" = "AI-Kunst erkunden...";
+"image_details_create_new" = "Neu erstellen";

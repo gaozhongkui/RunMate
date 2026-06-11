@@ -1,7 +1,74 @@
-// Localizable.strings
-// English
+"app_name" = "PriSpace AI";
+"common_cancel" = "Cancel";
+"common_error" = "Error";
+"common_loading" = "Loading...";
 
-"Home" = "Home";
-"AILab" = "AI Lab";
+"Create" = "Create";
+"Vault" = "Vault";
 "Me" = "Me";
-"AuraAI" = "PriSpace AI";
+
+"me_vip_activated" = "PriSpace AI Pro Activated";
+"me_upgrade_pro" = "Upgrade to PriSpace AI Pro";
+"me_vip_desc" = "Unlimited AI Generation & Private Vault";
+"me_upgrade_desc" = "Unlock all premium features & create without limits";
+"me_stat_works" = "Works";
+"me_stat_artist" = "Artist";
+"me_stat_creative" = "Creative";
+"me_creations_title" = "AI Creations";
+"me_total_works %lld" = "%lld total";
+"me_empty_title" = "No artworks yet";
+"me_empty_desc" = "Generate your first AI artwork\nin the Create tab";
+
+"settings_title" = "Settings";
+"settings_close" = "Close";
+"settings_user_role" = "AI Creator";
+"settings_section_legal" = "Support & Legal";
+"settings_feedback" = "Feedback";
+"settings_feedback_desc" = "Share your thoughts with us";
+"settings_privacy" = "Privacy Policy";
+"settings_privacy_desc" = "How we handle your data";
+"settings_terms" = "Terms of Service";
+"settings_terms_desc" = "Usage rules & agreements";
+"settings_feedback_alert_title" = "Send Feedback";
+"settings_feedback_alert_msg" = "How would you like to share your feedback?";
+"settings_feedback_email" = "Email Us";
+"settings_feedback_rate" = "Rate on App Store";
+
+"paywall_title" = "PriSpace AI Pro";
+"paywall_subtitle" = "Unlock full experience without limits";
+"paywall_feature1_title" = "AI Lab All Models";
+"paywall_feature1_desc" = "Unlock all advanced AI features";
+"paywall_feature2_title" = "Unlimited Vault";
+"paywall_feature2_desc" = "Military-grade encryption for privacy";
+"paywall_feature3_title" = "Remove All Ads";
+"paywall_feature3_desc" = "Pure experience, zero distractions";
+"paywall_loading_plans" = "Loading plans...";
+"paywall_button_unlock" = "Unlock Pro Now";
+"paywall_button_vip" = "You are a Pro Member";
+"paywall_footer_auto_renewable" = "Auto-renewable · Cancel anytime";
+"paywall_restore" = "Restore Purchase";
+"paywall_lifetime_desc" = "Lifetime · One-time payment";
+"paywall_monthly_approx %@" = "Approx. %@";
+"paywall_period_lifetime" = "LIFETIME";
+"paywall_period_yearly" = "YEARLY";
+"paywall_best_value" = "BEST VALUE";
+
+"config_header_title" = "AI Art Generator";
+"config_choose_style" = "Choose Your Style";
+"config_aspect_ratio" = "Aspect Ratio";
+"config_prompt_placeholder" = "Describe the action in detail... (e.g. Running on a rainbow bridge)";
+"config_generate_button" = "Generate";
+
+"result_header_title" = "Art Ready";
+"result_save_button" = "Save to Gallery";
+"result_saving_status" = "Saving...";
+"result_saved_status" = "Saved!";
+"result_failed_status" = "Try Again";
+"result_save_success_toast" = "Saved to Photos";
+"result_photo_access_denied" = "Please allow photo access in Settings";
+
+"splash_tagline" = "AI · POWERED · CREATION";
+"splash_loading" = "Preparing your experience…";
+
+"waterfall_explore_placeholder" = "Explore AI Art...";
+"image_details_create_new" = "Create New";
