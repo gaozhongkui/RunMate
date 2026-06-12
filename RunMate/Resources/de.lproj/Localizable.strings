@@ -2,10 +2,24 @@
 "common_cancel" = "Abbrechen";
 "common_error" = "Fehler";
 "common_loading" = "Laden...";
+"common_close" = "Schließen";
+"common_save" = "Speichern";
+"common_share" = "Teilen";
+"common_all" = "Alle";
+"common_ok" = "OK";
+"common_notice" = "Hinweis";
+"common_delete" = "Löschen";
+"common_keep" = "Behalten";
+"common_search_placeholder" = "Suchen...";
 
 "Create" = "Erstellen";
 "Vault" = "Tresor";
 "Me" = "Ich";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "Galaxy Album";
+"home_galaxy_subtitle" = "3D Immersiv · 5 kosmische Formen";
 
 "me_vip_activated" = "PriSpace AI Pro aktiviert";
 "me_upgrade_pro" = "Upgrade auf PriSpace AI Pro";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "AI-Kunst erkunden...";
 "image_details_create_new" = "Neu erstellen";
+
+"ai_random_button" = "AI Zufall";
+
+"video_compress_title" = "Video komprimieren";
+"video_original" = "Originalvideo";
+"video_select_quality" = "Kompressionsqualität wählen";
+"video_quality_low" = "Niedrige Qualität";
+"video_quality_medium" = "Mittlere Qualität";
+"video_quality_high" = "Hohe Qualität";
+"video_desc_low" = "Kleinste Dateigröße, ideal zum Teilen";
+"video_desc_medium" = "Gleichgewicht zwischen Qualität und Größe";
+"video_desc_high" = "Höhere Videoqualität beibehalten";
+"video_compressing" = "Komprimierung...";
+"video_complete" = "Komprimierung abgeschlossen";
+"video_original_size" = "Originalgröße:";
+"video_compressed_size" = "Komprimiert:";
+"video_space_saved" = "Platz gespart:";
+"video_start_compress" = "Komprimierung starten";
+"video_saving" = "Speichern…";
+"video_save_to_photos" = "In Fotos speichern";
+"video_save_success" = "Video in Fotos gespeichert";
+"video_no_videos" = "Keine Videos";
+"video_import" = "Video importieren";
+"video_duration_range" = "Dauerbereich:";
+"video_selected %lld %lld" = "%lld/%lld ausgewählt";
+"video_search_placeholder" = "Videos suchen...";
+"video_view_mode" = "Ansichtsmodus";
+"video_list_mode" = "Liste";
+"video_grid_mode" = "Gitter";
+"video_my_videos" = "Meine Videos";
+"video_stats_videos" = "Videos";
+"video_stats_duration" = "Dauer";
+"video_stats_size" = "Gesamtgröße";
+"video_sort_newest" = "Neueste";
+"video_sort_oldest" = "Älteste";
+"video_sort_size_desc" = "Größe ↓";
+"video_sort_size_asc" = "Größe ↑";
+"video_sort_duration_desc" = "Dauer ↓";
+"video_sort_duration_asc" = "Dauer ↑";
+
+"ai_processing_generating" = "Kunst wird generiert";
+"ai_processing_wait" = "Künstlerische Gestaltung braucht Zeit, bitte warten...";
+"ai_processing_painting" = "Die KI malt deine Gedanken";
+"ai_processing_creating" = "Erstelle dein Kunstwerk...";
+
+"home_scanning_title" = "AI-Scanning...";
+"home_scanning_completed" = "Scan abgeschlossen";
+"home_scanning_analyzing" = "Analysieren";
+"home_scanning_scanned" = "Gescant:";
+"home_scanning_total" = "Gesamt:";
+
+"vault_title" = "Bildersafe";
+"vault_select_image" = "Bild zum Verschlüsseln auswählen";
+"vault_empty_title" = "Noch keine verschlüsselten Bilder";
+"vault_empty_subtitle" = "Tippe auf die Schaltfläche oben, um ein Bild zum Verschlüsseln auszuwählen";
+"vault_decrypt_title" = "Entschlüsselungspasswort eingeben";
+"vault_decrypt_hint" = "Gib das bei der Verschlüsselung festgelegte Passwort ein";
+"vault_decrypt_button" = "Entschlüsseln & Anzeigen";
+"vault_decrypt_placeholder" = "Passwort eingeben";
+"vault_encrypt_title" = "Verschlüsselungspasswort festlegen";
+"vault_encrypt_hint" = "Lege ein starkes Passwort fest, um deine Bilder zu schützen";
+"vault_encrypt_button" = "Verschlüsseln";
+"vault_delete_original_title" = "Originalfoto löschen?";
+"vault_delete_original_msg" = "Das Originalfoto aus der Fotomediathek entfernen? Es wird nur innerhalb dieser App sichtbar sein.";
+"vault_secure_storage" = "Sicherer verschlüsselter Speicher";
+"vault_encryption_desc" = "Schütze deine Bilder mit AES-256-Verschlüsselung";
+"vault_error_load_failed" = "Bild konnte nicht geladen werden. Bitte versuche es mit einem anderen Foto.";
+"vault_error_no_password" = "Bitte gib ein Passwort ein";
+"vault_error_no_access" = "Zugriff auf Fotomediathek verweigert. Originalfoto wurde nicht gelöscht.";
+"vault_banner_abs" = "Absolut";
+"vault_banner_title" = "Privater Bereich";
+"vault_banner_desc" = "AES-256-Verschlüsselung auf Bankenniveau,\nPrivatsphärenschutz auf militärischem Niveau.";
+
+"galaxy_title" = "IMAGE GALAXY";
+"galaxy_ring_mode" = "RINGMODUS";
+"galaxy_drag_spin" = "Zum Drehen ziehen";
+"galaxy_double_tap" = "Doppeltippen zum Transformieren";
+"galaxy_shape_sphere" = "KUGEL";
+"galaxy_shape_heart" = "HERZ";
+"galaxy_shape_spiral" = "SPIRALE";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "KOSMOS";

@@ -52,3 +52,4 @@ builds/
 *.dSYM.zip
 *.dSYM
 .claude
+.idea/

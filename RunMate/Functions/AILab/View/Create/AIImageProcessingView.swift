@@ -36,7 +36,7 @@ struct AIImageProcessingView: View {
                 Spacer()
                 
                 // Bottom hint
-                Text("ai_process_desc")
+                Text("ai_processing_wait")
                     .font(AppTheme.Fonts.subheadline())
                     .foregroundColor(AppTheme.Colors.textTertiary)
                     .padding(.bottom, 40)
@@ -66,7 +66,7 @@ struct AIImageProcessingView: View {
                     .clipShape(Circle())
             }
             Spacer()
-            Text("ai_process_title")
+            Text("ai_processing_generating")
                 .font(AppTheme.Fonts.headline())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             
@@ -107,10 +107,10 @@ struct AIImageProcessingView: View {
             }
             
             VStack(spacing: AppTheme.Spacing.md) {
-                Text("ai_process_status1")
+                Text("ai_processing_creating")
                     .font(AppTheme.Fonts.title())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                Text("ai_process_status2")
+                Text("ai_processing_painting")
                     .font(AppTheme.Fonts.subheadline())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }

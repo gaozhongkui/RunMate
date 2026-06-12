@@ -2,10 +2,24 @@
 "common_cancel" = "إلغاء";
 "common_error" = "خطأ";
 "common_loading" = "جاري التحميل...";
+"common_close" = "إغلاق";
+"common_save" = "حفظ";
+"common_share" = "مشاركة";
+"common_all" = "الكل";
+"common_ok" = "موافق";
+"common_notice" = "تنبيه";
+"common_delete" = "حذف";
+"common_keep" = "احتفاظ";
+"common_search_placeholder" = "بحث...";
 
 "Create" = "إنشاء";
 "Vault" = "الخزنة";
 "Me" = "أنا";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "ألبوم المجرة";
+"home_galaxy_subtitle" = "غمر ثلاثي الأبعاد · 5 أشكال كونية";
 
 "me_vip_activated" = "تم تفعيل PriSpace AI Pro";
 "me_upgrade_pro" = "الترقية إلى PriSpace AI Pro";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "استكشف فن الذكاء الاصطناعي...";
 "image_details_create_new" = "إنشاء جديد";
+
+"ai_random_button" = "عشوائي بالذكاء الاصطناعي";
+
+"video_compress_title" = "ضغط الفيديو";
+"video_original" = "الفيديو الأصلي";
+"video_select_quality" = "اختر جودة الضغط";
+"video_quality_low" = "جودة منخفضة";
+"video_quality_medium" = "جودة متوسطة";
+"video_quality_high" = "جودة عالية";
+"video_desc_low" = "أصغر حجم ملف، مثالي للمشاركة";
+"video_desc_medium" = "توازن بين الجودة والحجم";
+"video_desc_high" = "الحفاظ على جودة فيديو أعلى";
+"video_compressing" = "جاري الضغط...";
+"video_complete" = "اكتمل الضغط";
+"video_original_size" = "الحجم الأصلي:";
+"video_compressed_size" = "المضغوط:";
+"video_space_saved" = "المساحة الموفرة:";
+"video_start_compress" = "بدء الضغط";
+"video_saving" = "جاري الحفظ...";
+"video_save_to_photos" = "حفظ في الصور";
+"video_save_success" = "تم حفظ الفيديو في الصور";
+"video_no_videos" = "لا توجد فيديوهات";
+"video_import" = "استيراد فيديو";
+"video_duration_range" = "نطاق المدة:";
+"video_selected %lld %lld" = "تم اختيار %lld/%lld";
+"video_search_placeholder" = "بحث في الفيديوهات...";
+"video_view_mode" = "وضع العرض";
+"video_list_mode" = "قائمة";
+"video_grid_mode" = "شبكة";
+"video_my_videos" = "فيديوهاتي";
+"video_stats_videos" = "فيديوهات";
+"video_stats_duration" = "المدة";
+"video_stats_size" = "الحجم الإجمالي";
+"video_sort_newest" = "الأحدث";
+"video_sort_oldest" = "الأقدم";
+"video_sort_size_desc" = "الحجم ↓";
+"video_sort_size_asc" = "الحجم ↑";
+"video_sort_duration_desc" = "المدة ↓";
+"video_sort_duration_asc" = "المدة ↑";
+
+"ai_processing_generating" = "جاري توليد الفن";
+"ai_processing_wait" = "الإبداع الفني يستغرق وقتاً، يرجى الانتظار...";
+"ai_processing_painting" = "الذكاء الاصطناعي يرسم أفكارك";
+"ai_processing_creating" = "جاري إنشاء عملك الفني...";
+
+"home_scanning_title" = "جاري المسح بالذكاء الاصطناعي...";
+"home_scanning_completed" = "اكتمل المسح";
+"home_scanning_analyzing" = "جاري التحليل";
+"home_scanning_scanned" = "تم المسح:";
+"home_scanning_total" = "الإجمالي:";
+
+"vault_title" = "خزنة الصور";
+"vault_select_image" = "اختر صورة لتشفيرها";
+"vault_empty_title" = "لا توجد صور مشفرة بعد";
+"vault_empty_subtitle" = "اضغط على الزر أعلاه لاختيار صورة لتشفيرها";
+"vault_decrypt_title" = "أدخل كلمة مرور فك التشفير";
+"vault_decrypt_hint" = "أدخل كلمة المرور التي عينتها أثناء التشفير";
+"vault_decrypt_button" = "فك التشفير والعرض";
+"vault_decrypt_placeholder" = "أدخل كلمة المرور";
+"vault_encrypt_title" = "تعيين كلمة مرور التشفير";
+"vault_encrypt_hint" = "عين كلمة مرور قوية لحماية صورك";
+"vault_encrypt_button" = "تشفير";
+"vault_delete_original_title" = "حذف الصورة الأصلية؟";
+"vault_delete_original_msg" = "هل تريد إزالة الصورة الأصلية من مكتبة الصور؟ ستكون قابلة للعرض فقط داخل هذا التطبيق.";
+"vault_secure_storage" = "تخزين مشفر آمن";
+"vault_encryption_desc" = "احمِ صورك بتشفير AES-256";
+"vault_error_load_failed" = "فشل تحميل الصورة. يرجى تجربة صورة أخرى.";
+"vault_error_no_password" = "يرجى إدخال كلمة المرور";
+"vault_error_no_access" = "تم رفض الوصول إلى مكتبة الصور. لم يتم حذف الصورة الأصلية.";
+"vault_banner_abs" = "بكل تأكيد";
+"vault_banner_title" = "مساحة خاصة";
+"vault_banner_desc" = "تشفير AES-256 من الفئة المصرفية،\nحماية خصوصية على المستوى العسكري.";
+
+"galaxy_title" = "مجرة الصور";
+"galaxy_ring_mode" = "وضع الحلقة";
+"galaxy_drag_spin" = "اسحب للتدوير";
+"galaxy_double_tap" = "انقر نقراً مزدوجاً للتحويل";
+"galaxy_shape_sphere" = "كرة";
+"galaxy_shape_heart" = "قلب";
+"galaxy_shape_spiral" = "حلزون";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "كون";

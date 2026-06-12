@@ -16,12 +16,12 @@ struct PriSpaceBanner: View {
                 // 2. Left text area
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("home_banner_title_top")
-                        Text("home_banner_title_bottom")
+                        Text("vault_banner_abs")
+                        Text("vault_banner_title")
                     }
                     .font(AppTheme.Fonts.title())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                    Text("home_banner_desc")
+                    Text("vault_banner_desc")
                         .font(AppTheme.Fonts.caption())
                         .foregroundColor(AppTheme.Colors.textTertiary)
                         .lineLimit(2)

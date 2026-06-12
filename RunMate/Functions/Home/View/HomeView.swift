@@ -48,7 +48,7 @@ struct HomeView: View {
        
     private var headerView: some View {
         HStack {
-            Text("app_name")
+            Text("home_ai_title")
                 .font(AppTheme.Fonts.largeTitle())
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Spacer()
@@ -62,7 +62,7 @@ struct HomeView: View {
     private var aiButton: some View {
         HStack(spacing: 0) {
             Image(systemName: "sparkles").font(AppTheme.Fonts.caption2(.semibold))
-            Text("home_tab_ai_badge").font(AppTheme.Fonts.subheadline(.bold))
+            Text("home_ai_badge").font(AppTheme.Fonts.subheadline(.bold))
         }
         .foregroundColor(.white)
         .padding(.horizontal, AppTheme.Spacing.lg)

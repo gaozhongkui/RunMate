@@ -21,15 +21,15 @@ struct DecryptPasswordSheet: View {
                     .foregroundColor(.green)
                     .padding(.top, 30)
                 
-                Text("prispace_decrypt_title")
+                Text("vault_decrypt_title")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("prispace_decrypt_desc")
+                Text("vault_decrypt_hint")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                SecureField("prispace_enter_password_placeholder", text: $password)
+                SecureField("vault_decrypt_placeholder", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -43,7 +43,7 @@ struct DecryptPasswordSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("prispace_decrypt_button")
+                        Text("vault_decrypt_button")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)

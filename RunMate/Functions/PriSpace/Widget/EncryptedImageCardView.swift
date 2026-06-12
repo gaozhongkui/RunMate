@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// 让 UIImage 可作为 sheet(item:) 的 item，直接携带数据避免 if-let 捕获时序问题
+// 让 UIImage 可作为 sheet(item:) 的 item，直接携带数据避免 if-let 捕獲時序問題
 private struct IdentifiableImage: Identifiable {
     let id = UUID()
     let uiImage: UIImage
@@ -18,15 +18,15 @@ struct EncryptedImageCardView: View {
     @ObservedObject var storageManager: StorageManager
     @State private var showDecryptSheet = false
     @State private var decryptPassword = ""
-    @State private var pendingImage: UIImage?       // 临时存储解密结果
-    @State private var viewableImage: IdentifiableImage?  // 驱动图片查看 sheet
+    @State private var pendingImage: UIImage?       // 臨時存儲解密結果
+    @State private var viewableImage: IdentifiableImage?  // 驅動圖片查看 sheet
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isDecrypting = false
 
     var body: some View {
         HStack(spacing: 15) {
-            // 加密状态图标，不显示原图缩略图
+            // 加密狀態圖標，不顯示原圖縮略圖
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.black.opacity(0.6))
@@ -44,14 +44,14 @@ struct EncryptedImageCardView: View {
                 Text(image.createdDate, style: .date)
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
-                Text("common_kb_format \(image.encryptedData.count / 1024)")
+                Text("\(image.encryptedData.count / 1024) KB")
                     .font(AppTheme.Fonts.caption2())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
 
             Spacer()
 
-            // 解密按钮
+            // 解密按鈕
             Button {
                 showDecryptSheet = true
             } label: {
@@ -63,7 +63,7 @@ struct EncryptedImageCardView: View {
                     .clipShape(Circle())
             }
 
-            // 删除按钮
+            // 刪除按鈕
             Button {
                 withAnimation {
                     storageManager.deleteImage(image)
@@ -80,11 +80,9 @@ struct EncryptedImageCardView: View {
         .padding()
         .appCardStyle(cornerRadius: AppTheme.Radius.sm + 5)
         .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
-        // 解密密码 sheet：onDismiss 后等动画结束再展示图片 sheet，避免两个 sheet 冲突
         .sheet(isPresented: $showDecryptSheet, onDismiss: {
             guard let img = pendingImage else { return }
             pendingImage = nil
-            // 等 sheet 关闭动画（~0.35s）彻底完成后再弹出图片
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                 viewableImage = IdentifiableImage(uiImage: img)
             }
@@ -95,7 +93,6 @@ struct EncryptedImageCardView: View {
                 onConfirm: decryptImage
             )
         }
-        // 使用 sheet(item:) 直接传递图片数据，不依赖额外 Bool 状态
         .sheet(item: $viewableImage) { item in
             ImageViewerSheet(image: item.uiImage)
         }
@@ -108,7 +105,7 @@ struct EncryptedImageCardView: View {
 
     private func decryptImage() {
         guard !decryptPassword.isEmpty else {
-            alertMessage = "prispace_alert_enter_password"
+            alertMessage = "vault_error_no_password"
             showAlert = true
             return
         }
@@ -128,7 +125,6 @@ struct EncryptedImageCardView: View {
                 }
 
                 DispatchQueue.main.async {
-                    // 先把图片存到 pendingImage，关闭 sheet 后 onDismiss 会取走它
                     self.pendingImage = uiImage
                     isDecrypting = false
                     decryptPassword = ""
@@ -137,7 +133,7 @@ struct EncryptedImageCardView: View {
             } catch {
                 DispatchQueue.main.async {
                     isDecrypting = false
-                    alertMessage = "prispace_alert_decrypt_failed"
+                    alertMessage = "vault_decrypt_hint" // 密碼錯誤提示
                     showAlert = true
                 }
             }

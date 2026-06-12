@@ -68,19 +68,15 @@ struct VideoListView: View {
                     }
                 }
                 .padding(.vertical)
-                // ✅ Fix 2: 底部留出足够空间防止被 TabBar/Home Indicator 遮挡
                 .padding(.bottom, 32)
             }
-            // ✅ Fix 2: 确保 ScrollView 内容延伸到安全区域外但 padding 留出空间
             .scrollIndicators(.hidden)
         }
-        .navigationTitle("video_list_title")
+        .navigationTitle("video_my_videos")
         .navigationBarTitleDisplayMode(.large)
-        // ✅ Fix 1: 强制导航栏使用深色外观，使标题和返回按钮呈白色
         .toolbarColorScheme(.dark, for: .navigationBar)
         .navigationBarBackButtonHidden(false)
         .toolbar {
-            // 确保 back button 也是白色
             ToolbarItem(placement: .navigationBarLeading) {
                 EmptyView()
             }
@@ -129,7 +125,7 @@ struct StatsCardView: View {
         HStack(spacing: 0) {
             StatItemView(
                 icon: "video.circle.fill",
-                title: "video_stat_videos",
+                title: "video_stats_videos",
                 value: "\(videos.count)",
                 color: Color(hex: "4E9EFF")
             )
@@ -140,7 +136,7 @@ struct StatsCardView: View {
 
             StatItemView(
                 icon: "clock.fill",
-                title: "video_stat_duration",
+                title: "video_stats_duration",
                 value: formatDuration(totalDuration),
                 color: Color(hex: "34D399")
             )
@@ -151,7 +147,7 @@ struct StatsCardView: View {
 
             StatItemView(
                 icon: "square.stack.3d.up.fill",
-                title: "video_stat_total_size",
+                title: "video_stats_size",
                 value: formatFileSize(totalSize),
                 color: Color(hex: "FB923C")
             )
@@ -160,7 +156,6 @@ struct StatsCardView: View {
         .padding(.horizontal, 8)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                // ✅ Fix 3: 使用更深的卡片背景色，增强对比度
                 .fill(Color.white.opacity(0.08))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md)
@@ -175,9 +170,9 @@ struct StatsCardView: View {
         let minutes = (Int(seconds) % 3600) / 60
         
         if hours > 0 {
-            return NSLocalizedString("video_duration_hour_min \(hours) \(minutes)", comment: "")
+            return "\(hours)h \(minutes)m"
         } else {
-            return NSLocalizedString("video_duration_min \(minutes)", comment: "")
+            return "\(minutes)m"
         }
     }
     
@@ -205,13 +200,11 @@ struct StatItemView: View {
             
             Text(value)
                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                // ✅ Fix 3: 数值使用纯白色，确保在深色背景下清晰可见
                 .foregroundColor(.white)
             
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption2)
                 .fontWeight(.medium)
-                // ✅ Fix 3: 次要文字用更高对比度的颜色
                 .foregroundColor(Color.white.opacity(0.6))
         }
         .frame(maxWidth: .infinity)
@@ -233,9 +226,8 @@ struct SortPickerView: View {
                             selection = option
                         }
                     } label: {
-                        Text(option.rawValue)
+                        Text(LocalizedStringKey(option.rawValue))
                             .font(.system(size: 13, weight: .semibold))
-                            // ✅ Fix 3: 选中/未选中状态对比更明显
                             .foregroundColor(selection == option ? .white : Color.white.opacity(0.5))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
@@ -273,23 +265,16 @@ struct VideoRowView: View {
     
     var body: some View {
         HStack(spacing: 14) {
-            // 缩略图容器
             thumbnailView
-            
-            // 视频信息
             infoView
-            
-            // 右侧箭头
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
-                // ✅ Fix 3: 箭头颜色加深，更易识别
                 .foregroundColor(Color.white.opacity(0.4))
                 .padding(.trailing, 2)
         }
         .padding(AppTheme.Spacing.md)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
-                // ✅ Fix 3: 卡片背景更深，与页面背景产生明显层次
                 .fill(Color.white.opacity(isPressed ? 0.12 : 0.09))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.lg)
@@ -312,9 +297,7 @@ struct VideoRowView: View {
             await loadThumbnail()
         }
     }
-    
-    // MARK: - Subviews
-    
+
     @ViewBuilder
     private var thumbnailView: some View {
         ZStack {
@@ -334,7 +317,6 @@ struct VideoRowView: View {
                                 )
                             )
                     }
-                    // 播放按钮
                     .overlay(alignment: .center) {
                         ZStack {
                             Circle()
@@ -347,7 +329,6 @@ struct VideoRowView: View {
                         }
                         .shadow(color: .black.opacity(0.3), radius: 4)
                     }
-                    // 时长标签
                     .overlay(alignment: .bottomLeading) {
                         Text(formatDuration(video.duration))
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
@@ -385,11 +366,10 @@ struct VideoRowView: View {
     @ViewBuilder
     private var infoView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // 分辨率 badge
             HStack(spacing: 4) {
                 Image(systemName: "aspectratio.fill")
                     .font(.system(size: 9))
-                Text("video_dimension_format \(video.width) \(video.height)")
+                Text("\(video.width) × \(video.height)")
                     .font(.system(size: 11, weight: .medium))
             }
             .foregroundColor(Color.white.opacity(0.45))
@@ -401,35 +381,26 @@ struct VideoRowView: View {
             )
             
             Spacer()
-            
-            // 文件大小 — 主信息，最醒目
             Text(formatFileSize(video.size))
                 .font(.system(size: 17, weight: .bold, design: .rounded))
-                // ✅ Fix 3: 主要数值使用高亮白色
                 .foregroundColor(.white)
             
             Spacer()
-            
-            // 创建日期
             HStack(spacing: 5) {
                 Image(systemName: "calendar")
                     .font(.system(size: 10))
                 Text(formatDate(video.created))
                     .font(.system(size: 12))
             }
-            // ✅ Fix 3: 次要信息有足够对比度但不抢眼
             .foregroundColor(Color.white.opacity(0.5))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 90)
     }
-    
-    // MARK: - Helper Methods
-    
+
     private func loadThumbnail() async {
         let scale = UIScreen.main.scale
         let targetSize = CGSize(width: 120 * scale, height: 90 * scale)
-        
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
@@ -445,7 +416,6 @@ struct VideoRowView: View {
             ) { result, info in
                 let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
                 let isError = (info?[PHImageErrorKey] != nil)
-                
                 if !isDegraded, !isError, !hasResumed {
                     hasResumed = true
                     continuation.resume(returning: result)
@@ -455,10 +425,7 @@ struct VideoRowView: View {
                 }
             }
         }
-        
-        await MainActor.run {
-            self.thumbnail = image
-        }
+        await MainActor.run { self.thumbnail = image }
     }
     
     private func formatDuration(_ seconds: Double) -> String {
@@ -466,7 +433,6 @@ struct VideoRowView: View {
         let hours = totalSeconds / 3600
         let minutes = (totalSeconds % 3600) / 60
         let secs = totalSeconds % 60
-        
         if hours > 0 {
             return String(format: "%d:%02d:%02d", hours, minutes, secs)
         } else {
@@ -488,20 +454,5 @@ struct VideoRowView: View {
         formatter.timeStyle = .short
         formatter.locale = Locale.current
         return formatter.string(from: date)
-    }
-}
-
-
-// MARK: - Preview
-
-struct VideoListView_Previews: PreviewProvider {
-    @Namespace static var namespace
-    static var previews: some View {
-        NavigationStack {
-            VideoListView(
-                namespace: namespace,
-                videos: []
-            )
-        }
     }
 }

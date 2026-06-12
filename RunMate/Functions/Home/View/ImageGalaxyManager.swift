@@ -239,7 +239,7 @@ struct ImageGalaxyCanvas: View {
             HStack {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 5) {
-                    Text("galaxy_header")
+                    Text("galaxy_title")
                         .font(.system(size: 22, weight: .black, design: .rounded))
                         .foregroundStyle(.linearGradient(
                             colors: isRingMode ? [.white, .cyan] : (currentShape == .heart ? [.pink, .purple] : [.cyan, .purple]),
@@ -249,22 +249,22 @@ struct ImageGalaxyCanvas: View {
                     if isRingMode {
                         HStack(spacing: 5) {
                             Image(systemName: "arrow.clockwise.circle").font(.caption2)
-                            Text("galaxy_mode_ring").font(.caption2.weight(.semibold))
+                            Text("galaxy_ring_mode").font(.caption2.weight(.semibold))
                         }
                         .foregroundColor(.white.opacity(0.65))
 
-                        Text("galaxy_hint_spin")
+                        Text("galaxy_drag_spin")
                             .font(.system(size: 10))
                             .foregroundColor(.white.opacity(0.38))
                     } else {
                         HStack(spacing: 5) {
                             Image(systemName: currentShape.icon).font(.caption2)
-                            Text(currentShape.displayName).font(.caption2.weight(.semibold))
+                            Text(LocalizedStringKey(currentShape.displayName)).font(.caption2.weight(.semibold))
                         }
                         .foregroundColor(.white.opacity(0.65))
                         .animation(.easeInOut(duration: 0.3), value: currentShape)
 
-                        Text("galaxy_hint_transform")
+                        Text("galaxy_double_tap")
                             .font(.system(size: 10))
                             .foregroundColor(.white.opacity(0.38))
                     }

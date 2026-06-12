@@ -21,17 +21,17 @@ struct PasswordInputSheet: View {
                     .foregroundColor(.blue)
                     .padding(.top, 30)
                 
-                Text("prispace_encrypt_title")
+                Text("vault_encrypt_title")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("prispace_encrypt_desc")
+                Text("vault_encrypt_hint")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                SecureField("prispace_enter_password_placeholder", text: $password)
+                SecureField("vault_decrypt_placeholder", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -45,7 +45,7 @@ struct PasswordInputSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("prispace_encrypt_button")
+                        Text("vault_encrypt_button")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
