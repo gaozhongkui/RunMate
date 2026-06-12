@@ -13,10 +13,10 @@ struct InfoCardView: View {
                 .foregroundStyle(AppTheme.Colors.accentGradient)
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                Text(NSLocalizedString("vault_secure_storage",comment: "") )
+                Text("vault_secure_storage")
                     .font(AppTheme.Fonts.headline())
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                Text(NSLocalizedString("vault_encryption_desc",comment: ""))
+                Text("vault_encryption_desc")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textSecondary)
                 

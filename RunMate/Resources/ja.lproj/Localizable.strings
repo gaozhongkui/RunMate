@@ -2,10 +2,24 @@
 "common_cancel" = "キャンセル";
 "common_error" = "エラー";
 "common_loading" = "読み込み中...";
+"common_close" = "閉じる";
+"common_save" = "保存";
+"common_share" = "共有";
+"common_all" = "すべて";
+"common_ok" = "OK";
+"common_notice" = "お知らせ";
+"common_delete" = "削除";
+"common_keep" = "保持";
+"common_search_placeholder" = "検索...";
 
 "Create" = "作成";
 "Vault" = "保管庫";
 "Me" = "マイページ";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "ギャラクシーアルバム";
+"home_galaxy_subtitle" = "3D没入型 · 5つの宇宙形状";
 
 "me_vip_activated" = "PriSpace AI Pro 有効";
 "me_upgrade_pro" = "PriSpace AI Pro にアップグレード";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "AIアートを探索...";
 "image_details_create_new" = "新規作成";
+
+"ai_random_button" = "AIおまかせ";
+
+"video_compress_title" = "動画を圧縮";
+"video_original" = "元の動画";
+"video_select_quality" = "圧縮品質を選択";
+"video_quality_low" = "低品質";
+"video_quality_medium" = "中品質";
+"video_quality_high" = "高品質";
+"video_desc_low" = "最小のファイルサイズ、共有に最適";
+"video_desc_medium" = "品質とサイズのバランス";
+"video_desc_high" = "高い動画品質を維持";
+"video_compressing" = "圧縮中...";
+"video_complete" = "圧縮完了";
+"video_original_size" = "元のサイズ:";
+"video_compressed_size" = "圧縮後:";
+"video_space_saved" = "節約された容量:";
+"video_start_compress" = "圧縮開始";
+"video_saving" = "保存中...";
+"video_save_to_photos" = "写真に保存";
+"video_save_success" = "動画が写真に保存されました";
+"video_no_videos" = "動画なし";
+"video_import" = "動画をインポート";
+"video_duration_range" = "長さの範囲:";
+"video_selected %lld %lld" = "%lld/%lld 選択済み";
+"video_search_placeholder" = "動画を検索...";
+"video_view_mode" = "表示モード";
+"video_list_mode" = "リスト";
+"video_grid_mode" = "グリッド";
+"video_my_videos" = "マイ動画";
+"video_stats_videos" = "動画";
+"video_stats_duration" = "長さ";
+"video_stats_size" = "合計サイズ";
+"video_sort_newest" = "新しい順";
+"video_sort_oldest" = "古い順";
+"video_sort_size_desc" = "サイズ大 ↓";
+"video_sort_size_asc" = "サイズ小 ↑";
+"video_sort_duration_desc" = "長さ長 ↓";
+"video_sort_duration_asc" = "長さ短 ↑";
+
+"ai_processing_generating" = "アートを生成中";
+"ai_processing_wait" = "芸術的な作成には時間がかかります。お待ちください...";
+"ai_processing_painting" = "AIがあなたの思考を描いています";
+"ai_processing_creating" = "作品を作成中...";
+
+"home_scanning_title" = "AIスキャン中...";
+"home_scanning_completed" = "スキャン完了";
+"home_scanning_analyzing" = "分析中";
+"home_scanning_scanned" = "スキャン済み:";
+"home_scanning_total" = "合計:";
+
+"vault_title" = "画像金庫";
+"vault_select_image" = "暗号化する画像を選択";
+"vault_empty_title" = "暗号化された画像はまだありません";
+"vault_empty_subtitle" = "上のボタンをタップして暗号化する画像を選択してください";
+"vault_decrypt_title" = "復号パスワードを入力";
+"vault_decrypt_hint" = "暗号化時に設定したパスワードを入力してください";
+"vault_decrypt_button" = "復号して表示";
+"vault_decrypt_placeholder" = "パスワードを入力";
+"vault_encrypt_title" = "暗号化パスワードを設定";
+"vault_encrypt_hint" = "画像を保護するために強力なパスワードを設定してください";
+"vault_encrypt_button" = "暗号化";
+"vault_delete_original_title" = "元の写真を削除しますか？";
+"vault_delete_original_msg" = "写真ライブラリから元の写真を削除しますか？このアプリ内でのみ閲覧可能になります。";
+"vault_secure_storage" = "安全な暗号化ストレージ";
+"vault_encryption_desc" = "AES-256暗号化で画像を保護";
+"vault_error_load_failed" = "画像の読み込みに失敗しました。別の写真を試してください。";
+"vault_error_no_password" = "パスワードを入力してください";
+"vault_error_no_access" = "写真ライブラリへのアクセスが拒否されました。元の写真は削除されませんでした。";
+"vault_banner_abs" = "絶対的";
+"vault_banner_title" = "プライベートスペース";
+"vault_banner_desc" = "銀行級のAES-256暗号化、\n軍事レベルのプライバシー保護。";
+
+"galaxy_title" = "イメージギャラクシー";
+"galaxy_ring_mode" = "リングモード";
+"galaxy_drag_spin" = "ドラッグして回転";
+"galaxy_double_tap" = "ダブルタップで変形";
+"galaxy_shape_sphere" = "球体";
+"galaxy_shape_heart" = "ハート";
+"galaxy_shape_spiral" = "スパイラル";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "コスモス";

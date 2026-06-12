@@ -2,10 +2,24 @@
 "common_cancel" = "취소";
 "common_error" = "오류";
 "common_loading" = "로딩 중...";
+"common_close" = "닫기";
+"common_save" = "저장";
+"common_share" = "공유";
+"common_all" = "전체";
+"common_ok" = "확인";
+"common_notice" = "공지";
+"common_delete" = "삭제";
+"common_keep" = "유지";
+"common_search_placeholder" = "검색...";
 
 "Create" = "만들기";
 "Vault" = "보관함";
 "Me" = "나";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "갤럭시 앨범";
+"home_galaxy_subtitle" = "3D 몰입형 · 5가지 우주 형상";
 
 "me_vip_activated" = "PriSpace AI Pro 활성화됨";
 "me_upgrade_pro" = "PriSpace AI Pro로 업그레이드";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "AI 아트 탐색...";
 "image_details_create_new" = "새로 만들기";
+
+"ai_random_button" = "AI 랜덤";
+
+"video_compress_title" = "비디오 압축";
+"video_original" = "원본 비디오";
+"video_select_quality" = "압축 품질 선택";
+"video_quality_low" = "낮은 품질";
+"video_quality_medium" = "중간 품질";
+"video_quality_high" = "높은 품질";
+"video_desc_low" = "가장 작은 파일 크기, 공유에 적합";
+"video_desc_medium" = "품질과 크기의 균형";
+"video_desc_high" = "높은 비디오 품질 유지";
+"video_compressing" = "압축 중...";
+"video_complete" = "압축 완료";
+"video_original_size" = "원본 크기:";
+"video_compressed_size" = "압축 후:";
+"video_space_saved" = "절약된 공간:";
+"video_start_compress" = "압축 시작";
+"video_saving" = "저장 중…";
+"video_save_to_photos" = "사진에 저장";
+"video_save_success" = "비디오가 사진에 저장되었습니다";
+"video_no_videos" = "비디오 없음";
+"video_import" = "비디오 가져오기";
+"video_duration_range" = "시간 범위:";
+"video_selected %lld %lld" = "%lld/%lld 선택됨";
+"video_search_placeholder" = "비디오 검색...";
+"video_view_mode" = "보기 모드";
+"video_list_mode" = "목록";
+"video_grid_mode" = "그리드";
+"video_my_videos" = "내 비디오";
+"video_stats_videos" = "비디오";
+"video_stats_duration" = "시간";
+"video_stats_size" = "총 크기";
+"video_sort_newest" = "최신순";
+"video_sort_oldest" = "오래된순";
+"video_sort_size_desc" = "크기 큰 순 ↓";
+"video_sort_size_asc" = "크기 작은 순 ↑";
+"video_sort_duration_desc" = "시간 긴 순 ↓";
+"video_sort_duration_asc" = "시간 짧은 순 ↑";
+
+"ai_processing_generating" = "아트 생성 중";
+"ai_processing_wait" = "예술 작품 생성에는 시간이 걸립니다. 잠시만 기다려 주세요...";
+"ai_processing_painting" = "AI가 당신의 생각을 그리고 있습니다";
+"ai_processing_creating" = "작품을 만드는 중...";
+
+"home_scanning_title" = "AI 스캔 중...";
+"home_scanning_completed" = "스캔 완료";
+"home_scanning_analyzing" = "분석 중";
+"home_scanning_scanned" = "스캔됨:";
+"home_scanning_total" = "합계:";
+
+"vault_title" = "이미지 보안함";
+"vault_select_image" = "암호화할 이미지 선택";
+"vault_empty_title" = "암호화된 이미지가 없습니다";
+"vault_empty_subtitle" = "위의 버튼을 눌러 암호화할 이미지를 선택하세요";
+"vault_decrypt_title" = "복호화 비밀번호 입력";
+"vault_decrypt_hint" = "암호화 시 설정한 비밀번호를 입력하세요";
+"vault_decrypt_button" = "복호화 및 보기";
+"vault_decrypt_placeholder" = "비밀번호 입력";
+"vault_encrypt_title" = "암호화 비밀번호 설정";
+"vault_encrypt_hint" = "이미지를 보호하기 위해 강력한 비밀번호를 설정하세요";
+"vault_encrypt_button" = "암호화";
+"vault_delete_original_title" = "원본 사진을 삭제할까요?";
+"vault_delete_original_msg" = "사진 라이브러리에서 원본 사진을 삭제하시겠습니까? 이 앱 내에서만 볼 수 있게 됩니다.";
+"vault_secure_storage" = "안전한 암호화 저장소";
+"vault_encryption_desc" = "AES-256 암호화로 이미지 보호";
+"vault_error_load_failed" = "이미지를 불러오지 못했습니다. 다른 사진을 시도해 보세요.";
+"vault_error_no_password" = "비밀번호를 입력하세요";
+"vault_error_no_access" = "사진 라이브러리 접근이 거부되었습니다. 원본 사진이 삭제되지 않았습니다.";
+"vault_banner_abs" = "절대적";
+"vault_banner_title" = "프라이빗 공간";
+"vault_banner_desc" = "은행급 AES-256 암호화,\n군사 수준의 개인정보 보호.";
+
+"galaxy_title" = "이미지 갤럭시";
+"galaxy_ring_mode" = "링 모드";
+"galaxy_drag_spin" = "드래그하여 회전";
+"galaxy_double_tap" = "두 번 탭하여 변형";
+"galaxy_shape_sphere" = "구형";
+"galaxy_shape_heart" = "하트형";
+"galaxy_shape_spiral" = "나선형";
+"galaxy_shape_dna" = "DNA형";
+"galaxy_shape_cosmos" = "우주형";

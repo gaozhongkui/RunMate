@@ -2,12 +2,26 @@
 "common_cancel" = "Annuler";
 "common_error" = "Erreur";
 "common_loading" = "Chargement...";
+"common_close" = "Fermer";
+"common_save" = "Enregistrer";
+"common_share" = "Partager";
+"common_all" = "Tout";
+"common_ok" = "OK";
+"common_notice" = "Avis";
+"common_delete" = "Supprimer";
+"common_keep" = "Garder";
+"common_search_placeholder" = "Rechercher...";
 
 "Create" = "Créer";
 "Vault" = "Coffre";
 "Me" = "Moi";
 
-"me_vip_activated" = "PriSpace AI Pro Activé";
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "IA";
+"home_galaxy_title" = "Album Galaxie";
+"home_galaxy_subtitle" = "Immersion 3D · 5 formes cosmiques";
+
+"me_vip_activated" = "PriSpace AI Pro activé";
 "me_upgrade_pro" = "Passer à PriSpace AI Pro";
 "me_vip_desc" = "Génération IA illimitée et coffre privé";
 "me_upgrade_desc" = "Débloquez toutes les fonctionnalités premium et créez sans limites";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "Explorer l'art IA...";
 "image_details_create_new" = "Créer nouveau";
+
+"ai_random_button" = "IA Aléatoire";
+
+"video_compress_title" = "Compresser la vidéo";
+"video_original" = "Vidéo originale";
+"video_select_quality" = "Sélectionner la qualité de compression";
+"video_quality_low" = "Qualité basse";
+"video_quality_medium" = "Qualité moyenne";
+"video_quality_high" = "Qualité haute";
+"video_desc_low" = "Plus petite taille de fichier, idéal pour le partage";
+"video_desc_medium" = "Équilibre entre qualité et taille";
+"video_desc_high" = "Maintenir une qualité vidéo supérieure";
+"video_compressing" = "Compression...";
+"video_complete" = "Compression terminée";
+"video_original_size" = "Taille originale :";
+"video_compressed_size" = "Compressée :";
+"video_space_saved" = "Espace économisé :";
+"video_start_compress" = "Démarrer la compression";
+"video_saving" = "Enregistrement…";
+"video_save_to_photos" = "Enregistrer dans Photos";
+"video_save_success" = "Vidéo enregistrée dans Photos";
+"video_no_videos" = "Pas de vidéos";
+"video_import" = "Importer une vidéo";
+"video_duration_range" = "Plage de durée :";
+"video_selected %lld %lld" = "%lld/%lld sélectionnés";
+"video_search_placeholder" = "Rechercher des vidéos...";
+"video_view_mode" = "Mode d'affichage";
+"video_list_mode" = "Liste";
+"video_grid_mode" = "Grille";
+"video_my_videos" = "Mes vidéos";
+"video_stats_videos" = "Vidéos";
+"video_stats_duration" = "Durée";
+"video_stats_size" = "Taille totale";
+"video_sort_newest" = "Le plus récent";
+"video_sort_oldest" = "Le plus ancien";
+"video_sort_size_desc" = "Taille ↓";
+"video_sort_size_asc" = "Taille ↑";
+"video_sort_duration_desc" = "Durée ↓";
+"video_sort_duration_asc" = "Durée ↑";
+
+"ai_processing_generating" = "Génération de l'art";
+"ai_processing_wait" = "La création artistique prend du temps, veuillez patienter...";
+"ai_processing_painting" = "L'IA peint vos pensées";
+"ai_processing_creating" = "Création de votre œuvre...";
+
+"home_scanning_title" = "Analyse IA...";
+"home_scanning_completed" = "Analyse terminée";
+"home_scanning_analyzing" = "Analyse en cours";
+"home_scanning_scanned" = "Analysé :";
+"home_scanning_total" = "Total :";
+
+"vault_title" = "Coffre d'images";
+"vault_select_image" = "Sélectionner l'image à chiffrer";
+"vault_empty_title" = "Pas encore d'images chiffrées";
+"vault_empty_subtitle" = "Appuyez sur le bouton ci-dessus pour sélectionner une image à chiffrer";
+"vault_decrypt_title" = "Entrer le mot de passe de déchiffrement";
+"vault_decrypt_hint" = "Entrez le mot de passe défini lors du chiffrement";
+"vault_decrypt_button" = "Déchiffrer et afficher";
+"vault_decrypt_placeholder" = "Entrer le mot de passe";
+"vault_encrypt_title" = "Définir le mot de passe de chiffrement";
+"vault_encrypt_hint" = "Définissez un mot de passe fort pour protéger vos images";
+"vault_encrypt_button" = "Chiffrer";
+"vault_delete_original_title" = "Supprimer la photo originale ?";
+"vault_delete_original_msg" = "Supprimer la photo originale de votre photothèque ? Elle ne sera visible que dans cette application.";
+"vault_secure_storage" = "Stockage chiffré sécurisé";
+"vault_encryption_desc" = "Protégez vos images avec le chiffrement AES-256";
+"vault_error_load_failed" = "Échec du chargement de l'image. Veuillez essayer une autre photo.";
+"vault_error_no_password" = "Veuillez entrer un mot de passe";
+"vault_error_no_access" = "Accès à la photothèque refusé. La photo originale n'a pas été supprimée.";
+"vault_banner_abs" = "Absolument";
+"vault_banner_title" = "Espace privé";
+"vault_banner_desc" = "Chiffrement AES-256 de niveau bancaire,\nprotection de la vie privée de niveau militaire.";
+
+"galaxy_title" = "GALAXIE D'IMAGES";
+"galaxy_ring_mode" = "MODE ANNEAU";
+"galaxy_drag_spin" = "Faire glisser pour faire pivoter";
+"galaxy_double_tap" = "Double-cliquer pour transformer";
+"galaxy_shape_sphere" = "SPHÈRE";
+"galaxy_shape_heart" = "CŒUR";
+"galaxy_shape_spiral" = "SPIRALE";
+"galaxy_shape_dna" = "ADN";
+"galaxy_shape_cosmos" = "COSMOS";

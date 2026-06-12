@@ -2,10 +2,24 @@
 "common_cancel" = "रद्द करें";
 "common_error" = "त्रुटि";
 "common_loading" = "लोड हो रहा है...";
+"common_close" = "बंद करें";
+"common_save" = "सहेजें";
+"common_share" = "साझा करें";
+"common_all" = "सभी";
+"common_ok" = "ठीक है";
+"common_notice" = "सूचना";
+"common_delete" = "हटाएं";
+"common_keep" = "रखें";
+"common_search_placeholder" = "खोजें...";
 
 "Create" = "बनाएं";
 "Vault" = "वॉल्ट";
 "Me" = "मैं";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "गैलेक्सी एल्बम";
+"home_galaxy_subtitle" = "3D इमर्सिव · 5 ब्रह्मांडीय आकृतियाँ";
 
 "me_vip_activated" = "PriSpace AI प्रो सक्रिय";
 "me_upgrade_pro" = "PriSpace AI प्रो में अपग्रेड करें";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "AI कला खोजें...";
 "image_details_create_new" = "नया बनाएं";
+
+"ai_random_button" = "AI रैंडम";
+
+"video_compress_title" = "वीडियो कंप्रेस करें";
+"video_original" = "मूल वीडियो";
+"video_select_quality" = "कंप्रेशन गुणवत्ता चुनें";
+"video_quality_low" = "कम गुणवत्ता";
+"video_quality_medium" = "मध्यम गुणवत्ता";
+"video_quality_high" = "उच्च गुणवत्ता";
+"video_desc_low" = "सबसे छोटा फ़ाइल आकार, साझा करने के लिए आदर्श";
+"video_desc_medium" = "गुणवत्ता और आकार के बीच संतुलन";
+"video_desc_high" = "उच्च वीडियो गुणवत्ता बनाए रखें";
+"video_compressing" = "कंप्रेस हो रहा है...";
+"video_complete" = "कंप्रेशन पूरा हुआ";
+"video_original_size" = "मूल आकार:";
+"video_compressed_size" = "कंप्रेस किया गया:";
+"video_space_saved" = "बचाया गया स्थान:";
+"video_start_compress" = "कंप्रेशन शुरू करें";
+"video_saving" = "सहेजा जा रहा है…";
+"video_save_to_photos" = "फोटो में सहेजें";
+"video_save_success" = "वीडियो फोटो में सहेजा गया";
+"video_no_videos" = "कोई वीडियो नहीं";
+"video_import" = "वीडियो आयात करें";
+"video_duration_range" = "अवधि सीमा:";
+"video_selected %lld %lld" = "%lld/%lld चयनित";
+"video_search_placeholder" = "वीडियो खोजें...";
+"video_view_mode" = "व्यू मोड";
+"video_list_mode" = "सूची";
+"video_grid_mode" = "ग्रिड";
+"video_my_videos" = "मेरे वीडियो";
+"video_stats_videos" = "वीडियो";
+"video_stats_duration" = "अवधि";
+"video_stats_size" = "कुल आकार";
+"video_sort_newest" = "नवीनतम";
+"video_sort_oldest" = "पुराना";
+"video_sort_size_desc" = "आकार ↓";
+"video_sort_size_asc" = "आकार ↑";
+"video_sort_duration_desc" = "अवधि ↓";
+"video_sort_duration_asc" = "अवधि ↑";
+
+"ai_processing_generating" = "कला उत्पन्न हो रही है";
+"ai_processing_wait" = "कलात्मक रचना में समय लगता है, कृपया प्रतीक्षा करें...";
+"ai_processing_painting" = "AI आपके विचारों को चित्रित कर रहा है";
+"ai_processing_creating" = "आपकी कलाकृति बनाई जा रही है...";
+
+"home_scanning_title" = "AI स्कैनिंग...";
+"home_scanning_completed" = "स्कैन पूरा हुआ";
+"home_scanning_analyzing" = "विश्लेषण हो रहा है";
+"home_scanning_scanned" = "स्कैन किया गया:";
+"home_scanning_total" = "कुल:";
+
+"vault_title" = "इमेज सेफ़";
+"vault_select_image" = "एन्क्रिप्ट करने के लिए छवि चुनें";
+"vault_empty_title" = "अभी तक कोई एन्क्रिप्टेड छवि नहीं";
+"vault_empty_subtitle" = "एन्क्रिप्ट करने के लिए छवि चुनने के लिए ऊपर दिए गए बटन पर टैप करें";
+"vault_decrypt_title" = "डिक्रिप्शन पासवर्ड दर्ज करें";
+"vault_decrypt_hint" = "एन्क्रिप्शन के दौरान आपके द्वारा सेट किया गया पासवर्ड दर्ज करें";
+"vault_decrypt_button" = "डिक्रिप्ट और देखें";
+"vault_decrypt_placeholder" = "पासवर्ड दर्ज करें";
+"vault_encrypt_title" = "एन्क्रिप्शन पासवर्ड सेट करें";
+"vault_encrypt_hint" = "अपनी छवियों की सुरक्षा के लिए एक मजबूत पासवर्ड सेट करें";
+"vault_encrypt_button" = "एन्क्रिप्ट करें";
+"vault_delete_original_title" = "मूल फोटो हटाएं?";
+"vault_delete_original_msg" = "अपनी फोटो लाइब्रेरी से मूल फोटो हटाएं? इसे केवल इस ऐप के अंदर देखा जा सकेगा।";
+"vault_secure_storage" = "सुरक्षित एन्क्रिप्टेड स्टोरेज";
+"vault_encryption_desc" = "अपनी छवियों को AES-256 एन्क्रिप्शन से सुरक्षित करें";
+"vault_error_load_failed" = "छवि लोड करने में विफल। कृपया दूसरी फोटो आज़माएं।";
+"vault_error_no_password" = "कृपया पासवर्ड दर्ज करें";
+"vault_error_no_access" = "फोटो लाइब्रेरी एक्सेस अस्वीकार। मूल फोटो नहीं हटाई गई।";
+"vault_banner_abs" = "बिल्कुल";
+"vault_banner_title" = "प्राइवेट स्पेस";
+"vault_banner_desc" = "बैंक-ग्रेड AES-256 एन्क्रिप्शन,\nसैन्य-स्तर की गोपनीयता सुरक्षा।";
+
+"galaxy_title" = "इमेज गैलेक्सी";
+"galaxy_ring_mode" = "रिंग मोड";
+"galaxy_drag_spin" = "घुमाने के लिए ड्रैग करें";
+"galaxy_double_tap" = "बदलने के लिए डबल-टैप करें";
+"galaxy_shape_sphere" = "गोला";
+"galaxy_shape_heart" = "हृदय";
+"galaxy_shape_spiral" = "सर्पिल";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "ब्रह्मांड";

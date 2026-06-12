@@ -2,10 +2,24 @@
 "common_cancel" = "Cancelar";
 "common_error" = "Erro";
 "common_loading" = "Carregando...";
+"common_close" = "Fechar";
+"common_save" = "Salvar";
+"common_share" = "Compartilhar";
+"common_all" = "Tudo";
+"common_ok" = "OK";
+"common_notice" = "Aviso";
+"common_delete" = "Excluir";
+"common_keep" = "Manter";
+"common_search_placeholder" = "Pesquisar...";
 
 "Create" = "Criar";
 "Vault" = "Cofre";
 "Me" = "Eu";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "IA";
+"home_galaxy_title" = "Álbum Galáxia";
+"home_galaxy_subtitle" = "Imersivo 3D · 5 Formas Cósmicas";
 
 "me_vip_activated" = "PriSpace AI Pro Ativado";
 "me_upgrade_pro" = "Atualizar para PriSpace AI Pro";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "Explorar arte IA...";
 "image_details_create_new" = "Criar novo";
+
+"ai_random_button" = "IA Aleatória";
+
+"video_compress_title" = "Comprimir Vídeo";
+"video_original" = "Vídeo Original";
+"video_select_quality" = "Selecionar Qualidade de Compressão";
+"video_quality_low" = "Qualidade Baixa";
+"video_quality_medium" = "Qualidade Média";
+"video_quality_high" = "Qualidade Alta";
+"video_desc_low" = "Menor tamanho de arquivo, ideal para compartilhar";
+"video_desc_medium" = "Equilíbrio entre qualidade e tamanho";
+"video_desc_high" = "Manter uma qualidade de vídeo superior";
+"video_compressing" = "Comprimindo...";
+"video_complete" = "Compressão Concluída";
+"video_original_size" = "Tamanho Original:";
+"video_compressed_size" = "Comprimido:";
+"video_space_saved" = "Espaço Economizado:";
+"video_start_compress" = "Iniciar Compressão";
+"video_saving" = "Salvando…";
+"video_save_to_photos" = "Salvar em Fotos";
+"video_save_success" = "Vídeo salvo em Fotos";
+"video_no_videos" = "Nenhum Vídeo";
+"video_import" = "Importar Vídeo";
+"video_duration_range" = "Intervalo de Duração:";
+"video_selected %lld %lld" = "%lld/%lld selecionados";
+"video_search_placeholder" = "Pesquisar vídeos...";
+"video_view_mode" = "Modo de Visualização";
+"video_list_mode" = "Lista";
+"video_grid_mode" = "Grade";
+"video_my_videos" = "Meus Vídeos";
+"video_stats_videos" = "Vídeos";
+"video_stats_duration" = "Duração";
+"video_stats_size" = "Tamanho Total";
+"video_sort_newest" = "Mais recente";
+"video_sort_oldest" = "Mais antigo";
+"video_sort_size_desc" = "Tamanho ↓";
+"video_sort_size_asc" = "Tamanho ↑";
+"video_sort_duration_desc" = "Duração ↓";
+"video_sort_duration_asc" = "Duração ↑";
+
+"ai_processing_generating" = "Gerando Arte";
+"ai_processing_wait" = "A criação artística leva tempo, por favor aguarde...";
+"ai_processing_painting" = "A IA está pintando seus pensamentos";
+"ai_processing_creating" = "Criando sua obra de arte...";
+
+"home_scanning_title" = "Escaneamento de IA...";
+"home_scanning_completed" = "Escaneamento Concluído";
+"home_scanning_analyzing" = "Analisando";
+"home_scanning_scanned" = "Escaneado:";
+"home_scanning_total" = "Total:";
+
+"vault_title" = "Cofre de Imagens";
+"vault_select_image" = "Selecionar imagem para criptografar";
+"vault_empty_title" = "Nenhuma imagem criptografada ainda";
+"vault_empty_subtitle" = "Toque no botão acima para selecionar uma imagem para criptografar";
+"vault_decrypt_title" = "Digitar Senha de Descriptografia";
+"vault_decrypt_hint" = "Digite a senha que você definiu durante a criptografia";
+"vault_decrypt_button" = "Descriptografar e Visualizar";
+"vault_decrypt_placeholder" = "Digitar senha";
+"vault_encrypt_title" = "Definir Senha de Criptografia";
+"vault_encrypt_hint" = "Defina uma senha forte para proteger suas imagens";
+"vault_encrypt_button" = "Criptografar";
+"vault_delete_original_title" = "Excluir Foto Original?";
+"vault_delete_original_msg" = "Remover a foto original da sua biblioteca de fotos? Ela só poderá ser visualizada dentro deste aplicativo.";
+"vault_secure_storage" = "Armazenamento Criptografado Seguro";
+"vault_encryption_desc" = "Proteja suas imagens com criptografia AES-256";
+"vault_error_load_failed" = "Falha ao carregar a imagem. Tente outra foto.";
+"vault_error_no_password" = "Por favor, digite uma senha";
+"vault_error_no_access" = "Acesso à biblioteca de fotos negado. A foto original não foi excluída.";
+"vault_banner_abs" = "Absolutamente";
+"vault_banner_title" = "Espaço Privado";
+"vault_banner_desc" = "Criptografia AES-256 de nível bancário,\nproteção de privacidade de nível militar.";
+
+"galaxy_title" = "GALÁXIA DE IMAGENS";
+"galaxy_ring_mode" = "MODO ANEL";
+"galaxy_drag_spin" = "Arraste para girar";
+"galaxy_double_tap" = "Toque duas vezes para transformar";
+"galaxy_shape_sphere" = "ESFERA";
+"galaxy_shape_heart" = "CORAÇÃO";
+"galaxy_shape_spiral" = "SPIRAL";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "COSMOS";
