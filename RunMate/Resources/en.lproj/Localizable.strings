@@ -2,10 +2,24 @@
 "common_cancel" = "Cancel";
 "common_error" = "Error";
 "common_loading" = "Loading...";
+"common_close" = "Close";
+"common_save" = "Save";
+"common_share" = "Share";
+"common_all" = "All";
+"common_ok" = "OK";
+"common_notice" = "Notice";
+"common_delete" = "Delete";
+"common_keep" = "Keep";
+"common_search_placeholder" = "Search...";
 
 "Create" = "Create";
 "Vault" = "Vault";
 "Me" = "Me";
+
+"home_ai_title" = "PriSpace AI";
+"home_ai_badge" = "AI";
+"home_galaxy_title" = "Galaxy Album";
+"home_galaxy_subtitle" = "3D Immersive · 5 Cosmic Shapes";
 
 "me_vip_activated" = "PriSpace AI Pro Activated";
 "me_upgrade_pro" = "Upgrade to PriSpace AI Pro";
@@ -72,3 +86,85 @@
 
 "waterfall_explore_placeholder" = "Explore AI Art...";
 "image_details_create_new" = "Create New";
+
+"ai_random_button" = "AI Random";
+
+"video_compress_title" = "Compress Video";
+"video_original" = "Original Video";
+"video_select_quality" = "Select Compression Quality";
+"video_quality_low" = "Low Quality";
+"video_quality_medium" = "Medium Quality";
+"video_quality_high" = "High Quality";
+"video_desc_low" = "Smallest file size, ideal for sharing";
+"video_desc_medium" = "Balance between quality and size";
+"video_desc_high" = "Maintain higher video quality";
+"video_compressing" = "Compressing...";
+"video_complete" = "Compression Complete";
+"video_original_size" = "Original Size:";
+"video_compressed_size" = "Compressed:";
+"video_space_saved" = "Space Saved:";
+"video_start_compress" = "Start Compression";
+"video_saving" = "Saving…";
+"video_save_to_photos" = "Save to Photos";
+"video_save_success" = "Video saved to Photos";
+"video_no_videos" = "No Videos";
+"video_import" = "Import Video";
+"video_duration_range" = "Duration Range:";
+"video_selected %lld %lld" = "%lld/%lld selected";
+"video_search_placeholder" = "Search videos...";
+"video_view_mode" = "View Mode";
+"video_list_mode" = "List";
+"video_grid_mode" = "Grid";
+"video_my_videos" = "My Videos";
+"video_stats_videos" = "Videos";
+"video_stats_duration" = "Duration";
+"video_stats_size" = "Total Size";
+"video_sort_newest" = "Newest";
+"video_sort_oldest" = "Oldest";
+"video_sort_size_desc" = "Size ↓";
+"video_sort_size_asc" = "Size ↑";
+"video_sort_duration_desc" = "Duration ↓";
+"video_sort_duration_asc" = "Duration ↑";
+
+"ai_processing_generating" = "Generating Art";
+"ai_processing_wait" = "Artistic creation takes time, please wait...";
+"ai_processing_painting" = "The AI is painting your thoughts";
+"ai_processing_creating" = "Creating your artwork...";
+
+"home_scanning_title" = "AI Scanning...";
+"home_scanning_completed" = "Scan Completed";
+"home_scanning_analyzing" = "Analyzing";
+"home_scanning_scanned" = "Scanned:";
+"home_scanning_total" = "Total:";
+
+"vault_title" = "Image Safe";
+"vault_select_image" = "Select Image to Encrypt";
+"vault_empty_title" = "No encrypted images yet";
+"vault_empty_subtitle" = "Tap the button above to select an image to encrypt";
+"vault_decrypt_title" = "Enter Decryption Password";
+"vault_decrypt_hint" = "Enter the password you set during encryption";
+"vault_decrypt_button" = "Decrypt & View";
+"vault_decrypt_placeholder" = "Enter password";
+"vault_encrypt_title" = "Set Encryption Password";
+"vault_encrypt_hint" = "Set a strong password to protect your images";
+"vault_encrypt_button" = "Encrypt";
+"vault_delete_original_title" = "Delete Original Photo?";
+"vault_delete_original_msg" = "Remove the original photo from your photo library? It will only be viewable inside this app.";
+"vault_secure_storage" = "Secure Encrypted Storage";
+"vault_encryption_desc" = "Protect your images with AES-256 encryption";
+"vault_error_load_failed" = "Failed to load image. Please try another photo.";
+"vault_error_no_password" = "Please enter a password";
+"vault_error_no_access" = "Photo library access denied. Original photo was not deleted.";
+"vault_banner_abs" = "Absolutely";
+"vault_banner_title" = "Private Space";
+"vault_banner_desc" = "Bank-grade AES-256 encryption,\nmilitary-level privacy protection.";
+
+"galaxy_title" = "IMAGE GALAXY";
+"galaxy_ring_mode" = "RING MODE";
+"galaxy_drag_spin" = "Drag to spin";
+"galaxy_double_tap" = "Double-tap to transform";
+"galaxy_shape_sphere" = "SPHERE";
+"galaxy_shape_heart" = "HEART";
+"galaxy_shape_spiral" = "SPIRAL";
+"galaxy_shape_dna" = "DNA";
+"galaxy_shape_cosmos" = "COSMOS";

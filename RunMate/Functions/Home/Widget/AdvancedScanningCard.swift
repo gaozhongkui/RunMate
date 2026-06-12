@@ -66,7 +66,7 @@ struct AdvancedScanningCard: View {
                 HStack(spacing: 10) {
                     Circle().fill(Color.green).frame(width: 6, height: 6)
                         .shadow(color: .green, radius: isAnimating ? 4 : 0)
-                    Text("AI Scanning...").font(AppTheme.Fonts.headline()).foregroundColor(AppTheme.Colors.textPrimary)
+                    Text("home_scanning_title").font(AppTheme.Fonts.headline()).foregroundColor(AppTheme.Colors.textPrimary)
                 }
                 statusLabels
             }
@@ -83,7 +83,7 @@ struct AdvancedScanningCard: View {
                     .foregroundColor(.green)
                     .font(.system(size: 18))
 
-                Text("Scan Completed")
+                Text("home_scanning_completed")
                     .font(AppTheme.Fonts.subheadline(.medium))
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
@@ -92,7 +92,7 @@ struct AdvancedScanningCard: View {
 
             // 右侧总大小
             HStack(spacing: 4) {
-                Text("Total:")
+                Text("home_scanning_total")
                     .font(AppTheme.Fonts.caption())
                     .foregroundColor(AppTheme.Colors.textMuted)
                 Text(viewModel.scannedSize)
@@ -141,7 +141,7 @@ struct AdvancedScanningCard: View {
                 Text("\(Int(viewModel.scanProgress * 100))%")
                     .font(.system(size: 48, weight: .bold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                Text("Analyzing")
+                Text("home_scanning_analyzing")
                     .font(AppTheme.Fonts.subheadline())
                     .foregroundColor(AppTheme.Colors.textSecondary)
             }
@@ -150,7 +150,7 @@ struct AdvancedScanningCard: View {
 
     private var statusLabels: some View {
         HStack(spacing: 4) {
-            Text("Scanned:")
+            Text("home_scanning_scanned")
             Text(viewModel.scannedSize)
         }
         .font(AppTheme.Fonts.caption(.medium))

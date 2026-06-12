@@ -16,7 +16,7 @@ struct AIExpandButton: View {
                 Image(systemName: "sparkles")
                     .font(.system(size: 14, weight: .semibold))
 
-                Text("AI Random")  // AI Expand
+                Text("ai_random_button")
                     .font(.system(size: 14, weight: .semibold))
             }
             .foregroundColor(.white)

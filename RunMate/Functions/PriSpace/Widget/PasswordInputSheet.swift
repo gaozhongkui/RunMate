@@ -21,17 +21,17 @@ struct PasswordInputSheet: View {
                     .foregroundColor(.blue)
                     .padding(.top, 30)
                 
-                Text("Set Encryption Password")
+                Text("vault_encrypt_title")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Set a strong password to protect your images")
+                Text("vault_encrypt_hint")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                SecureField("Enter password", text: $password)
+                SecureField("vault_decrypt_placeholder", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -45,7 +45,7 @@ struct PasswordInputSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("Encrypt")
+                        Text("vault_encrypt_button")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -62,7 +62,7 @@ struct PasswordInputSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
+                    Button("common_cancel") {
                         dismiss()
                     }
                     .disabled(isEncrypting)

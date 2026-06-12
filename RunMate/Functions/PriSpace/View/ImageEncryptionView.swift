@@ -35,7 +35,7 @@ struct ImageEncryptionView: View {
                         HStack {
                             Image(systemName: "photo.badge.plus")
                                 .font(.title2)
-                            Text("Select Image to Encrypt")
+                            Text("vault_select_image")
                                 .font(AppTheme.Fonts.subheadline(.semibold)).foregroundColor(.white)
                         }
                         .frame(maxWidth: .infinity)
@@ -49,8 +49,8 @@ struct ImageEncryptionView: View {
                     if storageManager.encryptedImages.isEmpty {
                         EmptyStateView(
                             icon: "photo.on.rectangle.angled",
-                            title: "No encrypted images yet",
-                            subtitle: "Tap the button above to select an image to encrypt"
+                            title: "vault_empty_title",
+                            subtitle: "vault_empty_subtitle"
                         )
                     } else {
                         ScrollView {
@@ -64,7 +64,7 @@ struct ImageEncryptionView: View {
                     }
                 }
         }
-        .navigationTitle("Image Safe")
+        .navigationTitle("vault_title")
         .navigationBarTitleDisplayMode(.large)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .sheet(isPresented: $showPasswordInput) {
@@ -74,22 +74,22 @@ struct ImageEncryptionView: View {
                 onConfirm: encryptSelectedImage
             )
         }
-        .alert("Notice", isPresented: $showAlert) {
-            Button("OK", role: .cancel) {}
+        .alert("common_notice", isPresented: $showAlert) {
+            Button("common_ok", role: .cancel) {}
         } message: {
-            Text(alertMessage)
+            Text(LocalizedStringKey(alertMessage))
         }
-        .alert("Delete Original Photo?", isPresented: $showDeleteOriginalAlert) {
-            Button("Delete", role: .destructive) {
+        .alert("vault_delete_original_title", isPresented: $showDeleteOriginalAlert) {
+            Button("common_delete", role: .destructive) {
                 deleteOriginalFromLibrary()
             }
-            Button("Keep", role: .cancel) {
+            Button("common_keep", role: .cancel) {
                 selectedImageData = nil
                 selectedItem = nil
                 selectedAssetIdentifier = nil
             }
         } message: {
-            Text("Remove the original photo from your photo library? It will only be viewable inside this app.")
+            Text("vault_delete_original_msg")
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
@@ -97,7 +97,6 @@ struct ImageEncryptionView: View {
         .onChange(of: selectedItem) { newItem in
             guard let newItem else { return }
 
-            // VIP 权限拦截
             if !StoreManager.shared.isVIP {
                 selectedItem = nil
                 showPaywall = true
@@ -106,14 +105,13 @@ struct ImageEncryptionView: View {
 
             selectedAssetIdentifier = newItem.itemIdentifier
             Task {
-                // 加载原始数据后统一转换为 JPEG，避免 HEIC 等格式解密后无法渲染
                 if let rawData = try? await newItem.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: rawData),
                    let jpegData = uiImage.jpegData(compressionQuality: 0.92) {
                     selectedImageData = jpegData
                     showPasswordInput = true
                 } else {
-                    alertMessage = "Failed to load image. Please try another photo."
+                    alertMessage = "vault_error_load_failed"
                     showAlert = true
                     selectedItem = nil
                     selectedAssetIdentifier = nil
@@ -122,10 +120,9 @@ struct ImageEncryptionView: View {
         }
     }
 
-    
     private func encryptSelectedImage() {
         guard let imageData = selectedImageData, !password.isEmpty else {
-            alertMessage = "Please enter a password"
+            alertMessage = "vault_error_no_password"
             showAlert = true
             return
         }
@@ -178,7 +175,7 @@ struct ImageEncryptionView: View {
                         }
                     }
                 } else {
-                    alertMessage = "Photo library access denied. Original photo was not deleted."
+                    alertMessage = "vault_error_no_access"
                     showAlert = true
                     selectedImageData = nil
                     selectedItem = nil

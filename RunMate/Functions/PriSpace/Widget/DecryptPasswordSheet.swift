@@ -21,15 +21,15 @@ struct DecryptPasswordSheet: View {
                     .foregroundColor(.green)
                     .padding(.top, 30)
                 
-                Text("Enter Decryption Password")
+                Text("vault_decrypt_title")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Enter the password you set during encryption")
+                Text("vault_decrypt_hint")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                SecureField("Enter password", text: $password)
+                SecureField("vault_decrypt_placeholder", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 30)
                     .frame(height: 50)
@@ -43,7 +43,7 @@ struct DecryptPasswordSheet: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                     } else {
-                        Text("Decrypt & View")
+                        Text("vault_decrypt_button")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
@@ -60,7 +60,7 @@ struct DecryptPasswordSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
+                    Button("common_cancel") {
                         dismiss()
                     }
                     .disabled(isDecrypting)

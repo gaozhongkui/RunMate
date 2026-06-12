@@ -9,11 +9,11 @@ enum GalaxyShape: CaseIterable, Hashable {
 
     var displayName: String {
         switch self {
-        case .sphere:    return "SPHERE"
-        case .heart:     return "HEART"
-        case .spiral:    return "SPIRAL"
-        case .dna:       return "DNA"
-        case .scattered: return "COSMOS"
+        case .sphere:    return "galaxy_shape_sphere"
+        case .heart:     return "galaxy_shape_heart"
+        case .spiral:    return "galaxy_shape_spiral"
+        case .dna:       return "galaxy_shape_dna"
+        case .scattered: return "galaxy_shape_cosmos"
         }
     }
 
@@ -239,7 +239,7 @@ struct ImageGalaxyCanvas: View {
             HStack {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 5) {
-                    Text("IMAGE GALAXY")
+                    Text("galaxy_title")
                         .font(.system(size: 22, weight: .black, design: .rounded))
                         .foregroundStyle(.linearGradient(
                             colors: isRingMode ? [.white, .cyan] : (currentShape == .heart ? [.pink, .purple] : [.cyan, .purple]),
@@ -249,22 +249,22 @@ struct ImageGalaxyCanvas: View {
                     if isRingMode {
                         HStack(spacing: 5) {
                             Image(systemName: "arrow.clockwise.circle").font(.caption2)
-                            Text("RING MODE").font(.caption2.weight(.semibold))
+                            Text("galaxy_ring_mode").font(.caption2.weight(.semibold))
                         }
                         .foregroundColor(.white.opacity(0.65))
 
-                        Text("Drag to spin")
+                        Text("galaxy_drag_spin")
                             .font(.system(size: 10))
                             .foregroundColor(.white.opacity(0.38))
                     } else {
                         HStack(spacing: 5) {
                             Image(systemName: currentShape.icon).font(.caption2)
-                            Text(currentShape.displayName).font(.caption2.weight(.semibold))
+                            Text(LocalizedStringKey(currentShape.displayName)).font(.caption2.weight(.semibold))
                         }
                         .foregroundColor(.white.opacity(0.65))
                         .animation(.easeInOut(duration: 0.3), value: currentShape)
 
-                        Text("Double-tap to transform")
+                        Text("galaxy_double_tap")
                             .font(.system(size: 10))
                             .foregroundColor(.white.opacity(0.38))
                     }
